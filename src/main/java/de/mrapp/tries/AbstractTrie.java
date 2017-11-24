@@ -65,6 +65,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
         private V value;
 
+        private NodeType predecessor;
+
         Node() {
             this(new Key<>());
         }
@@ -72,6 +74,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         Node(@NotNull final Key<K> key) {
             this.key = key;
             this.value = null;
+            this.predecessor = null;
         }
 
         public abstract void addSuccessor(@NotNull final Key<K> key,
@@ -82,6 +85,15 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
         @NotNull
         public abstract Collection<NodeType> getAllSuccessors();
+
+        @Nullable
+        public final NodeType getPredecessor() {
+            return predecessor;
+        }
+
+        public final void setPredecessor(@Nullable final NodeType predecessor) {
+            this.predecessor = predecessor;
+        }
 
         @Override
         public final Key<K> getKey() {
@@ -244,6 +256,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
         if (rootNode == null) {
             rootNode = createNode(new Key<>());
+            rootNode.setPredecessor(null);
         }
 
         ValueType previousValue = null;
@@ -257,6 +270,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
             if (successor == null) {
                 successor = createNode(symbolKey);
+                successor.setPredecessor(currentNode);
                 currentNode.addSuccessor(symbolKey, successor);
             }
 
