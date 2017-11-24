@@ -4,7 +4,6 @@ import de.mrapp.tries.AbstractTrie.Node.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.Serializable;
 import java.util.*;
 
 import static de.mrapp.util.Condition.ensureNotNull;
@@ -13,9 +12,9 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         implements Trie<SequenceType, SymbolType, ValueType> {
 
     public static abstract class Node<K, V, NodeType extends Node<K, V, ?>> implements
-            Map.Entry<Key<K>, V>, Serializable, Cloneable {
+            java.util.Map.Entry<Node.Key<K>, V>, java.io.Serializable, Cloneable {
 
-        public static class Key<K> implements Serializable {
+        public static class Key<K> implements java.io.Serializable {
 
             private static final long serialVersionUID = -5608197174243502873L;
 
