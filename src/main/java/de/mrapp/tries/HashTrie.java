@@ -4,6 +4,7 @@ import de.mrapp.tries.AbstractTrie.Node.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,11 +46,20 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
             return this.successors.get(key);
         }
 
+        @NotNull
+        @Override
+        public Collection<Node<K, V>> getAllSuccessors() {
+            return successors.values();
+        }
+
+        // TODO: toString, hashCode, equals, clone
+
     }
 
     private HashTrie(@NotNull final Node<SymbolType, ValueType> rootNode,
+                     final int size,
                      @NotNull final Map<SequenceType, Node<SymbolType, ValueType>> leafNodes) {
-        super(rootNode, leafNodes);
+        super(rootNode, size, leafNodes);
     }
 
     public HashTrie() {

@@ -18,27 +18,30 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
             private static final long serialVersionUID = -5608197174243502873L;
 
-            private final K[] key;
+            private final K[] sequence;
 
-            @SafeVarargs
-            Key(K... key) {
-                ensureNotNull(key, "The key may not be null");
-                this.key = key;
+            Key() {
+                this.sequence = null;
             }
 
-            @NotNull
-            public final K[] getKey() {
-                return key;
+            @SafeVarargs
+            Key(K... sequence) {
+                ensureNotNull(sequence, "The sequence may not be null");
+                this.sequence = sequence;
+            }
+
+            public final K[] getSequence() {
+                return sequence;
             }
 
             @Override
             public final String toString() {
-                return Arrays.toString(key);
+                return Arrays.toString(sequence);
             }
 
             @Override
             public final int hashCode() {
-                return Arrays.hashCode(key);
+                return Arrays.hashCode(sequence);
             }
 
             @Override
@@ -50,7 +53,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
                 if (obj.getClass() != getClass())
                     return false;
                 Key<?> other = (Key<?>) obj;
-                return Arrays.equals(key, other.key);
+                return Arrays.equals(sequence, other.sequence);
             }
 
         }
@@ -76,6 +79,9 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         @Nullable
         public abstract NodeType getSuccessor(@NotNull final Key<K> key);
 
+        @NotNull
+        public abstract Collection<NodeType> getAllSuccessors();
+
         @Override
         public final Key<K> getKey() {
             return key;
@@ -99,7 +105,9 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     private static final long serialVersionUID = -9049598420902876017L;
 
-    private NodeType rootNode;
+    protected NodeType rootNode;
+
+    private int size;
 
     private Map<SequenceType, NodeType> leafNodes;
 
@@ -127,13 +135,16 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     protected abstract NodeType createNode(@NotNull final Key<SymbolType> key);
 
-    AbstractTrie(final NodeType rootNode, final Map<SequenceType, NodeType> leafNodes) {
+    AbstractTrie(final NodeType rootNode, final int size,
+                 final Map<SequenceType, NodeType> leafNodes) {
         this.rootNode = rootNode;
+        this.size = size;
         this.leafNodes = leafNodes;
     }
 
     AbstractTrie() {
         this.rootNode = null;
+        this.size = 0;
         this.leafNodes = new HashMap<>();
     }
 
@@ -144,7 +155,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     @Override
     public final int size() {
-        return leafNodes.size();
+        return size;
     }
 
     @SuppressWarnings("unchecked")
@@ -161,7 +172,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     @Override
     public final void clear() {
-        rootNode = null;
+        this.rootNode = null;
+        this.size = 0;
         this.leafNodes.clear();
     }
 
@@ -208,6 +220,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
             if (!iterator.hasNext()) {
                 previousValue = successor.setValue(value);
+                size += previousValue == null ? 1 : 0;
             }
 
             currentNode = successor;
