@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static de.mrapp.util.Condition.ensureEqual;
 import static de.mrapp.util.Condition.ensureNotNull;
 
 public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, SymbolType, ValueType, NodeType extends AbstractTrie.Node<SymbolType, ValueType, NodeType>>
@@ -103,13 +104,57 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     }
 
+    private class EntrySet extends AbstractSet<Map.Entry<SequenceType, ValueType>> {
+
+        private final long modificationCount;
+
+        private void checkForModifications() {
+            ensureEqual(this.modificationCount, AbstractTrie.this.modificationCount, null,
+                    ConcurrentModificationException.class);
+        }
+
+        EntrySet(final long modificationCount) {
+            this.modificationCount = modificationCount;
+        }
+
+        @NotNull
+        @Override
+        public Iterator<Map.Entry<SequenceType, ValueType>> iterator() {
+            // TODO
+            return null;
+        }
+
+        @Override
+        public int size() {
+            checkForModifications();
+            return AbstractTrie.this.size();
+        }
+
+    }
+
+    private class EntryMap extends AbstractMap<SequenceType, ValueType> {
+
+        private final Set<Entry<SequenceType, ValueType>> entrySet;
+
+        EntryMap(final long modificationCount) {
+            this.entrySet = Collections.unmodifiableSet(new EntrySet(modificationCount));
+        }
+
+        @NotNull
+        @Override
+        public Set<Entry<SequenceType, ValueType>> entrySet() {
+            return entrySet;
+        }
+
+    }
+
     private static final long serialVersionUID = -9049598420902876017L;
 
     protected NodeType rootNode;
 
     private int size;
 
-    private Map<SequenceType, NodeType> leafNodes;
+    private long modificationCount;
 
     @Nullable
     private NodeType getNode(final SequenceType key) {
@@ -139,13 +184,13 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
                  final Map<SequenceType, NodeType> leafNodes) {
         this.rootNode = rootNode;
         this.size = size;
-        this.leafNodes = leafNodes;
+        this.modificationCount = 0;
     }
 
     AbstractTrie() {
         this.rootNode = null;
         this.size = 0;
-        this.leafNodes = new HashMap<>();
+        this.modificationCount = 0;
     }
 
     @Override
@@ -158,48 +203,45 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         return size;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public final boolean containsKey(final Object key) {
-        SequenceType sequence = (SequenceType) key;
-        return leafNodes.containsKey(sequence);
+        return new EntryMap(modificationCount).containsKey(key);
     }
 
     @Override
     public final boolean containsValue(final Object value) {
-        return leafNodes.containsValue(value);
+        return new EntryMap(modificationCount).containsValue(value);
     }
 
     @Override
     public final void clear() {
         this.rootNode = null;
         this.size = 0;
-        this.leafNodes.clear();
+        this.modificationCount++;
     }
 
     @NotNull
     @Override
     public final Set<SequenceType> keySet() {
-        return leafNodes.keySet();
+        return Collections.unmodifiableSet(new EntryMap(modificationCount).keySet());
     }
 
     @NotNull
     @Override
     public final Collection<ValueType> values() {
-        // TODO
-        return null;
+        return Collections.unmodifiableCollection(new EntryMap(modificationCount).values());
     }
 
     @NotNull
     @Override
     public final Set<Entry<SequenceType, ValueType>> entrySet() {
-        // TODO
-        return null;
+        return Collections.unmodifiableSet(new EntryMap(modificationCount).entrySet);
     }
 
-
     @Override
-    public ValueType put(final SequenceType key, final ValueType value) {
+    public final ValueType put(final SequenceType key, final ValueType value) {
+        modificationCount++;
+
         if (rootNode == null) {
             rootNode = createNode(new Key<>());
         }
@@ -237,7 +279,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     @SuppressWarnings("unchecked")
     @Override
-    public ValueType get(final Object key) {
+    public final ValueType get(final Object key) {
         SequenceType sequence = (SequenceType) key;
         NodeType node = getNode(sequence);
         return node != null ? node.getValue() : null;
