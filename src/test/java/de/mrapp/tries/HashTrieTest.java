@@ -63,6 +63,7 @@ public class HashTrieTest {
         String string = "tea";
         String previous = trie.put(new StringSequence(string), string);
         assertNull(previous);
+        assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(1, trie.size());
         verifyRootNode(trie.rootNode);
         verifySuccessors(trie.rootNode, "t");
@@ -83,6 +84,7 @@ public class HashTrieTest {
         String string = "to";
         String previous = trie.put(new StringSequence(string), string);
         assertNull(previous);
+        assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(2, trie.size());
         verifyRootNode(trie.rootNode);
         verifySuccessors(trie.rootNode, "t");
@@ -101,6 +103,7 @@ public class HashTrieTest {
         String string = "ted";
         String previous = trie.put(new StringSequence(string), string);
         assertNull(previous);
+        assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(3, trie.size());
         verifyRootNode(trie.rootNode);
         verifySuccessors(trie.rootNode, "t");
@@ -121,6 +124,7 @@ public class HashTrieTest {
         String string = "ten";
         String previous = trie.put(new StringSequence(string), string);
         assertNull(previous);
+        assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(4, trie.size());
         verifyRootNode(trie.rootNode);
         verifySuccessors(trie.rootNode, "t");
@@ -141,6 +145,7 @@ public class HashTrieTest {
         String string = "inn";
         String previous = trie.put(new StringSequence(string), string);
         assertNull(previous);
+        assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(5, trie.size());
         verifyRootNode(trie.rootNode);
         verifySuccessors(trie.rootNode, "t", "i");
