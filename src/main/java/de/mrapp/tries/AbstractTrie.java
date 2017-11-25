@@ -6,8 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static de.mrapp.util.Condition.ensureEqual;
-import static de.mrapp.util.Condition.ensureNotNull;
+import static de.mrapp.util.Condition.*;
 
 public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, SymbolType, ValueType, NodeType extends AbstractTrie.Node<SymbolType, ValueType, NodeType>>
         implements Trie<SequenceType, SymbolType, ValueType> {
@@ -95,6 +94,10 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
             this.predecessor = predecessor;
         }
 
+        public final boolean isLeaf() {
+            return getAllSuccessors().isEmpty();
+        }
+
         @Override
         public final Key<K> getKey() {
             return key;
@@ -118,6 +121,79 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     private class EntrySet extends AbstractSet<Map.Entry<SequenceType, ValueType>> {
 
+        private class LeafIterator implements Iterator<Map.Entry<SequenceType, ValueType>> {
+
+            private class Path {
+
+                private final NodeType node;
+
+                private final Collection<SymbolType> sequence;
+
+                Path(final NodeType node) {
+                    this.node = node;
+                    this.sequence = new LinkedList<>();
+                }
+
+                Path(final NodeType node, final Collection<SymbolType> sequence) {
+                    ensureNotNull(node, "The node may not be null");
+                    ensureNotNull(sequence, "The sequence may not be null");
+                    this.node = node;
+                    this.sequence = sequence;
+                }
+
+            }
+
+            private final Queue<Path> queue;
+
+            private Path nextPath;
+
+            @Nullable
+            private Path fetchNext() {
+                Path next = null;
+
+                while (!this.queue.isEmpty() && next == null) {
+                    Path path = this.queue.poll();
+
+                    if (path.node.isLeaf()) {
+                        next = path;
+                    } else {
+                        for (NodeType successor : path.node.getAllSuccessors()) {
+                            Collection<SymbolType> sequence = new LinkedList<>(path.sequence);
+                            sequence.addAll(Arrays.asList(successor.getKey().getSequence()));
+                            this.queue.add(new Path(successor, sequence));
+                        }
+                    }
+                }
+
+                return next;
+            }
+
+            LeafIterator() {
+                this.queue = new LinkedList<>();
+
+                if (rootNode != null) {
+                    this.queue.add(new Path(rootNode));
+                    this.nextPath = fetchNext();
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                checkForModifications();
+                return this.nextPath != null;
+            }
+
+            @Override
+            public Entry<SequenceType, ValueType> next() {
+                checkForModifications();
+                ensureTrue(hasNext(), null, NoSuchElementException.class);
+                Path result = this.nextPath;
+                this.nextPath = fetchNext();
+                SequenceType sequence = sequenceBuilder.build(result.sequence);
+                return new AbstractMap.SimpleImmutableEntry<>(sequence, result.node.getValue());
+            }
+        }
+
         private final long modificationCount;
 
         private void checkForModifications() {
@@ -132,8 +208,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         @NotNull
         @Override
         public Iterator<Map.Entry<SequenceType, ValueType>> iterator() {
-            // TODO
-            return null;
+            return new LeafIterator();
         }
 
         @Override
@@ -161,6 +236,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
     }
 
     private static final long serialVersionUID = -9049598420902876017L;
+
+    private final Sequence.Builder<SequenceType, SymbolType> sequenceBuilder;
 
     protected NodeType rootNode;
 
@@ -192,14 +269,9 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     protected abstract NodeType createNode(@NotNull final Key<SymbolType> key);
 
-    AbstractTrie(final NodeType rootNode, final int size,
-                 final Map<SequenceType, NodeType> leafNodes) {
-        this.rootNode = rootNode;
-        this.size = size;
-        this.modificationCount = 0;
-    }
-
-    AbstractTrie() {
+    AbstractTrie(@NotNull final Sequence.Builder<SequenceType, SymbolType> sequenceBuilder) {
+        ensureNotNull(sequenceBuilder, "The sequence builder may not be null");
+        this.sequenceBuilder = sequenceBuilder;
         this.rootNode = null;
         this.size = 0;
         this.modificationCount = 0;

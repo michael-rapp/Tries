@@ -56,14 +56,8 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
 
     }
 
-    private HashTrie(@NotNull final Node<SymbolType, ValueType> rootNode,
-                     final int size,
-                     @NotNull final Map<SequenceType, Node<SymbolType, ValueType>> leafNodes) {
-        super(rootNode, size, leafNodes);
-    }
-
-    public HashTrie() {
-        super();
+    public HashTrie(@NotNull final Sequence.Builder<SequenceType, SymbolType> sequenceBuilder) {
+        super(sequenceBuilder);
     }
 
     @Override
