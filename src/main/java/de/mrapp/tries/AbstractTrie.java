@@ -1,6 +1,7 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.AbstractTrie.Node.Key;
+import de.mrapp.tries.AbstractTrie.Node.Value;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +13,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         implements Trie<SequenceType, SymbolType, ValueType> {
 
     public static abstract class Node<K, V, NodeType extends Node<K, V, ?>> implements
-            java.util.Map.Entry<Node.Key<K>, V>, java.io.Serializable, Cloneable {
+            java.util.Map.Entry<Node.Key<K>, Node.Value<V>>, java.io.Serializable, Cloneable {
 
         public static class Key<K> implements java.io.Serializable {
 
@@ -58,11 +59,58 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
         }
 
+        public static class Value<V> implements java.io.Serializable {
+
+            private static final long serialVersionUID = -2272789810845385356L;
+
+            private V value;
+
+            Value(@Nullable final V value) {
+                this.value = value;
+            }
+
+            @Nullable
+            public V getValue() {
+                return value;
+            }
+
+            @Override
+            public final String toString() {
+                return value != null ? value.toString() : "null";
+            }
+
+            @Override
+            public final int hashCode() {
+                final int prime = 31;
+                int result = 0;
+                result = prime * result + (value == null ? 0 : value.hashCode());
+                return result;
+            }
+
+            @Override
+            public final boolean equals(final Object obj) {
+                if (obj == null)
+                    return false;
+                if (this == obj)
+                    return true;
+                if (obj.getClass() != getClass())
+                    return false;
+                Value<?> other = (Value<?>) obj;
+                if (value == null) {
+                    if (other.value != null)
+                        return false;
+                } else if (!value.equals(other.value))
+                    return false;
+                return true;
+            }
+
+        }
+
         private static final long serialVersionUID = -5239050242490781683L;
 
         private final Key<K> key;
 
-        private V value;
+        private Value<V> value;
 
         private NodeType predecessor;
 
@@ -94,23 +142,20 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
             this.predecessor = predecessor;
         }
 
-        public final boolean isLeaf() {
-            return getAllSuccessors().isEmpty();
-        }
-
         @Override
         public final Key<K> getKey() {
             return key;
         }
 
         @Override
-        public final V getValue() {
+        public final Value<V> getValue() {
             return value;
         }
 
+        @Nullable
         @Override
-        public final V setValue(final V value) {
-            V oldValue = this.value;
+        public final Value<V> setValue(@Nullable final Value<V> value) {
+            Value<V> oldValue = this.value;
             this.value = value;
             return oldValue;
         }
@@ -154,14 +199,14 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
                 while (!this.queue.isEmpty() && next == null) {
                     Path path = this.queue.poll();
 
-                    if (path.node.isLeaf()) {
+                    if (path.node.getValue() != null) {
                         next = path;
-                    } else {
-                        for (NodeType successor : path.node.getAllSuccessors()) {
-                            Collection<SymbolType> sequence = new LinkedList<>(path.sequence);
-                            sequence.addAll(Arrays.asList(successor.getKey().getSequence()));
-                            this.queue.add(new Path(successor, sequence));
-                        }
+                    }
+
+                    for (NodeType successor : path.node.getAllSuccessors()) {
+                        Collection<SymbolType> sequence = new LinkedList<>(path.sequence);
+                        sequence.addAll(Arrays.asList(successor.getKey().getSequence()));
+                        this.queue.add(new Path(successor, sequence));
                     }
                 }
 
@@ -190,7 +235,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
                 Path result = this.nextPath;
                 this.nextPath = fetchNext();
                 SequenceType sequence = sequenceBuilder.build(result.sequence);
-                return new AbstractMap.SimpleImmutableEntry<>(sequence, result.node.getValue());
+                return new AbstractMap.SimpleImmutableEntry<>(sequence,
+                        result.node.getValue().getValue());
             }
         }
 
@@ -289,6 +335,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     @Override
     public final boolean containsKey(final Object key) {
+        ensureNotNull(key, "The key may not be null");
         return new EntryMap(modificationCount).containsKey(key);
     }
 
@@ -324,6 +371,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     @Override
     public final ValueType put(final SequenceType key, final ValueType value) {
+        ensureNotNull(key, "The key may not be null");
         modificationCount++;
 
         if (rootNode == null) {
@@ -331,7 +379,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
             rootNode.setPredecessor(null);
         }
 
-        ValueType previousValue = null;
+        Value<ValueType> previousValue = null;
         NodeType currentNode = rootNode;
         Iterator<SymbolType> iterator = key.iterator();
 
@@ -347,14 +395,14 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
             }
 
             if (!iterator.hasNext()) {
-                previousValue = successor.setValue(value);
+                previousValue = successor.setValue(new Value<>(value));
                 size += previousValue == null ? 1 : 0;
             }
 
             currentNode = successor;
         }
 
-        return previousValue;
+        return previousValue != null ? previousValue.getValue() : null;
     }
 
     @Override
@@ -366,9 +414,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
     @SuppressWarnings("unchecked")
     @Override
     public final ValueType get(final Object key) {
+        ensureNotNull(key, "The key may not be null");
         SequenceType sequence = (SequenceType) key;
         NodeType node = getNode(sequence);
-        return node != null ? node.getValue() : null;
+        Value<ValueType> value = node != null ? node.getValue() : null;
+        return value != null ? value.getValue() : null;
     }
 
 }

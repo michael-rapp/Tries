@@ -1,6 +1,7 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.AbstractTrie.Node.Key;
+import de.mrapp.tries.AbstractTrie.Node.Value;
 import de.mrapp.tries.HashTrie.Node;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,13 +43,12 @@ public class HashTrieTest {
         Object[] sequence = key.getSequence();
         assertEquals(1, sequence.length);
         assertEquals(successor, sequence[0]);
-        assertTrue(childNode.getValue() == null || childNode.getAllSuccessors().isEmpty());
         return childNode;
     }
 
     private void verifyLeaf(final Node<String, String> node, final String value) {
         assertNotNull(node);
-        assertEquals(value, node.getValue());
+        assertEquals(new Value<>(value), node.getValue());
         assertTrue(node.getAllSuccessors().isEmpty());
     }
 
@@ -161,6 +161,85 @@ public class HashTrieTest {
         verifyLeaf(successor, string);
     }
 
+    /**
+     * Adds "tea", "to", "ted", "ten" "inn" and "in" to the trie.
+     */
+    @Test
+    public final void testPut6() {
+        testPut5();
+        String string = "in";
+        String previous = trie.put(new StringSequence(string), string);
+        assertNull(previous);
+        assertEquals(string, trie.get(new StringSequence(string)));
+        assertEquals(6, trie.size());
+        verifyRootNode(trie.rootNode);
+        verifySuccessors(trie.rootNode, "t", "i");
+        Node<String, String> successor = getSuccessor(trie.rootNode, "i");
+        verifySuccessors(successor, "n");
+        successor = getSuccessor(successor, "n");
+        assertEquals(new Value<>(string), successor.getValue());
+        verifySuccessors(successor, "n");
+        successor = getSuccessor(successor, "n");
+        verifyLeaf(successor, "inn");
+    }
+
+
+    /**
+     * Adds "tea", "to", "ted", "ten" "inn", "in" and "A" (mapped to null value) to the trie.
+     */
+    @Test
+    public final void testPut7() {
+        testPut6();
+        String string = "A";
+        String previous = trie.put(new StringSequence(string), null);
+        assertNull(previous);
+        assertNull(trie.get(new StringSequence(string)));
+        assertFalse(trie.isEmpty());
+        assertEquals(7, trie.size());
+        verifyRootNode(trie.rootNode);
+        verifySuccessors(trie.rootNode, "t", "i", "A");
+        Node<String, String> successor = getSuccessor(trie.rootNode, "A");
+        verifyLeaf(successor, null);
+    }
+
+    @Test
+    public final void testPutWithDuplicateValue() {
+        testPut7();
+        String string = "B";
+        String duplicate = "tea";
+        String previous = trie.put(new StringSequence(string), duplicate);
+        assertNull(previous);
+        assertEquals(duplicate, trie.get(new StringSequence(string)));
+        assertFalse(trie.isEmpty());
+        assertEquals(8, trie.size());
+        verifyRootNode(trie.rootNode);
+        verifySuccessors(trie.rootNode, "t", "i", "A", "B");
+        Node<String, String> successor = getSuccessor(trie.rootNode, "B");
+        verifyLeaf(successor, duplicate);
+    }
+
+    @Test
+    public final void testPutReplacesPreviousValue() {
+        testPut1();
+        String string = "tea";
+        String string2 = "tea2";
+        assertEquals(1, trie.size());
+        assertEquals(string, trie.get(new StringSequence(string)));
+        String previous = trie.put(new StringSequence(string), string2);
+        assertEquals(string, previous);
+        assertEquals(string2, trie.get(new StringSequence(string)));
+        assertFalse(trie.isEmpty());
+        assertEquals(1, trie.size());
+        verifyRootNode(trie.rootNode);
+        verifySuccessors(trie.rootNode, "t");
+        Node<String, String> successor = getSuccessor(trie.rootNode, "t");
+        verifySuccessors(successor, "e");
+        successor = getSuccessor(successor, "e");
+        verifySuccessors(successor, "a");
+        successor = getSuccessor(successor, "a");
+        verifyLeaf(successor, string2);
+    }
+
     @Test
     public final void testPutAll() {
         String string1 = "tea";
@@ -186,12 +265,18 @@ public class HashTrieTest {
 
     @Test
     public final void testClear() {
-        testPut1();
+        testPut7();
         trie.clear();
         assertTrue(trie.isEmpty());
         assertEquals(0, trie.size());
         assertNull(trie.rootNode);
         assertNull(trie.get(new StringSequence("tea")));
+        assertNull(trie.get(new StringSequence("to")));
+        assertNull(trie.get(new StringSequence("ted")));
+        assertNull(trie.get(new StringSequence("ten")));
+        assertNull(trie.get(new StringSequence("inn")));
+        assertNull(trie.get(new StringSequence("in")));
+        assertNull(trie.get(new StringSequence("A")));
         assertTrue(trie.values().isEmpty());
         assertTrue(trie.keySet().isEmpty());
         assertTrue(trie.entrySet().isEmpty());
@@ -200,26 +285,28 @@ public class HashTrieTest {
 
     @Test
     public final void testValues() {
-        testPut5();
+        testPutWithDuplicateValue();
         Collection<String> values = trie.values();
-        assertEquals(5, values.size());
+        assertEquals(8, values.size());
         assertTrue(values.contains("tea"));
         assertTrue(values.contains("to"));
         assertTrue(values.contains("ted"));
         assertTrue(values.contains("ten"));
         assertTrue(values.contains("inn"));
+        assertTrue(values.contains("in"));
+        assertTrue(values.contains(null));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public final void testValuesImmutable() {
-        testPut5();
+        testPut6();
         Collection<String> values = trie.values();
         values.add("foo");
     }
 
     @Test(expected = ConcurrentModificationException.class)
     public final void testValuesThrowsConcurrentModificationException() {
-        testPut5();
+        testPut6();
         Collection<String> values = trie.values();
         trie.put(new StringSequence("foo"), "foo");
         values.iterator().next();
@@ -227,37 +314,42 @@ public class HashTrieTest {
 
     @Test
     public final void testContainsValue() {
-        testPut5();
+        testPutWithDuplicateValue();
+        assertEquals(8, trie.size());
         assertTrue(trie.containsValue("tea"));
         assertTrue(trie.containsValue("to"));
         assertTrue(trie.containsValue("ted"));
         assertTrue(trie.containsValue("ten"));
         assertTrue(trie.containsValue("inn"));
-        assertFalse(trie.containsValue("te"));
+        assertTrue(trie.containsValue("in"));
+        assertTrue(trie.containsValue(null));
     }
 
     @Test
     public final void testKeySet() {
-        testPut5();
+        testPutWithDuplicateValue();
         Collection<StringSequence> keys = trie.keySet();
-        assertEquals(5, keys.size());
+        assertEquals(8, keys.size());
         assertTrue(keys.contains(new StringSequence("tea")));
         assertTrue(keys.contains(new StringSequence("to")));
         assertTrue(keys.contains(new StringSequence("ted")));
         assertTrue(keys.contains(new StringSequence("ten")));
         assertTrue(keys.contains(new StringSequence("inn")));
+        assertTrue(keys.contains(new StringSequence("in")));
+        assertTrue(keys.contains(new StringSequence("A")));
+        assertTrue(keys.contains(new StringSequence("B")));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public final void testKeySetImmutable() {
-        testPut5();
+        testPut6();
         Collection<StringSequence> keys = trie.keySet();
         keys.add(new StringSequence("foo"));
     }
 
     @Test(expected = ConcurrentModificationException.class)
     public final void testKeySetThrowsConcurrentModificationException() {
-        testPut5();
+        testPut6();
         Collection<StringSequence> keys = trie.keySet();
         trie.put(new StringSequence("foo"), "foo");
         keys.iterator().next();
@@ -265,20 +357,23 @@ public class HashTrieTest {
 
     @Test
     public final void testContainsKey() {
-        testPut5();
+        testPutWithDuplicateValue();
+        assertEquals(8, trie.size());
         assertTrue(trie.containsKey(new StringSequence("tea")));
         assertTrue(trie.containsKey(new StringSequence("to")));
         assertTrue(trie.containsKey(new StringSequence("ted")));
         assertTrue(trie.containsKey(new StringSequence("ten")));
         assertTrue(trie.containsKey(new StringSequence("inn")));
-        assertFalse(trie.containsKey(new StringSequence("te")));
+        assertTrue(trie.containsKey(new StringSequence("in")));
+        assertTrue(trie.containsKey(new StringSequence("A")));
+        assertTrue(trie.containsKey(new StringSequence("B")));
     }
 
     @Test
     public final void testEntrySet() {
-        testPut5();
+        testPutWithDuplicateValue();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
-        assertEquals(5, entrySet.size());
+        assertEquals(8, entrySet.size());
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
                 new StringSequence("tea"), "tea")));
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
@@ -289,11 +384,17 @@ public class HashTrieTest {
                 new StringSequence("ten"), "ten")));
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
                 new StringSequence("inn"), "inn")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
+                new StringSequence("in"), "in")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
+                new StringSequence("A"), (String) null)));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
+                new StringSequence("B"), "tea")));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public final void testEntrySetImmutable() {
-        testPut5();
+        testPut6();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
         entrySet.add(new AbstractMap.SimpleImmutableEntry<>(
                 new StringSequence("foo"), "foo"));
@@ -301,7 +402,7 @@ public class HashTrieTest {
 
     @Test(expected = ConcurrentModificationException.class)
     public final void testEntrySetThrowsConcurrentModificationException() {
-        testPut5();
+        testPut6();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
         trie.put(new StringSequence("foo"), "foo");
         entrySet.iterator().next();
