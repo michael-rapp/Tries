@@ -57,6 +57,38 @@ public class HashTrieTest {
         this.trie = new HashTrie<>(new StringSequence.Builder());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public final void testConstructorThrowsExceptionIfSequenceBuilderIsNull() {
+        new HashTrie<StringSequence, String, String>(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public final void testGetThrowsExceptionIfKeyIsNull() {
+        trie.get(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public final void testPutThrowsExceptionIfKeyIsNull() {
+        trie.put(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public final void testPutAllThrowsExceptionIfMapIsNull() {
+        trie.putAll(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public final void testPutAllThrowsExceptionIfMapContainsNullKey() {
+        Map<StringSequence, String> map = new HashMap<>();
+        map.put(null, null);
+        trie.putAll(map);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public final void testContainsKeyThrowsExceptionIfKeyIsNull() {
+        trie.containsKey(null);
+    }
+
     /**
      * Adds "tea" to the trie.
      */

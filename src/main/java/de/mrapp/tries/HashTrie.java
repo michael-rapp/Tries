@@ -61,12 +61,6 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
     }
 
     @Override
-    public ValueType remove(final Object key) {
-        // TODO
-        return null;
-    }
-
-    @Override
     public Trie<SequenceType, SymbolType, ValueType> subTree(Object key) {
         // TODO
         return null;

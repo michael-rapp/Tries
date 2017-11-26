@@ -397,6 +397,13 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         map.forEach(this::put);
     }
 
+    @Override
+    public final ValueType remove(final Object key) {
+        ensureNotNull(key, "The key may not be null");
+        // TODO
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public final ValueType get(final Object key) {
