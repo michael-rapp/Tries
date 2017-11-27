@@ -35,7 +35,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
             @NotNull
             public final Collection<K> getSequence() {
-                return sequence;
+                return Collections.unmodifiableCollection(sequence);
             }
 
             @Override
@@ -45,7 +45,10 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
             @Override
             public final int hashCode() {
-                return sequence.hashCode();
+                final int prime = 31;
+                int result = 0;
+                result = prime * result + sequence.hashCode();
+                return result;
             }
 
             @Override
@@ -116,6 +119,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         private Value<V> value;
 
         public Node(@NotNull final Key<K> key) {
+            ensureNotNull(key, "The key may not be null");
             this.key = key;
             this.value = null;
         }
@@ -151,7 +155,33 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
             return oldValue;
         }
 
-        // TODO: clone, toString, hashCode, equals
+        @Override
+        public final int hashCode() {
+            final int prime = 31;
+            int result = 0;
+            result = prime * result + key.hashCode();
+            result = prime * result + (value == null ? 0 : value.hashCode());
+            return result;
+        }
+
+        @Override
+        public final boolean equals(final Object obj) {
+            if (obj == null)
+                return false;
+            if (this == obj)
+                return true;
+            if (obj.getClass() != getClass())
+                return false;
+            Node<?, ?, ?> other = (Node<?, ?, ?>) obj;
+            if (!key.equals(other.key))
+                return false;
+            if (value == null) {
+                if (other.value != null)
+                    return false;
+            } else if (!value.equals(other.value))
+                return false;
+            return true;
+        }
 
     }
 
