@@ -47,6 +47,12 @@ public class StringSequenceTest {
     }
 
     @Test
+    public final void testLength() {
+        assertEquals(0, new StringSequence("").length());
+        assertEquals(3, new StringSequence("foo").length());
+    }
+
+    @Test
     public final void testToString() {
         String string = "foo";
         StringSequence stringSequence = new StringSequence(string);

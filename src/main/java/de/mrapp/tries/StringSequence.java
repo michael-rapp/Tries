@@ -51,6 +51,11 @@ public class StringSequence implements Sequence<String> {
     }
 
     @Override
+    public final int length() {
+        return string.length();
+    }
+
+    @Override
     public final String toString() {
         return string;
     }

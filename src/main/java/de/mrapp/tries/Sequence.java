@@ -12,4 +12,6 @@ public interface Sequence<SymbolType> extends Iterable<SymbolType>, Serializable
 
     }
 
+    int length();
+
 }

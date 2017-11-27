@@ -170,6 +170,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
                 Path(final NodeType node, final Collection<SymbolType> sequence) {
                     ensureNotNull(node, "The node may not be null");
                     ensureNotNull(sequence, "The sequence may not be null");
+                    ensureFalse(sequence.isEmpty(), "The sequence may not be empty");
                     this.node = node;
                     this.sequence = sequence;
                 }
@@ -299,10 +300,13 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         return size;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public final boolean containsKey(final Object key) {
         ensureNotNull(key, "The key may not be null");
-        return new EntryMap(modificationCount).containsKey(key);
+        SequenceType sequence = (SequenceType) key;
+        ensureAtLeast(sequence.length(), 1, "The key may not be empty");
+        return new EntryMap(modificationCount).containsKey(sequence);
     }
 
     @Override
@@ -338,6 +342,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
     @Override
     public final ValueType put(final SequenceType key, final ValueType value) {
         ensureNotNull(key, "The key may not be null");
+        ensureAtLeast(key.length(), 1, "The key may not be empty");
 
         if (rootNode == null) {
             rootNode = createNode(new Key<>());
@@ -380,6 +385,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
     public final ValueType remove(final Object key) {
         ensureNotNull(key, "The key may not be null");
         SequenceType sequence = (SequenceType) key;
+        ensureAtLeast(sequence.length(), 1, "The key may not be empty");
 
         if (rootNode != null) {
             NodeType lastRetainedNode = rootNode;
@@ -440,9 +446,10 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
     @Override
     public final ValueType get(final Object key) {
         ensureNotNull(key, "The key may not be null");
+        SequenceType sequence = (SequenceType) key;
+        ensureAtLeast(sequence.length(), 1, "The key may not be empty");
 
         if (rootNode != null) {
-            SequenceType sequence = (SequenceType) key;
             NodeType currentNode = rootNode;
             Iterator<SymbolType> iterator = sequence.iterator();
 

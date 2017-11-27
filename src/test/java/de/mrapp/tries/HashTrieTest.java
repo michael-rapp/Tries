@@ -68,8 +68,18 @@ public class HashTrieTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public final void testGetThrowsExceptionIfKeyIsEmpty() {
+        trie.get(new StringSequence(""));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public final void testPutThrowsExceptionIfKeyIsNull() {
         trie.put(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public final void testPutThrowsExceptionIfKeyIsEmpty() {
+        trie.put(new StringSequence(""), null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -85,8 +95,30 @@ public class HashTrieTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public final void testPutAllThrowsExceptionIfMapContainsEmptyKey() {
+        Map<StringSequence, String> map = new HashMap<>();
+        map.put(new StringSequence(""), null);
+        trie.putAll(map);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public final void testContainsKeyThrowsExceptionIfKeyIsNull() {
         trie.containsKey(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public final void testContainsKeyThrowsExceptionIfKeyIsEmpty() {
+        trie.containsKey(new StringSequence(""));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public final void testRemoveThrowsExceptionIfKeyIsNull() {
+        trie.remove(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public final void testRemoveThrowsExceptionIfKeyIsEmpty() {
+        trie.remove(new StringSequence(""));
     }
 
     /**
