@@ -1,8 +1,13 @@
 package de.mrapp.tries;
 
-public interface StringTrie<ValueType> extends Trie<StringSequence, String, ValueType> {
+import org.jetbrains.annotations.NotNull;
 
-    @Override
-    StringTrie<ValueType> subTree(Object key);
+import java.io.Serializable;
+import java.util.Map;
+
+public interface StringTrie<ValueType> extends Map<String, ValueType>, Cloneable, Serializable {
+
+    @NotNull
+    StringTrie<ValueType> subTree(@NotNull String key);
 
 }
