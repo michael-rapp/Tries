@@ -1,6 +1,5 @@
-package de.mrapp.tries;
+package de.mrapp.tries.sequence;
 
-import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
 import java.util.Collection;

@@ -21,30 +21,31 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
             private static final long serialVersionUID = -5608197174243502873L;
 
-            private final K[] sequence;
+            private final Collection<K> sequence;
 
             Key() {
-                this.sequence = null;
+                this.sequence = Collections.emptyList();
             }
 
             @SafeVarargs
             Key(K... sequence) {
                 ensureNotNull(sequence, "The sequence may not be null");
-                this.sequence = sequence;
+                this.sequence = new ArrayList<>(Arrays.asList(sequence));
             }
 
-            public final K[] getSequence() {
+            @NotNull
+            public final Collection<K> getSequence() {
                 return sequence;
             }
 
             @Override
             public final String toString() {
-                return Arrays.toString(sequence);
+                return sequence.toString();
             }
 
             @Override
             public final int hashCode() {
-                return Arrays.hashCode(sequence);
+                return sequence.hashCode();
             }
 
             @Override
@@ -56,7 +57,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
                 if (obj.getClass() != getClass())
                     return false;
                 Key<?> other = (Key<?>) obj;
-                return Arrays.equals(sequence, other.sequence);
+                return sequence.equals(other.sequence);
             }
 
         }
@@ -196,7 +197,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
                     for (NodeType successor : path.node.getAllSuccessors()) {
                         Collection<SymbolType> sequence = new LinkedList<>(path.sequence);
-                        sequence.addAll(Arrays.asList(successor.getKey().getSequence()));
+                        sequence.addAll(successor.getKey().getSequence());
                         this.queue.add(new Path(successor, sequence));
                     }
                 }

@@ -1,8 +1,9 @@
-package de.mrapp.tries;
+package de.mrapp.tries.datastructure;
 
+import de.mrapp.tries.HashTrie;
+import de.mrapp.tries.HashTrie.Node;
 import de.mrapp.tries.datastructure.AbstractTrie.Node.Key;
 import de.mrapp.tries.datastructure.AbstractTrie.Node.Value;
-import de.mrapp.tries.HashTrie.Node;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class HashTrieTest {
         assertNotNull(node);
         Key<String> key = node.getKey();
         assertNotNull(key);
-        assertNull(key.getSequence());
+        assertTrue(key.getSequence().isEmpty());
         assertNull(node.getValue());
     }
 
@@ -41,9 +42,9 @@ public class HashTrieTest {
         Node<String, String> childNode = node.getSuccessor(new Key<>(successor));
         assertNotNull(childNode);
         Key<String> key = childNode.getKey();
-        Object[] sequence = key.getSequence();
-        assertEquals(1, sequence.length);
-        assertEquals(successor, sequence[0]);
+        Collection<String> sequence = key.getSequence();
+        assertEquals(1, sequence.size());
+        assertEquals(successor, sequence.iterator().next());
         return childNode;
     }
 
