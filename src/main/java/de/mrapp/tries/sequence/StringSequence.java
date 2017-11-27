@@ -1,5 +1,6 @@
-package de.mrapp.tries;
+package de.mrapp.tries.sequence;
 
+import de.mrapp.tries.Sequence;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;

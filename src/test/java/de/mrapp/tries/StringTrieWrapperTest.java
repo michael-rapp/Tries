@@ -1,5 +1,7 @@
 package de.mrapp.tries;
 
+import de.mrapp.tries.datastructure.StringTrieWrapper;
+import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Before;
 import org.junit.Test;
 

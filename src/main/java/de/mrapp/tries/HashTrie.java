@@ -1,6 +1,7 @@
 package de.mrapp.tries;
 
-import de.mrapp.tries.AbstractTrie.Node.Key;
+import de.mrapp.tries.datastructure.AbstractTrie;
+import de.mrapp.tries.datastructure.AbstractTrie.Node.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

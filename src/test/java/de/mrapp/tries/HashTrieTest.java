@@ -1,8 +1,9 @@
 package de.mrapp.tries;
 
-import de.mrapp.tries.AbstractTrie.Node.Key;
-import de.mrapp.tries.AbstractTrie.Node.Value;
+import de.mrapp.tries.datastructure.AbstractTrie.Node.Key;
+import de.mrapp.tries.datastructure.AbstractTrie.Node.Value;
 import de.mrapp.tries.HashTrie.Node;
+import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Before;
 import org.junit.Test;
 

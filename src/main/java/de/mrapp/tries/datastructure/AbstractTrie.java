@@ -1,7 +1,9 @@
-package de.mrapp.tries;
+package de.mrapp.tries.datastructure;
 
-import de.mrapp.tries.AbstractTrie.Node.Key;
-import de.mrapp.tries.AbstractTrie.Node.Value;
+import de.mrapp.tries.Sequence;
+import de.mrapp.tries.Trie;
+import de.mrapp.tries.datastructure.AbstractTrie.Node.Key;
+import de.mrapp.tries.datastructure.AbstractTrie.Node.Value;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -112,7 +114,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
         private Value<V> value;
 
-        Node(@NotNull final Key<K> key) {
+        public Node(@NotNull final Key<K> key) {
             this.key = key;
             this.value = null;
         }
@@ -282,7 +284,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     protected abstract NodeType createNode(@NotNull final Key<SymbolType> key);
 
-    AbstractTrie(@NotNull final Sequence.Builder<SequenceType, SymbolType> sequenceBuilder) {
+    public AbstractTrie(@NotNull final Sequence.Builder<SequenceType, SymbolType> sequenceBuilder) {
         ensureNotNull(sequenceBuilder, "The sequence builder may not be null");
         this.sequenceBuilder = sequenceBuilder;
         this.rootNode = null;

@@ -1,5 +1,8 @@
-package de.mrapp.tries;
+package de.mrapp.tries.datastructure;
 
+import de.mrapp.tries.StringTrie;
+import de.mrapp.tries.Trie;
+import de.mrapp.tries.sequence.StringSequence;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
