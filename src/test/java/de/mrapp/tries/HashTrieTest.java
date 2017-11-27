@@ -440,4 +440,122 @@ public class HashTrieTest {
         entrySet.iterator().next();
     }
 
+    @Test
+    public void testRemoveIfKeyIsNotContainedAndIsPrefix() {
+        testPut1();
+        String removed = trie.remove(new StringSequence("te"));
+        assertNull(removed);
+        assertFalse(trie.isEmpty());
+        assertEquals(1, trie.size());
+        verifyRootNode(trie.rootNode);
+        verifySuccessors(trie.rootNode, "t");
+        Node<String, String> successor = getSuccessor(trie.rootNode, "t");
+        verifySuccessors(successor, "e");
+        successor = getSuccessor(successor, "e");
+        verifySuccessors(successor, "a");
+        successor = getSuccessor(successor, "a");
+        verifyLeaf(successor, "tea");
+    }
+
+    @Test
+    public void testRemoveIfKeyIsNotContainedAndSharesPrefix() {
+        testPut1();
+        String removed = trie.remove(new StringSequence("to"));
+        assertNull(removed);
+        assertFalse(trie.isEmpty());
+        assertEquals(1, trie.size());
+        verifyRootNode(trie.rootNode);
+        verifySuccessors(trie.rootNode, "t");
+        Node<String, String> successor = getSuccessor(trie.rootNode, "t");
+        verifySuccessors(successor, "e");
+        successor = getSuccessor(successor, "e");
+        verifySuccessors(successor, "a");
+        successor = getSuccessor(successor, "a");
+        verifyLeaf(successor, "tea");
+    }
+
+    @Test
+    public void testRemoveIfKeyIsNotContainedAndContainsOtherKeyAsPrefix() {
+        testPut1();
+        String removed = trie.remove(new StringSequence("teaa"));
+        assertNull(removed);
+        assertFalse(trie.isEmpty());
+        assertEquals(1, trie.size());
+        verifyRootNode(trie.rootNode);
+        verifySuccessors(trie.rootNode, "t");
+        Node<String, String> successor = getSuccessor(trie.rootNode, "t");
+        verifySuccessors(successor, "e");
+        successor = getSuccessor(successor, "e");
+        verifySuccessors(successor, "a");
+        successor = getSuccessor(successor, "a");
+        verifyLeaf(successor, "tea");
+    }
+
+    @Test
+    public void testRemoveIfKeyIsTheOnlyOne() {
+        testPut1();
+        String string = "tea";
+        String removed = trie.remove(new StringSequence(string));
+        assertEquals(string, removed);
+        assertNull(trie.get(new StringSequence(string)));
+        assertNull(trie.rootNode);
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+    }
+
+    @Test
+    public void testRemoveIfKeySharesPrefix() {
+        testPut2();
+        String string = "to";
+        String removed = trie.remove(new StringSequence(string));
+        assertEquals(string, removed);
+        assertNull(trie.get(new StringSequence(string)));
+        assertEquals(1, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(trie.rootNode);
+        verifySuccessors(trie.rootNode, "t");
+        Node<String, String> successor = getSuccessor(trie.rootNode, "t");
+        verifySuccessors(successor, "e");
+        successor = getSuccessor(successor, "e");
+        verifySuccessors(successor, "a");
+        successor = getSuccessor(successor, "a");
+        verifyLeaf(successor, "tea");
+    }
+
+    @Test
+    public void testRemoveKeyIfKeyIsPrefix() {
+        testPut6();
+        String string = "in";
+        String removed = trie.remove(new StringSequence(string));
+        assertEquals(string, removed);
+        assertNull(trie.get(new StringSequence(string)));
+        assertEquals(5, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(trie.rootNode);
+        verifySuccessors(trie.rootNode, "t", "i");
+        Node<String, String> successor = getSuccessor(trie.rootNode, "i");
+        verifySuccessors(successor, "n");
+        successor = getSuccessor(successor, "n");
+        verifySuccessors(successor, "n");
+        successor = getSuccessor(successor, "n");
+        verifyLeaf(successor, "inn");
+    }
+
+    @Test
+    public void testRemoveKeyIfKeyContainsOtherKeyAsPrefix() {
+        testPut6();
+        String string = "inn";
+        String removed = trie.remove(new StringSequence(string));
+        assertEquals(string, removed);
+        assertNull(trie.get(new StringSequence(string)));
+        assertEquals(5, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(trie.rootNode);
+        verifySuccessors(trie.rootNode, "t", "i");
+        Node<String, String> successor = getSuccessor(trie.rootNode, "i");
+        verifySuccessors(successor, "n");
+        successor = getSuccessor(successor, "n");
+        verifyLeaf(successor, "in");
+    }
+
 }

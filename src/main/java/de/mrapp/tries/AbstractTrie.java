@@ -112,10 +112,6 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
         private Value<V> value;
 
-        Node() {
-            this(new Key<>());
-        }
-
         Node(@NotNull final Key<K> key) {
             this.key = key;
             this.value = null;
@@ -124,11 +120,15 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         public abstract void addSuccessor(@NotNull final Key<K> key,
                                           @NotNull final NodeType successor);
 
+        public abstract void removeSuccessor(@NotNull final Key<K> key);
+
         @Nullable
         public abstract NodeType getSuccessor(@NotNull final Key<K> key);
 
         @NotNull
         public abstract Collection<NodeType> getAllSuccessors();
+
+        public abstract int getSuccessorCount();
 
         @Override
         public final Key<K> getKey() {
@@ -279,28 +279,6 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
 
     private long modificationCount;
 
-    @Nullable
-    private NodeType getNode(final SequenceType key) {
-        if (rootNode != null) {
-            NodeType currentNode = rootNode;
-            Iterator<SymbolType> iterator = key.iterator();
-
-            while (iterator.hasNext()) {
-                SymbolType symbol = iterator.next();
-                Key<SymbolType> symbolKey = new Key<>(symbol);
-                currentNode = currentNode.getSuccessor(symbolKey);
-
-                if (currentNode == null) {
-                    return null;
-                } else if (!iterator.hasNext()) {
-                    return currentNode;
-                }
-            }
-        }
-
-        return null;
-    }
-
     protected abstract NodeType createNode(@NotNull final Key<SymbolType> key);
 
     AbstractTrie(@NotNull final Sequence.Builder<SequenceType, SymbolType> sequenceBuilder) {
@@ -360,7 +338,6 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
     @Override
     public final ValueType put(final SequenceType key, final ValueType value) {
         ensureNotNull(key, "The key may not be null");
-        modificationCount++;
 
         if (rootNode == null) {
             rootNode = createNode(new Key<>());
@@ -383,6 +360,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
             if (!iterator.hasNext()) {
                 previousValue = successor.setValue(new Value<>(value));
                 size += previousValue == null ? 1 : 0;
+                modificationCount++;
             }
 
             currentNode = successor;
@@ -397,10 +375,64 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         map.forEach(this::put);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public final ValueType remove(final Object key) {
         ensureNotNull(key, "The key may not be null");
-        // TODO
+        SequenceType sequence = (SequenceType) key;
+
+        if (rootNode != null) {
+            NodeType lastRetainedNode = rootNode;
+            Key<SymbolType> successorToRemove = null;
+            NodeType currentNode = rootNode;
+            Iterator<SymbolType> iterator = sequence.iterator();
+
+            while (iterator.hasNext()) {
+                SymbolType symbol = iterator.next();
+                Key<SymbolType> symbolKey = new Key<>(symbol);
+                NodeType successor = currentNode.getSuccessor(symbolKey);
+
+                if (successor == null) {
+                    return null;
+                } else {
+                    if (currentNode.getSuccessorCount() > 1 || currentNode.getValue() != null) {
+                        lastRetainedNode = currentNode;
+                        successorToRemove = symbolKey;
+                    }
+
+                    if (!iterator.hasNext()) {
+                        if (successor.getSuccessorCount() > 0) {
+                            lastRetainedNode = null;
+                            successorToRemove = null;
+                        }
+
+                        Value<ValueType> value = successor.getValue();
+
+                        if (value != null) {
+                            successor.setValue(null);
+
+                            if (lastRetainedNode == rootNode) {
+                                clear();
+                            } else {
+                                if (successorToRemove != null) {
+                                    lastRetainedNode.removeSuccessor(successorToRemove);
+                                }
+
+                                size--;
+                                modificationCount++;
+                            }
+
+                            return value.getValue();
+                        }
+
+                        return null;
+                    }
+                }
+
+                currentNode = successor;
+            }
+        }
+
         return null;
     }
 
@@ -408,10 +440,27 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
     @Override
     public final ValueType get(final Object key) {
         ensureNotNull(key, "The key may not be null");
-        SequenceType sequence = (SequenceType) key;
-        NodeType node = getNode(sequence);
-        Value<ValueType> value = node != null ? node.getValue() : null;
-        return value != null ? value.getValue() : null;
+
+        if (rootNode != null) {
+            SequenceType sequence = (SequenceType) key;
+            NodeType currentNode = rootNode;
+            Iterator<SymbolType> iterator = sequence.iterator();
+
+            while (iterator.hasNext()) {
+                SymbolType symbol = iterator.next();
+                Key<SymbolType> symbolKey = new Key<>(symbol);
+                currentNode = currentNode.getSuccessor(symbolKey);
+
+                if (currentNode == null) {
+                    return null;
+                } else if (!iterator.hasNext()) {
+                    Value<ValueType> value = currentNode.getValue();
+                    return value != null ? value.getValue() : null;
+                }
+            }
+        }
+
+        return null;
     }
 
 }

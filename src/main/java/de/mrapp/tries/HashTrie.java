@@ -21,11 +21,6 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
 
         private final Map<Key<K>, Node<K, V>> successors;
 
-        public Node() {
-            super();
-            this.successors = new HashMap<>();
-        }
-
         public Node(@NotNull final Key<K> key) {
             super(key);
             this.successors = new HashMap<>();
@@ -39,6 +34,12 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
             this.successors.put(key, successor);
         }
 
+        @Override
+        public void removeSuccessor(@NotNull final Key<K> key) {
+            ensureNotNull(key, "The key may not be null");
+            this.successors.remove(key);
+        }
+
         @Nullable
         @Override
         public Node<K, V> getSuccessor(@NotNull final Key<K> key) {
@@ -50,6 +51,11 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
         @Override
         public Collection<Node<K, V>> getAllSuccessors() {
             return successors.values();
+        }
+
+        @Override
+        public int getSuccessorCount() {
+            return successors.size();
         }
 
         // TODO: toString, hashCode, equals, clone
