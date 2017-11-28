@@ -27,6 +27,12 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
             this.successors = new HashMap<>();
         }
 
+        public Node(@NotNull final Node<K, V> node) {
+            this(node.getKey());
+            setValue(node.getValue());
+            node.successors.forEach((k, v) -> addSuccessor(k, new Node<>(v)));
+        }
+
         @Override
         public void addSuccessor(@NotNull final Key<K> key,
                                  @NotNull final Node<K, V> successor) {
@@ -59,7 +65,30 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
             return successors.size();
         }
 
-        // TODO: toString, hashCode, equals, clone
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "key=" + getKey() +
+                    ", value=" + getValue() +
+                    ", successors=" + successors.keySet() +
+                    '}';
+        }
+
+        @Override
+        public final int hashCode() {
+            final int prime = 31;
+            int result = super.hashCode();
+            result = prime * result + successors.hashCode();
+            return result;
+        }
+
+        @Override
+        public final boolean equals(final Object obj) {
+            if (!super.equals(obj))
+                return false;
+            Node<?, ?> other = (Node<?, ?>) obj;
+            return successors.equals(other.successors);
+        }
 
     }
 
@@ -77,6 +106,11 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
     @Override
     protected final Node<SymbolType, ValueType> createNode(@NotNull final Key<SymbolType> key) {
         return new Node<>(key);
+    }
+
+    @Override
+    public final String toString() {
+        return "HashTrie " + entrySet().toString();
     }
 
 }

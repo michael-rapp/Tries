@@ -15,7 +15,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         implements Trie<SequenceType, SymbolType, ValueType> {
 
     public static abstract class Node<K, V, NodeType extends Node<K, V, ?>> implements
-            java.util.Map.Entry<Node.Key<K>, Node.Value<V>>, java.io.Serializable, Cloneable {
+            java.util.Map.Entry<Node.Key<K>, Node.Value<V>>, java.io.Serializable {
 
         public static class Key<K> implements java.io.Serializable {
 
@@ -156,7 +156,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         }
 
         @Override
-        public final int hashCode() {
+        public int hashCode() {
             final int prime = 31;
             int result = 0;
             result = prime * result + key.hashCode();
@@ -165,7 +165,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         }
 
         @Override
-        public final boolean equals(final Object obj) {
+        public boolean equals(final Object obj) {
             if (obj == null)
                 return false;
             if (this == obj)
@@ -501,6 +501,31 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
         }
 
         return null;
+    }
+
+    @Override
+    public final int hashCode() {
+        final int prime = 31;
+        int result = 0;
+        result = prime * result + (rootNode == null ? 0 : rootNode.hashCode());
+        return result;
+    }
+
+    @Override
+    public final boolean equals(final Object obj) {
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
+        if (obj.getClass() != getClass())
+            return false;
+        AbstractTrie<?, ?, ?, ?> other = (AbstractTrie<?, ?, ?, ?>) obj;
+        if (rootNode == null) {
+            if (other.rootNode != null)
+                return false;
+        } else if (!rootNode.equals(other.rootNode))
+            return false;
+        return true;
     }
 
 }
