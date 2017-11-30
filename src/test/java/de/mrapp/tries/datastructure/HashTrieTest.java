@@ -592,4 +592,88 @@ public class HashTrieTest {
         verifyLeaf(successor, "in");
     }
 
+    @Test
+    public void testSubTree1() {
+        testPut7();
+        HashTrie<StringSequence, String, String> subTrie = (HashTrie<StringSequence, String, String>) trie
+                .subTree(new StringSequence("t"));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(4, subTrie.size());
+        verifyRootNode(subTrie.rootNode);
+        verifySuccessors(subTrie.rootNode, "t");
+        Node<String, String> tSuccessor = getSuccessor(subTrie.rootNode, "t");
+        verifySuccessors(tSuccessor, "e", "o");
+        Node<String, String> eSuccessor = getSuccessor(tSuccessor, "e");
+        verifySuccessors(eSuccessor, "a", "d", "n");
+        Node<String, String> leaf = getSuccessor(eSuccessor, "a");
+        verifyLeaf(leaf, "tea");
+        leaf = getSuccessor(eSuccessor, "d");
+        verifyLeaf(leaf, "ted");
+        leaf = getSuccessor(eSuccessor, "n");
+        verifyLeaf(leaf, "ten");
+        Node<String, String> oSuccessor = getSuccessor(tSuccessor, "o");
+        verifyLeaf(oSuccessor, "to");
+    }
+
+    @Test
+    public void testSubTree2() {
+        testPut7();
+        HashTrie<StringSequence, String, String> subTrie = (HashTrie<StringSequence, String, String>) trie
+                .subTree(new StringSequence("te"));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(3, subTrie.size());
+        verifyRootNode(subTrie.rootNode);
+        verifySuccessors(subTrie.rootNode, "t");
+        Node<String, String> tSuccessor = getSuccessor(subTrie.rootNode, "t");
+        verifySuccessors(tSuccessor, "e");
+        Node<String, String> eSuccessor = getSuccessor(tSuccessor, "e");
+        verifySuccessors(eSuccessor, "a", "d", "n");
+        Node<String, String> leaf = getSuccessor(eSuccessor, "a");
+        verifyLeaf(leaf, "tea");
+        leaf = getSuccessor(eSuccessor, "d");
+        verifyLeaf(leaf, "ted");
+        leaf = getSuccessor(eSuccessor, "n");
+        verifyLeaf(leaf, "ten");
+    }
+
+    @Test
+    public void testHashCode() {
+        HashTrie<StringSequence, String, String> trie1 = new HashTrie<>(
+                new StringSequence.Builder());
+        HashTrie<StringSequence, String, String> trie2 = new HashTrie<>(
+                new StringSequence.Builder());
+        assertEquals(trie1.hashCode(), trie1.hashCode());
+        assertEquals(trie1.hashCode(), trie2.hashCode());
+        trie1.put(new StringSequence("foo"), "value");
+        assertNotEquals(trie1.hashCode(), trie2.hashCode());
+        trie2.put(new StringSequence("foo"), "value");
+        assertEquals(trie1.hashCode(), trie2.hashCode());
+        trie1.put(new StringSequence("fob"), "value2");
+        assertNotEquals(trie1.hashCode(), trie2.hashCode());
+    }
+
+    @Test
+    public void testEquals() {
+        HashTrie<StringSequence, String, String> trie1 = new HashTrie<>(
+                new StringSequence.Builder());
+        HashTrie<StringSequence, String, String> trie2 = new HashTrie<>(
+                new StringSequence.Builder());
+        assertFalse(trie1.equals(null));
+        assertFalse(trie1.equals(new Object()));
+        assertTrue(trie1.equals(trie1));
+        assertTrue(trie1.equals(trie2));
+        trie1.put(new StringSequence("foo"), "value");
+        assertFalse(trie1.equals(trie2));
+        trie2.put(new StringSequence("foo"), "value");
+        assertTrue(trie1.equals(trie2));
+        trie1.put(new StringSequence("fob"), "value2");
+        assertFalse(trie1.equals(trie2));
+    }
+
+    @Test
+    public void testToString() {
+        testPut3();
+        assertEquals("HashTrie [to=to, tea=tea, ted=ted]", trie.toString());
+    }
+
 }

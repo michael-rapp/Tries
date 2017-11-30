@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
@@ -30,21 +31,18 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
         public Node(@NotNull final Node<K, V> node) {
             this(node.getKey());
             setValue(node.getValue());
-            node.successors.forEach((k, v) -> addSuccessor(k, new Node<>(v)));
+            node.successors.forEach((k, v) -> this.addSuccessor(k, new Node<>(v)));
         }
 
         @Override
-        public void addSuccessor(@NotNull final Key<K> key,
-                                 @NotNull final Node<K, V> successor) {
-            ensureNotNull(key, "The key may not be null");
-            ensureNotNull(successor, "The successor may not be null");
+        protected void onAddSuccessor(@NotNull final Key<K> key,
+                                      @NotNull final Node<K, V> successor) {
             this.successors.put(key, successor);
         }
 
         @Override
-        public void removeSuccessor(@NotNull final Key<K> key) {
-            ensureNotNull(key, "The key may not be null");
-            this.successors.remove(key);
+        public Node<K, V> onRemoveSuccessor(@NotNull final Key<K> key) {
+            return this.successors.remove(key);
         }
 
         @Nullable
@@ -92,6 +90,11 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
 
     }
 
+    private HashTrie(@NotNull final Sequence.Builder<SequenceType, SymbolType> sequenceBuilder,
+                     @Nullable final Node<SymbolType, ValueType> rootNode) {
+        super(sequenceBuilder, rootNode);
+    }
+
     public HashTrie(@NotNull final Sequence.Builder<SequenceType, SymbolType> sequenceBuilder) {
         super(sequenceBuilder);
     }
@@ -99,8 +102,27 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
     @NotNull
     @Override
     public Trie<SequenceType, SymbolType, ValueType> subTree(@NotNull final SequenceType key) {
-        // TODO
-        return null;
+        Node<SymbolType, ValueType> node = getNode(key);
+
+        if (node != null) {
+            Node<SymbolType, ValueType> newRootNode = createNode(new Key<>());
+            Node<SymbolType, ValueType> currentNode = newRootNode;
+
+            for (SymbolType symbol : key) {
+                Key<SymbolType> symbolKey = new Key<>(symbol);
+                Node<SymbolType, ValueType> successor = new Node<>(symbolKey);
+                currentNode.addSuccessor(symbolKey, successor);
+                currentNode = successor;
+            }
+
+            for (Node<SymbolType, ValueType> successor : node.getAllSuccessors()) {
+                currentNode.addSuccessor(successor.getKey(), successor);
+            }
+
+            return new HashTrie<>(sequenceBuilder, newRootNode);
+        }
+
+        throw new NoSuchElementException();
     }
 
     @Override
