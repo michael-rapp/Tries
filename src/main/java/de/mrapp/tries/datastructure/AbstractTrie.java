@@ -429,8 +429,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence<SymbolType>, Sy
     public final boolean containsKey(final Object key) {
         ensureNotNull(key, "The key may not be null");
         SequenceType sequence = (SequenceType) key;
-        ensureAtLeast(sequence.length(), 1, "The key may not be empty");
-        return new EntryMap(modificationCount).containsKey(sequence);
+        NodeType node = getNode(sequence);
+        return node != null && node.getValue() != null;
     }
 
     @Override
