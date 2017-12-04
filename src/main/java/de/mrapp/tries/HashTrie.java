@@ -17,7 +17,7 @@ public class HashTrie<SequenceType extends Sequence, ValueType> extends
 
     private static final long serialVersionUID = -2250393346732658811L;
 
-    public static class Node<S extends Sequence, V> extends AbstractTrie.Node<S, V, Node<S, V>> {
+    public static class Node<S extends Sequence, V> extends AbstractNode<S, V, Node<S, V>> {
 
         private static final long serialVersionUID = 6241483145831567447L;
 

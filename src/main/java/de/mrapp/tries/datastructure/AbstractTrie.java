@@ -2,7 +2,7 @@ package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.Trie;
-import de.mrapp.tries.datastructure.AbstractTrie.Node.Value;
+import de.mrapp.tries.datastructure.AbstractTrie.AbstractNode.Value;
 import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,10 +11,10 @@ import java.util.*;
 
 import static de.mrapp.util.Condition.*;
 
-public abstract class AbstractTrie<SequenceType extends Sequence, ValueType, NodeType extends AbstractTrie.Node<SequenceType, ValueType, NodeType>>
+public abstract class AbstractTrie<SequenceType extends Sequence, ValueType, NodeType extends AbstractTrie.AbstractNode<SequenceType, ValueType, NodeType>>
         implements Trie<SequenceType, ValueType> {
 
-    public static abstract class Node<S extends Sequence, V, NodeType extends Node<S, V, NodeType>>
+    public static abstract class AbstractNode<S extends Sequence, V, NodeType extends AbstractNode<S, V, NodeType>>
             implements java.io.Serializable {
 
         public static class Value<T> implements java.io.Serializable {
@@ -70,7 +70,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType, Nod
 
         private int containedValues;
 
-        private Node<S, V, ?> predecessor;
+        private AbstractNode<S, V, ?> predecessor;
 
         protected final void increaseContainedValues(final int by) {
             this.containedValues += by;
@@ -88,23 +88,24 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType, Nod
             }
         }
 
-        protected final void setPredecessor(@Nullable final Node<S, V, ?> predecessor) {
+        protected final void setPredecessor(
+                @Nullable final AbstractTrie.AbstractNode<S, V, ?> predecessor) {
             this.predecessor = predecessor;
         }
 
         @Nullable
-        protected Node<S, V, ?> getPredecessor() {
+        protected AbstractTrie.AbstractNode<S, V, ?> getPredecessor() {
             return predecessor;
         }
 
-        public Node() {
+        public AbstractNode() {
             this.value = null;
             this.containedValues = 0;
             this.predecessor = null;
         }
 
         protected abstract S onAddSuccessor(@NotNull final S sequence,
-                                               @NotNull final NodeType successor);
+                                            @NotNull final NodeType successor);
 
         protected abstract NodeType onRemoveSuccessor(@NotNull final S sequence);
 
@@ -117,7 +118,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType, Nod
         public abstract int getSuccessorCount();
 
         public final S addSuccessor(@NotNull final S sequence,
-                                       @NotNull final NodeType successor) {
+                                    @NotNull final NodeType successor) {
             ensureNotNull(sequence, "The sequence may not be null");
             ensureNotNull(successor, "The successor may not be null");
             S suffix = onAddSuccessor(sequence, successor);
@@ -175,7 +176,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType, Nod
                 return true;
             if (obj.getClass() != getClass())
                 return false;
-            Node<?, ?, ?> other = (Node<?, ?, ?>) obj;
+            AbstractNode<?, ?, ?> other = (AbstractNode<?, ?, ?>) obj;
             if (value == null) {
                 if (other.value != null)
                     return false;

@@ -2,7 +2,7 @@ package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.HashTrie;
 import de.mrapp.tries.HashTrie.Node;
-import de.mrapp.tries.datastructure.AbstractTrie.Node.Value;
+import de.mrapp.tries.datastructure.AbstractTrie.AbstractNode.Value;
 import de.mrapp.tries.sequence.StringSequence;
 import de.mrapp.util.datastructure.Pair;
 import org.junit.Before;
