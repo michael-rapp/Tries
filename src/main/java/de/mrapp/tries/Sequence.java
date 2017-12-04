@@ -4,12 +4,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
-public interface Sequence<SymbolType> extends Iterable<SymbolType>, Serializable {
+public interface Sequence extends Serializable {
 
-    interface Builder<SequenceType extends Sequence<SymbolType>, SymbolType> {
+    default Sequence subsequence(int start) {
+        return subsequence(start, length());
+    }
 
-        SequenceType build(@NotNull Iterable<SymbolType> iterable);
+    Sequence subsequence(int start, int end);
 
+    Sequence concat(@NotNull Sequence sequence);
+
+    default boolean isEmpty() {
+        return !(length() > 0);
     }
 
     int length();

@@ -3,24 +3,11 @@ package de.mrapp.tries.sequence;
 import de.mrapp.tries.Sequence;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
-
 import static de.mrapp.util.Condition.ensureNotNull;
 
-public class StringSequence implements Sequence<String> {
+public class StringSequence implements Sequence {
 
-    public static class Builder implements Sequence.Builder<StringSequence, String> {
-
-        @Override
-        public final StringSequence build(@NotNull final Iterable<String> iterable) {
-            StringBuilder stringBuilder = new StringBuilder();
-            iterable.forEach(stringBuilder::append);
-            return new StringSequence(stringBuilder.toString());
-        }
-
-    }
-
-    private static final long serialVersionUID = 8149493337253738209L;
+    private static final long serialVersionUID = -5315067045883935279L;
 
     private final String string;
 
@@ -29,26 +16,16 @@ public class StringSequence implements Sequence<String> {
         this.string = string;
     }
 
-    @NotNull
     @Override
-    public Iterator<String> iterator() {
-        return new Iterator<String>() {
+    public final Sequence subsequence(final int start, final int end) {
+        return new StringSequence(string.substring(start, end));
+    }
 
-            private int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < string.length();
-            }
-
-            @Override
-            public String next() {
-                String symbol = Character.toString(string.charAt(i));
-                i++;
-                return symbol;
-            }
-
-        };
+    @Override
+    public final Sequence concat(@NotNull final Sequence sequence) {
+        ensureNotNull(sequence, "The sequence may not be null");
+        StringSequence stringSequence = (StringSequence) sequence;
+        return new StringSequence(string.concat(stringSequence.string));
     }
 
     @Override

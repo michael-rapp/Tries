@@ -1,61 +1,72 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.AbstractTrie;
-import de.mrapp.tries.datastructure.AbstractTrie.Node.Key;
+import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
-public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, ValueType> extends
-        AbstractTrie<SequenceType, SymbolType, ValueType, HashTrie.Node<SymbolType, ValueType>> {
+public class HashTrie<SequenceType extends Sequence, ValueType> extends
+        AbstractTrie<SequenceType, ValueType, HashTrie.Node<SequenceType, ValueType>> {
 
     private static final long serialVersionUID = -2250393346732658811L;
 
-    public static class Node<K, V> extends AbstractTrie.Node<K, V, Node<K, V>> {
+    public static class Node<S extends Sequence, V> extends AbstractTrie.Node<S, V, Node<S, V>> {
 
         private static final long serialVersionUID = 6241483145831567447L;
 
-        private final Map<Key<K>, Node<K, V>> successors;
+        private final Map<S, Node<S, V>> successors;
 
-        public Node(@NotNull final Key<K> key) {
-            super(key);
+        public Node() {
+            super();
             this.successors = new HashMap<>();
         }
 
-        public Node(@NotNull final Node<K, V> node) {
-            this(node.getKey());
+        public Node(@NotNull final Node<S, V> node) {
+            this();
             setValue(node.getValue());
             node.successors.forEach((k, v) -> this.addSuccessor(k, new Node<>(v)));
         }
 
+        @Nullable
         @Override
-        protected void onAddSuccessor(@NotNull final Key<K> key,
-                                      @NotNull final Node<K, V> successor) {
+        protected S onAddSuccessor(@NotNull final S sequence,
+                                   @NotNull final Node<S, V> successor) {
+            S key = (S) sequence.subsequence(0, 1);
             this.successors.put(key, successor);
+            return (S) sequence.subsequence(1);
         }
 
         @Override
-        public Node<K, V> onRemoveSuccessor(@NotNull final Key<K> key) {
-            return this.successors.remove(key);
+        public Node<S, V> onRemoveSuccessor(@NotNull final S sequence) {
+            return this.successors.remove(sequence);
         }
 
         @Nullable
         @Override
-        public Node<K, V> getSuccessor(@NotNull final Key<K> key) {
-            ensureNotNull(key, "The key may not be null");
-            return this.successors.get(key);
+        public Pair<Node<S, V>, S> getSuccessor(@NotNull final S sequence) {
+            ensureNotNull(sequence, "The sequence may not be null");
+            S key = (S) sequence.subsequence(0, 1);
+            Node<S, V> node = this.successors.get(key);
+
+            if (node != null) {
+                S suffix = (S) sequence.subsequence(1);
+                return Pair.create(node, suffix);
+            }
+
+            return null;
         }
 
         @NotNull
         @Override
-        public Collection<Node<K, V>> getAllSuccessors() {
-            return successors.values();
+        public Map<S, Node<S, V>> getAllSuccessors() {
+            return Collections.unmodifiableMap(successors);
         }
 
         @Override
@@ -66,8 +77,7 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
         @Override
         public String toString() {
             return "Node{" +
-                    "key=" + getKey() +
-                    ", value=" + getValue() +
+                    "value=" + getValue() +
                     ", successors=" + successors.keySet() +
                     '}';
         }
@@ -90,44 +100,44 @@ public class HashTrie<SequenceType extends Sequence<SymbolType>, SymbolType, Val
 
     }
 
-    private HashTrie(@NotNull final Sequence.Builder<SequenceType, SymbolType> sequenceBuilder,
-                     @Nullable final Node<SymbolType, ValueType> rootNode) {
-        super(sequenceBuilder, rootNode);
+    private HashTrie(@Nullable final Node<SequenceType, ValueType> rootNode) {
+        super(rootNode);
     }
 
-    public HashTrie(@NotNull final Sequence.Builder<SequenceType, SymbolType> sequenceBuilder) {
-        super(sequenceBuilder);
+    public HashTrie() {
+        super();
     }
 
     @NotNull
     @Override
-    public Trie<SequenceType, SymbolType, ValueType> subTree(@NotNull final SequenceType key) {
-        Node<SymbolType, ValueType> node = getNode(key);
+    public HashTrie<SequenceType, ValueType> subTree(@NotNull final SequenceType key) {
+        Node<SequenceType, ValueType> node = getNode(key);
 
         if (node != null) {
-            Node<SymbolType, ValueType> newRootNode = createNode(new Key<>());
-            Node<SymbolType, ValueType> currentNode = newRootNode;
+            Node<SequenceType, ValueType> newRootNode = createNode();
+            Node<SequenceType, ValueType> currentNode = newRootNode;
 
-            for (SymbolType symbol : key) {
-                Key<SymbolType> symbolKey = new Key<>(symbol);
-                Node<SymbolType, ValueType> successor = new Node<>(symbolKey);
-                currentNode.addSuccessor(symbolKey, successor);
+            for (int i = 0; i < key.length(); i++) {
+                Node<SequenceType, ValueType> successor = createNode();
+                SequenceType subsequence = (SequenceType) key.subsequence(i, i + 1);
+                currentNode.addSuccessor(subsequence, successor);
                 currentNode = successor;
             }
 
-            for (Node<SymbolType, ValueType> successor : node.getAllSuccessors()) {
-                currentNode.addSuccessor(successor.getKey(), successor);
+            for (Map.Entry<SequenceType, Node<SequenceType, ValueType>> entry : node
+                    .getAllSuccessors().entrySet()) {
+                currentNode.addSuccessor(entry.getKey(), new Node<>(entry.getValue()));
             }
 
-            return new HashTrie<>(sequenceBuilder, newRootNode);
+            return new HashTrie<>(newRootNode);
         }
 
         throw new NoSuchElementException();
     }
 
     @Override
-    protected final Node<SymbolType, ValueType> createNode(@NotNull final Key<SymbolType> key) {
-        return new Node<>(key);
+    protected final Node<SequenceType, ValueType> createNode() {
+        return new Node<>();
     }
 
     @Override

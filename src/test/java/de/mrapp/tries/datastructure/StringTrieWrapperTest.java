@@ -1,5 +1,6 @@
 package de.mrapp.tries.datastructure;
 
+import de.mrapp.tries.HashTrie;
 import de.mrapp.tries.StringTrie;
 import de.mrapp.tries.Trie;
 import de.mrapp.tries.sequence.StringSequence;
@@ -8,15 +9,14 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class StringTrieWrapperTest {
 
     private StringTrieWrapper<String> trieWrapper;
 
-    private Trie<StringSequence, String, String> trie;
+    private Trie<StringSequence, String> trie;
 
     @SuppressWarnings("unchecked")
     @Before
@@ -150,11 +150,41 @@ public class StringTrieWrapperTest {
     @Test
     public final void testSubTree() {
         String key = "key";
-        Trie<StringSequence, String, String> subTrie = mock(Trie.class);
+        Trie<StringSequence, String> subTrie = mock(Trie.class);
         when(trie.subTree(new StringSequence(key))).thenReturn(subTrie);
         StringTrie<String> subStringTrie = trieWrapper.subTree(key);
         assertTrue(subStringTrie instanceof StringTrieWrapper);
         assertEquals(subTrie, ((StringTrieWrapper) subStringTrie).trie);
+    }
+
+    @Test
+    public final void testHashCode() {
+        Trie<StringSequence, String> trie1 = new HashTrie<>();
+        Trie<StringSequence, String> trie2 = new HashTrie<>();
+        StringTrieWrapper<String> trieWrapper1 = new StringTrieWrapper<>(trie1);
+        StringTrieWrapper<String> trieWrapper2 = new StringTrieWrapper<>(trie2);
+        assertEquals(trieWrapper1.hashCode(), trieWrapper2.hashCode());
+        assertEquals(trieWrapper1.hashCode(), trieWrapper2.hashCode());
+        trieWrapper1.put("key", "value");
+        assertNotEquals(trieWrapper1.hashCode(), trieWrapper2.hashCode());
+        trieWrapper2.put("key", "value");
+        assertEquals(trieWrapper1.hashCode(), trieWrapper2.hashCode());
+    }
+
+    @Test
+    public final void testEquals() {
+        Trie<StringSequence, String> trie1 = new HashTrie<>();
+        Trie<StringSequence, String> trie2 = new HashTrie<>();
+        StringTrieWrapper<String> trieWrapper1 = new StringTrieWrapper<>(trie1);
+        StringTrieWrapper<String> trieWrapper2 = new StringTrieWrapper<>(trie2);
+        assertFalse(trieWrapper1.equals(null));
+        assertFalse(trieWrapper1.equals(new Object()));
+        assertTrue(trieWrapper1.equals(trieWrapper1));
+        assertTrue(trieWrapper1.equals(trieWrapper2));
+        trieWrapper1.put("key", "value");
+        assertFalse(trieWrapper1.equals(trieWrapper2));
+        trieWrapper2.put("key", "value");
+        assertTrue(trieWrapper1.equals(trieWrapper2));
     }
 
 }

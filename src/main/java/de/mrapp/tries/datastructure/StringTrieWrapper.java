@@ -11,7 +11,6 @@ import static de.mrapp.util.Condition.ensureNotNull;
 
 public class StringTrieWrapper<ValueType> implements StringTrie<ValueType> {
 
-
     private class EntrySetWrapper extends AbstractSet<Entry<String, ValueType>> {
 
         private class IteratorWrapper implements Iterator<Entry<String, ValueType>> {
@@ -103,9 +102,9 @@ public class StringTrieWrapper<ValueType> implements StringTrie<ValueType> {
 
     private static final long serialVersionUID = -2331614627443287430L;
 
-    protected final Trie<StringSequence, String, ValueType> trie;
+    protected final Trie<StringSequence, ValueType> trie;
 
-    public StringTrieWrapper(@NotNull final Trie<StringSequence, String, ValueType> trie) {
+    public StringTrieWrapper(@NotNull final Trie<StringSequence, ValueType> trie) {
         this.trie = trie;
     }
 
@@ -177,6 +176,26 @@ public class StringTrieWrapper<ValueType> implements StringTrie<ValueType> {
     @Override
     public final StringTrie<ValueType> subTree(@NotNull final String key) {
         return new StringTrieWrapper<>(trie.subTree(new StringSequence(key)));
+    }
+
+    @Override
+    public final int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + trie.hashCode();
+        return result;
+    }
+
+    @Override
+    public final boolean equals(final Object obj) {
+        if (obj == null)
+            return false;
+        if (this == obj)
+            return true;
+        if (getClass() != obj.getClass())
+            return false;
+        StringTrieWrapper<?> other = (StringTrieWrapper<?>) obj;
+        return trie.equals(other.trie);
     }
 
 }

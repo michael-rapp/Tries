@@ -4,11 +4,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.NavigableMap;
 
-public interface SortedTrie<SequenceType extends Sequence<SymbolType>, SymbolType, ValueType> extends
-        NavigableMap<SequenceType, ValueType>, Trie<SequenceType, SymbolType, ValueType> {
+public interface SortedTrie<SequenceType extends Sequence, ValueType>
+        extends NavigableMap<SequenceType, ValueType>, Trie<SequenceType, ValueType> {
 
     @NotNull
     @Override
-    SortedTrie<SequenceType, SymbolType, ValueType> subTree(@NotNull SequenceType key);
+    SortedTrie<SequenceType, ValueType> subTree(@NotNull SequenceType key);
 
 }

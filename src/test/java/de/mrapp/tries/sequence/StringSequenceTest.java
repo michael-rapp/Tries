@@ -13,37 +13,27 @@ import static org.junit.Assert.*;
  */
 public class StringSequenceTest {
 
-    @Test
-    public final void testBuilder() {
-        StringSequence.Builder builder = new StringSequence.Builder();
-        Collection<String> sequence = new LinkedList<>();
-        sequence.add("f");
-        sequence.add("o");
-        sequence.add("o");
-        StringSequence stringSequence = builder.build(sequence);
-        assertEquals("foo", stringSequence.toString());
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public final void testConstructorThrowsExceptionIfStringIsNull() {
         new StringSequence(null);
     }
 
     @Test
-    public final void testIterator() {
-        StringSequence stringSequence = new StringSequence("foo");
-        Iterator<String> iterator = stringSequence.iterator();
-        assertEquals("f", iterator.next());
-        assertEquals("o", iterator.next());
-        assertEquals("o", iterator.next());
-        assertFalse(iterator.hasNext());
+    public final void testSubsequenceWithStartParameter() {
+        assertEquals(new StringSequence("23"), new StringSequence("123").subsequence(1));
     }
 
     @Test
-    public final void testIteratorWithEmptyString() {
-        StringSequence stringSequence = new StringSequence("");
-        Iterator<String> iterator = stringSequence.iterator();
-        assertFalse(iterator.hasNext());
+    public final void testSubsequenceWithStartAndEndParameter() {
+        assertEquals(new StringSequence(""), new StringSequence("123").subsequence(1, 1));
+        assertEquals(new StringSequence("2"), new StringSequence("123").subsequence(1, 2));
+        assertEquals(new StringSequence("23"), new StringSequence("123").subsequence(1, 3));
+    }
+
+    @Test
+    public final void testIsEmpty() {
+        assertTrue(new StringSequence("").isEmpty());
+        assertFalse(new StringSequence("foo").isEmpty());
     }
 
     @Test
