@@ -1,9 +1,11 @@
 package de.mrapp.tries.datastructure;
 
+import de.mrapp.tries.Node;
 import de.mrapp.tries.StringTrie;
 import de.mrapp.tries.Trie;
 import de.mrapp.tries.sequence.StringSequence;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -170,6 +172,12 @@ public class StringTrieWrapper<ValueType> implements StringTrie<ValueType> {
     @Override
     public final Set<Entry<String, ValueType>> entrySet() {
         return new EntrySetWrapper(trie.entrySet());
+    }
+
+    @Nullable
+    @Override
+    public final Node<StringSequence, ValueType> getRootNode() {
+        return trie.getRootNode();
     }
 
     @NotNull

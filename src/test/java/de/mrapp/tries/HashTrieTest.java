@@ -1,10 +1,7 @@
-package de.mrapp.tries.datastructure;
+package de.mrapp.tries;
 
-import de.mrapp.tries.HashTrie;
-import de.mrapp.tries.HashTrie.Node;
-import de.mrapp.tries.datastructure.AbstractTrie.AbstractNode.Value;
 import de.mrapp.tries.sequence.StringSequence;
-import de.mrapp.util.datastructure.Pair;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,13 +19,13 @@ public class HashTrieTest {
     private void verifyRootNode(final Node<StringSequence, String> node) {
         assertNotNull(node);
         assertNull(node.getPredecessor());
-        assertNull(node.getValue());
+        assertNull(node.getNodeValue());
     }
 
     private void verifySuccessors(final Node<StringSequence, String> node,
                                   final String... successors) {
         assertNotNull(node);
-        assertEquals(successors.length, node.getAllSuccessors().size());
+        assertEquals(successors.length, node.getSuccessorCount());
 
         for (String successor : successors) {
             getSuccessor(node, successor);
@@ -38,19 +35,15 @@ public class HashTrieTest {
     private Node<StringSequence, String> getSuccessor(final Node<StringSequence, String> node,
                                                       final String successor) {
         assertNotNull(node);
-        Pair<Node<StringSequence, String>, StringSequence> pair = node
-                .getSuccessor(new StringSequence(successor));
-        assertNotNull(pair);
-        Node<StringSequence, String> childNode = pair.first;
+        Node<StringSequence, String> childNode = node.getSuccessor(new StringSequence(successor));
         assertNotNull(childNode);
-        assertEquals(pair.second, new StringSequence(successor.substring(1, successor.length())));
         return childNode;
     }
 
     private void verifyLeaf(final Node<StringSequence, String> node, final String value) {
         assertNotNull(node);
-        assertEquals(new Value<>(value), node.getValue());
-        assertTrue(node.getAllSuccessors().isEmpty());
+        Assert.assertEquals(new NodeValue<>(value), node.getNodeValue());
+        assertEquals(0, node.getSuccessorCount());
     }
 
     @Before
@@ -129,9 +122,9 @@ public class HashTrieTest {
         assertEquals(string, trie.get(new StringSequence(string)));
         assertFalse(trie.isEmpty());
         assertEquals(1, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "t");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
         verifySuccessors(successor, "e");
         successor = getSuccessor(successor, "e");
         verifySuccessors(successor, "a");
@@ -150,9 +143,9 @@ public class HashTrieTest {
         assertNull(previous);
         assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(2, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "t");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
         verifySuccessors(successor, "e", "o");
         successor = getSuccessor(successor, "o");
         verifyLeaf(successor, string);
@@ -169,9 +162,9 @@ public class HashTrieTest {
         assertNull(previous);
         assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(3, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "t");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
         verifySuccessors(successor, "e", "o");
         successor = getSuccessor(successor, "e");
         verifySuccessors(successor, "a", "d");
@@ -190,9 +183,9 @@ public class HashTrieTest {
         assertNull(previous);
         assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(4, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "t");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
         verifySuccessors(successor, "e", "o");
         successor = getSuccessor(successor, "e");
         verifySuccessors(successor, "a", "d", "n");
@@ -211,9 +204,9 @@ public class HashTrieTest {
         assertNull(previous);
         assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(5, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t", "i");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "i");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t", "i");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "i");
         verifySuccessors(successor, "n");
         successor = getSuccessor(successor, "n");
         verifySuccessors(successor, "n");
@@ -232,12 +225,12 @@ public class HashTrieTest {
         assertNull(previous);
         assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(6, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t", "i");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "i");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t", "i");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "i");
         verifySuccessors(successor, "n");
         successor = getSuccessor(successor, "n");
-        assertEquals(new Value<>(string), successor.getValue());
+        assertEquals(new NodeValue<>(string), successor.getNodeValue());
         verifySuccessors(successor, "n");
         successor = getSuccessor(successor, "n");
         verifyLeaf(successor, "inn");
@@ -256,9 +249,9 @@ public class HashTrieTest {
         assertNull(trie.get(new StringSequence(string)));
         assertFalse(trie.isEmpty());
         assertEquals(7, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t", "i", "A");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "A");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t", "i", "A");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "A");
         verifyLeaf(successor, null);
     }
 
@@ -272,9 +265,9 @@ public class HashTrieTest {
         assertEquals(duplicate, trie.get(new StringSequence(string)));
         assertFalse(trie.isEmpty());
         assertEquals(8, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t", "i", "A", "B");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "B");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t", "i", "A", "B");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "B");
         verifyLeaf(successor, duplicate);
     }
 
@@ -290,9 +283,9 @@ public class HashTrieTest {
         assertEquals(string2, trie.get(new StringSequence(string)));
         assertFalse(trie.isEmpty());
         assertEquals(1, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "t");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
         verifySuccessors(successor, "e");
         successor = getSuccessor(successor, "e");
         verifySuccessors(successor, "a");
@@ -311,9 +304,9 @@ public class HashTrieTest {
         assertEquals(2, trie.size());
         assertEquals(string1, trie.get(new StringSequence(string1)));
         assertEquals(string2, trie.get(new StringSequence(string2)));
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "t");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
         verifySuccessors(successor, "e", "o");
         Node<StringSequence, String> successorE = getSuccessor(successor, "e");
         verifySuccessors(successorE, "a");
@@ -329,7 +322,7 @@ public class HashTrieTest {
         trie.clear();
         assertTrue(trie.isEmpty());
         assertEquals(0, trie.size());
-        assertNull(trie.rootNode);
+        assertNull(trie.getRootNode());
         assertNull(trie.get(new StringSequence("tea")));
         assertNull(trie.get(new StringSequence("to")));
         assertNull(trie.get(new StringSequence("ted")));
@@ -475,9 +468,9 @@ public class HashTrieTest {
         assertNull(removed);
         assertFalse(trie.isEmpty());
         assertEquals(1, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "t");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
         verifySuccessors(successor, "e");
         successor = getSuccessor(successor, "e");
         verifySuccessors(successor, "a");
@@ -492,9 +485,9 @@ public class HashTrieTest {
         assertNull(removed);
         assertFalse(trie.isEmpty());
         assertEquals(1, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "t");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
         verifySuccessors(successor, "e");
         successor = getSuccessor(successor, "e");
         verifySuccessors(successor, "a");
@@ -509,9 +502,9 @@ public class HashTrieTest {
         assertNull(removed);
         assertFalse(trie.isEmpty());
         assertEquals(1, trie.size());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "t");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
         verifySuccessors(successor, "e");
         successor = getSuccessor(successor, "e");
         verifySuccessors(successor, "a");
@@ -526,7 +519,7 @@ public class HashTrieTest {
         String removed = trie.remove(new StringSequence(string));
         assertEquals(string, removed);
         assertNull(trie.get(new StringSequence(string)));
-        assertNull(trie.rootNode);
+        assertNull(trie.getRootNode());
         assertEquals(0, trie.size());
         assertTrue(trie.isEmpty());
     }
@@ -540,9 +533,9 @@ public class HashTrieTest {
         assertNull(trie.get(new StringSequence(string)));
         assertEquals(1, trie.size());
         assertFalse(trie.isEmpty());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "t");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
         verifySuccessors(successor, "e");
         successor = getSuccessor(successor, "e");
         verifySuccessors(successor, "a");
@@ -559,9 +552,9 @@ public class HashTrieTest {
         assertNull(trie.get(new StringSequence(string)));
         assertEquals(5, trie.size());
         assertFalse(trie.isEmpty());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t", "i");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "i");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t", "i");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "i");
         verifySuccessors(successor, "n");
         successor = getSuccessor(successor, "n");
         verifySuccessors(successor, "n");
@@ -578,9 +571,9 @@ public class HashTrieTest {
         assertNull(trie.get(new StringSequence(string)));
         assertEquals(5, trie.size());
         assertFalse(trie.isEmpty());
-        verifyRootNode(trie.rootNode);
-        verifySuccessors(trie.rootNode, "t", "i");
-        Node<StringSequence, String> successor = getSuccessor(trie.rootNode, "i");
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "t", "i");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "i");
         verifySuccessors(successor, "n");
         successor = getSuccessor(successor, "n");
         verifyLeaf(successor, "in");
@@ -592,9 +585,9 @@ public class HashTrieTest {
         HashTrie<StringSequence, String> subTrie = trie.subTree(new StringSequence("t"));
         assertFalse(subTrie.isEmpty());
         assertEquals(4, subTrie.size());
-        verifyRootNode(subTrie.rootNode);
-        verifySuccessors(subTrie.rootNode, "t");
-        Node<StringSequence, String> tSuccessor = getSuccessor(subTrie.rootNode, "t");
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "t");
+        Node<StringSequence, String> tSuccessor = getSuccessor(subTrie.getRootNode(), "t");
         verifySuccessors(tSuccessor, "e", "o");
         Node<StringSequence, String> eSuccessor = getSuccessor(tSuccessor, "e");
         verifySuccessors(eSuccessor, "a", "d", "n");
@@ -614,9 +607,9 @@ public class HashTrieTest {
         HashTrie<StringSequence, String> subTrie = trie.subTree(new StringSequence("te"));
         assertFalse(subTrie.isEmpty());
         assertEquals(3, subTrie.size());
-        verifyRootNode(subTrie.rootNode);
-        verifySuccessors(subTrie.rootNode, "t");
-        Node<StringSequence, String> tSuccessor = getSuccessor(subTrie.rootNode, "t");
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "t");
+        Node<StringSequence, String> tSuccessor = getSuccessor(subTrie.getRootNode(), "t");
         verifySuccessors(tSuccessor, "e");
         Node<StringSequence, String> eSuccessor = getSuccessor(tSuccessor, "e");
         verifySuccessors(eSuccessor, "a", "d", "n");
