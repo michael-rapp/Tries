@@ -52,9 +52,8 @@ public class HashNode<KeyType, ValueType> extends AbstractNode<KeyType, ValueTyp
 
     @NotNull
     @Override
-    protected final Node<KeyType, ValueType> onAddSuccessor(
-            @NotNull final KeyType key,
-            @Nullable final Node<KeyType, ValueType> successor) {
+    protected final Node<KeyType, ValueType> onAddSuccessor(@NotNull final KeyType key,
+                                                            @Nullable final Node<KeyType, ValueType> successor) {
         Node<KeyType, ValueType> successorToAdd =
                 successor == null ? new HashNode<>() : successor;
         successors.put(key, successorToAdd);
@@ -62,8 +61,7 @@ public class HashNode<KeyType, ValueType> extends AbstractNode<KeyType, ValueTyp
     }
 
     @Override
-    protected final Node<KeyType, ValueType> onRemoveSuccessor(
-            @NotNull final KeyType key) {
+    protected final Node<KeyType, ValueType> onRemoveSuccessor(@NotNull final KeyType key) {
         return successors.remove(key);
     }
 
