@@ -25,6 +25,11 @@ import java.util.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests the functionality of the class {@link StringTrieWrapper}.
+ *
+ * @author Michael Rapp
+ */
 public class StringTrieWrapperTest {
 
     private StringTrieWrapper<String> trieWrapper;

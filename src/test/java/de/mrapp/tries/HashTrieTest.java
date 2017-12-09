@@ -24,6 +24,8 @@ import static org.junit.Assert.*;
 
 /**
  * Tests the functionality of the class {@link HashTrie}.
+ *
+ * @author Michael Rapp
  */
 public class HashTrieTest {
 

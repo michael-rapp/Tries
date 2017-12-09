@@ -19,6 +19,8 @@ import static org.junit.Assert.*;
 
 /**
  * Tests the functionality of the class {@link NodeValue}.
+ *
+ * @author Michael Rapp
  */
 public class NodeValueTest {
 

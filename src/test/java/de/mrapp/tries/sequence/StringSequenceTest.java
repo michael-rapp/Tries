@@ -15,14 +15,12 @@ package de.mrapp.tries.sequence;
 
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import static org.junit.Assert.*;
 
 /**
  * Tests the functionality of the class {@link StringSequence}.
+ *
+ * @author Michael Rapp
  */
 public class StringSequenceTest {
 
