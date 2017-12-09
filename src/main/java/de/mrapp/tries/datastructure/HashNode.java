@@ -23,12 +23,29 @@ import java.util.Map;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
+/**
+ * A node of a trie, which stores its successors in a {@link HashMap}.
+ *
+ * @param <KeyType>   The type of the keys, which are associated with the node's successors
+ * @param <ValueType> The type of the node's value
+ * @author Michael Rapp
+ * @since 1.0.0
+ */
 public class HashNode<KeyType, ValueType> extends AbstractNode<KeyType, ValueType> {
 
+    /**
+     * The constant serial version UID.
+     */
     private static final long serialVersionUID = 6241483145831567447L;
 
+    /**
+     * The hash map, the successors of the node are stored in.
+     */
     private final Map<KeyType, Node<KeyType, ValueType>> successors;
 
+    /**
+     * Creates a new node of a trie, which stores its successors in a {@link HashMap}.
+     */
     public HashNode() {
         this.successors = new HashMap<>();
     }
