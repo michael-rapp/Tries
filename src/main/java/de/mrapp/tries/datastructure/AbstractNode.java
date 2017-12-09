@@ -144,8 +144,7 @@ public abstract class AbstractNode<KeyType, ValueType> implements
     }
 
     @Override
-    public final void setPredecessor(
-            @Nullable final Node<KeyType, ValueType> predecessor) {
+    public final void setPredecessor(@Nullable final Node<KeyType, ValueType> predecessor) {
         this.predecessor = predecessor;
     }
 
