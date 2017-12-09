@@ -171,20 +171,18 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             @NotNull final SequenceType sequence);
 
     protected abstract void removeSuccessor(@NotNull final Node<SequenceType, ValueType> node,
-                                            @NotNull final SequenceType sequence);
+                                            @Nullable final SequenceType sequence);
 
     @SuppressWarnings("unchecked")
     @Nullable
     protected final Node<SequenceType, ValueType> getNode(final Object key) {
-        ensureNotNull(key, "The key may not be null");
         SequenceType sequence = (SequenceType) key;
-        ensureAtLeast(sequence.length(), 1, "The key may not be empty");
 
         if (rootNode != null) {
             Node<SequenceType, ValueType> currentNode = rootNode;
             SequenceType suffix = sequence;
 
-            while (!suffix.isEmpty()) {
+            while (suffix != null && !suffix.isEmpty()) {
                 Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(currentNode,
                         suffix);
 
@@ -267,9 +265,6 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
     @Override
     public final ValueType put(final SequenceType key, final ValueType value) {
-        ensureNotNull(key, "The key may not be null");
-        ensureAtLeast(key.length(), 1, "The key may not be empty");
-
         if (rootNode == null) {
             rootNode = createRootNode();
         }
@@ -277,7 +272,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         Node<SequenceType, ValueType> currentNode = rootNode;
         SequenceType suffix = key;
 
-        while (!suffix.isEmpty()) {
+        while (suffix != null && !suffix.isEmpty()) {
             Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(currentNode,
                     suffix);
 
@@ -291,7 +286,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
         NodeValue<ValueType> previousValue = null;
 
-        if (suffix.isEmpty()) {
+        if (suffix == null || suffix.isEmpty()) {
             previousValue = currentNode.setNodeValue(new NodeValue<>(value));
         } else {
             while (!suffix.isEmpty()) {
@@ -321,59 +316,62 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     @SuppressWarnings("unchecked")
     @Override
     public final ValueType remove(final Object key) {
-        ensureNotNull(key, "The key may not be null");
         SequenceType sequence = (SequenceType) key;
-        ensureAtLeast(sequence.length(), 1, "The key may not be empty");
 
         if (rootNode != null) {
-            Node<SequenceType, ValueType> lastRetainedNode = rootNode;
-            SequenceType suffixToRemove = null;
-            Node<SequenceType, ValueType> currentNode = rootNode;
-            SequenceType suffix = sequence;
+            if (sequence == null || sequence.isEmpty()) {
+                NodeValue<ValueType> previous = rootNode.setNodeValue(null);
+                return previous != null ? previous.getValue() : null;
+            } else {
+                Node<SequenceType, ValueType> lastRetainedNode = rootNode;
+                SequenceType suffixToRemove = null;
+                Node<SequenceType, ValueType> currentNode = rootNode;
+                SequenceType suffix = sequence;
 
-            while (!suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(currentNode,
-                        suffix);
+                while (!suffix.isEmpty()) {
+                    Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(
+                            currentNode, suffix);
 
-                if (pair == null) {
-                    return null;
-                } else {
-                    if (currentNode.getSuccessorCount() > 1 || currentNode.getValue() != null) {
-                        lastRetainedNode = currentNode;
-                        suffixToRemove = suffix;
-                    }
-
-                    Node<SequenceType, ValueType> successor = pair.first;
-                    suffix = pair.second;
-
-                    if (suffix.isEmpty()) {
-                        if (successor.getSuccessorCount() > 0) {
-                            lastRetainedNode = null;
-                            suffixToRemove = null;
+                    if (pair == null) {
+                        return null;
+                    } else {
+                        if (currentNode.getSuccessorCount() > 1 || currentNode.getValue() != null) {
+                            lastRetainedNode = currentNode;
+                            suffixToRemove = suffix;
                         }
 
-                        NodeValue<ValueType> value = successor.getNodeValue();
+                        Node<SequenceType, ValueType> successor = pair.first;
+                        suffix = pair.second;
 
-                        if (value != null) {
-                            successor.setNodeValue(null);
-
-                            if (lastRetainedNode == rootNode) {
-                                clear();
-                            } else {
-                                if (suffixToRemove != null) {
-                                    removeSuccessor(lastRetainedNode, suffixToRemove);
-                                }
-
-                                modificationCount++;
+                        if (suffix.isEmpty()) {
+                            if (successor.getSuccessorCount() > 0) {
+                                lastRetainedNode = null;
+                                suffixToRemove = null;
                             }
 
-                            return value.getValue();
+                            NodeValue<ValueType> value = successor.getNodeValue();
+
+                            if (value != null) {
+                                successor.setNodeValue(null);
+
+                                if (lastRetainedNode == rootNode) {
+                                    clear();
+                                } else {
+                                    if (suffixToRemove != null) {
+                                        removeSuccessor(lastRetainedNode, suffixToRemove);
+                                    }
+
+                                    modificationCount++;
+                                }
+
+                                return value.getValue();
+                            }
+
+                            return null;
                         }
 
-                        return null;
+                        currentNode = successor;
                     }
-
-                    currentNode = successor;
                 }
             }
         }

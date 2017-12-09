@@ -14,6 +14,7 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.sequence.StringSequence;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,9 +33,20 @@ public class HashTrieTest {
     private HashTrie<StringSequence, String> trie;
 
     private void verifyRootNode(final Node<StringSequence, String> node) {
+        verifyRootNode(node, null);
+    }
+
+    private void verifyRootNode(final Node<StringSequence, String> node,
+                                @Nullable final String value) {
         assertNotNull(node);
         assertNull(node.getPredecessor());
-        assertNull(node.getNodeValue());
+
+        if (value == null) {
+            assertNull(node.getNodeValue());
+        } else {
+            assertNotNull(node.getNodeValue());
+            assertEquals(value, node.getValue());
+        }
     }
 
     private void verifySuccessors(final Node<StringSequence, String> node,
@@ -67,62 +79,13 @@ public class HashTrieTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public final void testGetThrowsExceptionIfKeyIsNull() {
-        trie.get(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public final void testGetThrowsExceptionIfKeyIsEmpty() {
-        trie.get(new StringSequence(""));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public final void testPutThrowsExceptionIfKeyIsNull() {
-        trie.put(null, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public final void testPutThrowsExceptionIfKeyIsEmpty() {
-        trie.put(new StringSequence(""), null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public final void testPutAllThrowsExceptionIfMapIsNull() {
         trie.putAll(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public final void testPutAllThrowsExceptionIfMapContainsNullKey() {
-        Map<StringSequence, String> map = new HashMap<>();
-        map.put(null, null);
-        trie.putAll(map);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public final void testPutAllThrowsExceptionIfMapContainsEmptyKey() {
-        Map<StringSequence, String> map = new HashMap<>();
-        map.put(new StringSequence(""), null);
-        trie.putAll(map);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public final void testContainsKeyThrowsExceptionIfKeyIsNull() {
         trie.containsKey(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public final void testContainsKeyThrowsExceptionIfKeyIsEmpty() {
-        trie.containsKey(new StringSequence(""));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public final void testRemoveThrowsExceptionIfKeyIsNull() {
-        trie.remove(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public final void testRemoveThrowsExceptionIfKeyIsEmpty() {
-        trie.remove(new StringSequence(""));
     }
 
     /**
@@ -287,6 +250,30 @@ public class HashTrieTest {
     }
 
     @Test
+    public final void testPutWithEmptyKey() {
+        testPutWithDuplicateValue();
+        String string = "empty";
+        String previous = trie.put(new StringSequence(""), string);
+        assertNull(previous);
+        assertEquals(string, trie.get(new StringSequence("")));
+        assertFalse(trie.isEmpty());
+        assertEquals(9, trie.size());
+        verifyRootNode(trie.getRootNode(), string);
+    }
+
+    @Test
+    public final void testPutWithNullKey() {
+        testPutWithEmptyKey();
+        String string = "null";
+        String previous = trie.put(null, string);
+        assertEquals("empty", previous);
+        assertEquals(string, trie.get(null));
+        assertFalse(trie.isEmpty());
+        assertEquals(9, trie.size());
+        verifyRootNode(trie.getRootNode(), string);
+    }
+
+    @Test
     public final void testPutReplacesPreviousValue() {
         testPut1();
         String string = "tea";
@@ -353,9 +340,9 @@ public class HashTrieTest {
 
     @Test
     public final void testValues() {
-        testPutWithDuplicateValue();
+        testPutWithEmptyKey();
         Collection<String> values = trie.values();
-        assertEquals(8, values.size());
+        assertEquals(9, values.size());
         assertTrue(values.contains("tea"));
         assertTrue(values.contains("to"));
         assertTrue(values.contains("ted"));
@@ -363,6 +350,7 @@ public class HashTrieTest {
         assertTrue(values.contains("inn"));
         assertTrue(values.contains("in"));
         assertTrue(values.contains(null));
+        assertTrue(values.contains("empty"));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -382,8 +370,8 @@ public class HashTrieTest {
 
     @Test
     public final void testContainsValue() {
-        testPutWithDuplicateValue();
-        assertEquals(8, trie.size());
+        testPutWithEmptyKey();
+        assertEquals(9, trie.size());
         assertTrue(trie.containsValue("tea"));
         assertTrue(trie.containsValue("to"));
         assertTrue(trie.containsValue("ted"));
@@ -391,13 +379,14 @@ public class HashTrieTest {
         assertTrue(trie.containsValue("inn"));
         assertTrue(trie.containsValue("in"));
         assertTrue(trie.containsValue(null));
+        assertTrue(trie.containsValue("empty"));
     }
 
     @Test
     public final void testKeySet() {
-        testPutWithDuplicateValue();
+        testPutWithEmptyKey();
         Collection<StringSequence> keys = trie.keySet();
-        assertEquals(8, keys.size());
+        assertEquals(9, keys.size());
         assertTrue(keys.contains(new StringSequence("tea")));
         assertTrue(keys.contains(new StringSequence("to")));
         assertTrue(keys.contains(new StringSequence("ted")));
@@ -406,6 +395,7 @@ public class HashTrieTest {
         assertTrue(keys.contains(new StringSequence("in")));
         assertTrue(keys.contains(new StringSequence("A")));
         assertTrue(keys.contains(new StringSequence("B")));
+        assertTrue(keys.contains(null));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -425,8 +415,8 @@ public class HashTrieTest {
 
     @Test
     public final void testContainsKey() {
-        testPutWithDuplicateValue();
-        assertEquals(8, trie.size());
+        testPutWithEmptyKey();
+        assertEquals(9, trie.size());
         assertTrue(trie.containsKey(new StringSequence("tea")));
         assertTrue(trie.containsKey(new StringSequence("to")));
         assertTrue(trie.containsKey(new StringSequence("ted")));
@@ -435,13 +425,14 @@ public class HashTrieTest {
         assertTrue(trie.containsKey(new StringSequence("in")));
         assertTrue(trie.containsKey(new StringSequence("A")));
         assertTrue(trie.containsKey(new StringSequence("B")));
+        assertTrue(trie.containsKey(new StringSequence("")));
     }
 
     @Test
     public final void testEntrySet() {
-        testPutWithDuplicateValue();
+        testPutWithEmptyKey();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
-        assertEquals(8, entrySet.size());
+        assertEquals(9, entrySet.size());
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
                 new StringSequence("tea"), "tea")));
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
@@ -458,6 +449,8 @@ public class HashTrieTest {
                 new StringSequence("A"), (String) null)));
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
                 new StringSequence("B"), "tea")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(null, "empty")));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -559,7 +552,7 @@ public class HashTrieTest {
     }
 
     @Test
-    public void testRemoveKeyIfKeyIsPrefix() {
+    public void testRemoveIfKeyIsPrefix() {
         testPut6();
         String string = "in";
         String removed = trie.remove(new StringSequence(string));
@@ -578,7 +571,7 @@ public class HashTrieTest {
     }
 
     @Test
-    public void testRemoveKeyIfKeyContainsOtherKeyAsPrefix() {
+    public void testRemoveIfKeyContainsOtherKeyAsPrefix() {
         testPut6();
         String string = "inn";
         String removed = trie.remove(new StringSequence(string));
@@ -592,6 +585,32 @@ public class HashTrieTest {
         verifySuccessors(successor, "n");
         successor = getSuccessor(successor, "n");
         verifyLeaf(successor, "in");
+    }
+
+    @Test
+    public void testRemoveEmptyKey() {
+        testPutWithEmptyKey();
+        String string = "empty";
+        String removed = trie.remove(new StringSequence(""));
+        assertEquals(string, removed);
+        assertNull(trie.get(new StringSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(8, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(trie.getRootNode());
+    }
+
+    @Test
+    public void testRemoveNullKey() {
+        testPutWithEmptyKey();
+        String string = "empty";
+        String removed = trie.remove(null);
+        assertEquals(string, removed);
+        assertNull(trie.get(new StringSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(8, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(trie.getRootNode());
     }
 
     @Test
