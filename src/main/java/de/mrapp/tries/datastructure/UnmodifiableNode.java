@@ -77,7 +77,8 @@ public class UnmodifiableNode<SequenceType extends Sequence, ValueType> implemen
     @Nullable
     @Override
     public final Node<SequenceType, ValueType> getSuccessor(@NotNull final SequenceType sequence) {
-        return node.getSuccessor(sequence);
+        Node<SequenceType, ValueType> successor = node.getSuccessor(sequence);
+        return successor != null ? new UnmodifiableNode<>(successor) : null;
     }
 
     @NotNull
@@ -110,7 +111,8 @@ public class UnmodifiableNode<SequenceType extends Sequence, ValueType> implemen
     @Nullable
     @Override
     public final Node<SequenceType, ValueType> getPredecessor() {
-        return node.getPredecessor();
+        Node<SequenceType, ValueType> predecessor = node.getPredecessor();
+        return predecessor != null ? new UnmodifiableNode<>(predecessor) : null;
     }
 
     @Override

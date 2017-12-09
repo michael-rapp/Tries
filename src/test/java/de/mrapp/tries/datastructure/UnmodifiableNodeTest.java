@@ -72,7 +72,8 @@ public class UnmodifiableNodeTest {
         StringSequence sequence = mock(StringSequence.class);
         Node<StringSequence, String> successor = mock(Node.class);
         when(node.getSuccessor(sequence)).thenReturn(successor);
-        assertEquals(successor, unmodifiableNode.getSuccessor(sequence));
+        assertTrue(unmodifiableNode.getSuccessor(sequence) instanceof UnmodifiableNode);
+        assertEquals(successor.hashCode(), unmodifiableNode.getSuccessor(sequence).hashCode());
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -111,7 +112,8 @@ public class UnmodifiableNodeTest {
     public final void testGetPredecessor() {
         Node<StringSequence, String> predecessor = mock(Node.class);
         when(node.getPredecessor()).thenReturn(predecessor);
-        assertEquals(predecessor, unmodifiableNode.getPredecessor());
+        assertTrue(unmodifiableNode.getPredecessor() instanceof UnmodifiableNode);
+        assertEquals(predecessor.hashCode(), unmodifiableNode.getPredecessor().hashCode());
     }
 
     @Test(expected = UnsupportedOperationException.class)
