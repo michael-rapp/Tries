@@ -32,14 +32,34 @@ import static de.mrapp.util.Condition.ensureNotNull;
 public abstract class AbstractNode<KeyType, ValueType> implements
         Node<KeyType, ValueType> {
 
+    /**
+     * The constant serial version UID.
+     */
     private static final long serialVersionUID = -5239050242490781683L;
 
+    /**
+     * The value of the node.
+     */
     private NodeValue<ValueType> nodeValue;
 
+    /**
+     * The number of successors of the node for which a value is set.
+     */
     private int successorValueCount;
 
+    /**
+     * The predecessor of the node.
+     */
     private Node<KeyType, ValueType> predecessor;
 
+    /**
+     * Clones all successors of a specific node recursively and adds them to another node.
+     *
+     * @param source The node, whose successors should be cloned, as an instance of the type {@link
+     *               Node}. The node may not be null
+     * @param target The node, the clones should be added to, as an instance of the type {@link
+     *               Node}. The node may not be null
+     */
     protected final void cloneSuccessors(@NotNull final Node<KeyType, ValueType> source,
                                          @NotNull final Node<KeyType, ValueType> target) {
         for (KeyType keys : source) {
@@ -54,13 +74,35 @@ public abstract class AbstractNode<KeyType, ValueType> implements
         }
     }
 
+    /**
+     * The method, which is invoked on subclasses in order to add a specific successor to the node.
+     *
+     * @param key       The key, which corresponds to the successor as an instance of the generic
+     *                  type {@link KeyType}. The key may not be null
+     * @param successor The successor, which should be added, as an instance of the type {@link
+     *                  Node} or null, if a new node should be created
+     * @return The node, which has been added as a successor, as an instance of the type {@link
+     * Node}. The node may not be null
+     */
     @NotNull
     protected abstract Node<KeyType, ValueType> onAddSuccessor(
             @NotNull final KeyType key, @Nullable final Node<KeyType, ValueType> successor);
 
+    /**
+     * The method, which is invoked on subclasses in order to remove a specific successor from the
+     * node.
+     *
+     * @param key The key, which corresponds to the successor, which should be removed, as an
+     *            instance of the generic type {@link KeyType}. The key may not be null
+     * @return The successor, which has been removed, as an instance of the type {@link Node} or
+     * null, if no successor corresponds to the given key
+     */
     @Nullable
     protected abstract Node<KeyType, ValueType> onRemoveSuccessor(@NotNull final KeyType key);
 
+    /**
+     * Creates a new node of a trie.
+     */
     AbstractNode() {
         this.nodeValue = null;
         this.successorValueCount = 0;
@@ -87,9 +129,6 @@ public abstract class AbstractNode<KeyType, ValueType> implements
         this.nodeValue = nodeValue;
         return oldValue;
     }
-
-    @Override
-    public abstract int getSuccessorCount();
 
     @NotNull
     public final Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key,
