@@ -71,25 +71,26 @@ public class UnmodifiableNode<SequenceType extends Sequence, ValueType> implemen
 
     @Override
     public final int getSuccessorCount() {
+
         return node.getSuccessorCount();
     }
 
     @Nullable
     @Override
-    public final Node<SequenceType, ValueType> getSuccessor(@NotNull final SequenceType sequence) {
-        Node<SequenceType, ValueType> successor = node.getSuccessor(sequence);
+    public final Node<SequenceType, ValueType> getSuccessor(@NotNull final SequenceType key) {
+        Node<SequenceType, ValueType> successor = node.getSuccessor(key);
         return successor != null ? new UnmodifiableNode<>(successor) : null;
     }
 
     @NotNull
     @Override
-    public final Node<SequenceType, ValueType> addSuccessor(@NotNull final SequenceType sequence,
+    public final Node<SequenceType, ValueType> addSuccessor(@NotNull final SequenceType key,
                                                             @Nullable final Node<SequenceType, ValueType> successor) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void removeSuccessor(@NotNull final SequenceType sequence) {
+    public final void removeSuccessor(@NotNull final SequenceType key) {
         throw new UnsupportedOperationException();
     }
 

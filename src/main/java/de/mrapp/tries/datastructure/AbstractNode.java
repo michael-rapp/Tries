@@ -15,7 +15,6 @@ package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
-import de.mrapp.tries.Sequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,13 +24,13 @@ import static de.mrapp.util.Condition.ensureNotNull;
 /**
  * An abstract base for all nodes of a trie.
  *
- * @param <SequenceType> The type of the sequences, which correspond to the node's successors
- * @param <ValueType>    The type of the node's value
+ * @param <KeyType>   The type of the keys, which are associated with the node's successors
+ * @param <ValueType> The type of the node's value
  * @author Michael Rapp
  * @since 1.0.0
  */
-public abstract class AbstractNode<SequenceType extends Sequence, ValueType>
-        implements Node<SequenceType, ValueType> {
+public abstract class AbstractNode<KeyType, ValueType> implements
+        Node<KeyType, ValueType> {
 
     private static final long serialVersionUID = -5239050242490781683L;
 
@@ -39,15 +38,15 @@ public abstract class AbstractNode<SequenceType extends Sequence, ValueType>
 
     private int successorValueCount;
 
-    private Node<SequenceType, ValueType> predecessor;
+    private Node<KeyType, ValueType> predecessor;
 
-    protected final void cloneSuccessors(@NotNull final Node<SequenceType, ValueType> source,
-                                         @NotNull final Node<SequenceType, ValueType> target) {
-        for (SequenceType sequence : source) {
-            Node<SequenceType, ValueType> successor = source.getSuccessor(sequence);
+    protected final void cloneSuccessors(@NotNull final Node<KeyType, ValueType> source,
+                                         @NotNull final Node<KeyType, ValueType> target) {
+        for (KeyType keys : source) {
+            Node<KeyType, ValueType> successor = source.getSuccessor(keys);
 
             if (successor != null) {
-                Node<SequenceType, ValueType> clonedSuccessor = target.addSuccessor(sequence);
+                Node<KeyType, ValueType> clonedSuccessor = target.addSuccessor(keys);
                 clonedSuccessor.setNodeValue(
                         successor.getNodeValue() != null ? successor.getNodeValue().clone() : null);
                 cloneSuccessors(successor, clonedSuccessor);
@@ -56,13 +55,11 @@ public abstract class AbstractNode<SequenceType extends Sequence, ValueType>
     }
 
     @NotNull
-    protected abstract Node<SequenceType, ValueType> onAddSuccessor(
-            @NotNull final SequenceType sequence,
-            @Nullable final Node<SequenceType, ValueType> successor);
+    protected abstract Node<KeyType, ValueType> onAddSuccessor(
+            @NotNull final KeyType key, @Nullable final Node<KeyType, ValueType> successor);
 
     @Nullable
-    protected abstract Node<SequenceType, ValueType> onRemoveSuccessor(
-            @NotNull final SequenceType sequence);
+    protected abstract Node<KeyType, ValueType> onRemoveSuccessor(@NotNull final KeyType key);
 
     AbstractNode() {
         this.nodeValue = null;
@@ -95,19 +92,19 @@ public abstract class AbstractNode<SequenceType extends Sequence, ValueType>
     public abstract int getSuccessorCount();
 
     @NotNull
-    public final Node<SequenceType, ValueType> addSuccessor(@NotNull final SequenceType sequence,
-                                                            @Nullable final Node<SequenceType, ValueType> successor) {
-        ensureNotNull(sequence, "The sequence may not be null");
-        Node<SequenceType, ValueType> addedSuccessor = onAddSuccessor(sequence, successor);
+    public final Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key,
+                                                       @Nullable final Node<KeyType, ValueType> successor) {
+        ensureNotNull(key, "The key may not be null");
+        Node<KeyType, ValueType> addedSuccessor = onAddSuccessor(key, successor);
         addedSuccessor.setPredecessor(this);
         increaseSuccessorValueCount(addedSuccessor.getSuccessorValueCount());
         return addedSuccessor;
     }
 
     @Override
-    public final void removeSuccessor(@NotNull final SequenceType sequence) {
-        ensureNotNull(sequence, "The sequence may not be null");
-        Node<SequenceType, ValueType> successor = onRemoveSuccessor(sequence);
+    public final void removeSuccessor(@NotNull final KeyType key) {
+        ensureNotNull(key, "The key may not be null");
+        Node<KeyType, ValueType> successor = onRemoveSuccessor(key);
 
         if (successor != null) {
             decreaseSuccessorValueCount(successor.getSuccessorValueCount());
@@ -142,18 +139,18 @@ public abstract class AbstractNode<SequenceType extends Sequence, ValueType>
 
     @Nullable
     @Override
-    public final Node<SequenceType, ValueType> getPredecessor() {
+    public final Node<KeyType, ValueType> getPredecessor() {
         return predecessor;
     }
 
     @Override
     public final void setPredecessor(
-            @Nullable final Node<SequenceType, ValueType> predecessor) {
+            @Nullable final Node<KeyType, ValueType> predecessor) {
         this.predecessor = predecessor;
     }
 
     @Override
-    public abstract Node<SequenceType, ValueType> clone();
+    public abstract Node<KeyType, ValueType> clone();
 
     @Override
     public int hashCode() {

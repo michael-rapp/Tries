@@ -20,15 +20,15 @@ import java.io.Serializable;
 
 /**
  * Defines the interface, a node of a trie must implement. It extends the interface {@link Iterable}
- * to be able to iterate the sequences, which correspond to the node's successors.
+ * to be able to iterate the keys, which correspond to the node's successors.
  *
- * @param <SequenceType> The type of the sequences, which correspond to the node's successors
- * @param <ValueType>    The type of the node's value
+ * @param <KeyType>   The type of the keys, which are associated with the node's successors
+ * @param <ValueType> The type of the node's value
  * @author Michael Rapp
  * @since 1.0.0
  */
-public interface Node<SequenceType extends Sequence, ValueType> extends Iterable<SequenceType>,
-        Serializable, Cloneable {
+public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializable,
+        Cloneable {
 
     /**
      * Returns the value of the node.
@@ -80,53 +80,50 @@ public interface Node<SequenceType extends Sequence, ValueType> extends Iterable
     int getSuccessorCount();
 
     /**
-     * Returns the successor of the node, which corresponds to a specific sequence.
+     * Returns the successor of the node, which corresponds to a specific key.
      *
-     * @param sequence The sequence of the successor, which should be returned, as an instance of
-     *                 the generic type {@link SequenceType}. The sequence may not be null
-     * @return The successor, which corresponds to the given sequence, as an instance of the type
-     * {@link Node} or null, if no successor corresponds to the given sequence
+     * @param key The key of the successor, which should be returned, as an instance of the generic
+     *            type {@link KeyType}. The key may not be null
+     * @return The successor, which corresponds to the given key, as an instance of the type {@link
+     * Node} or null, if no successor corresponds to the given key
      */
     @Nullable
-    Node<SequenceType, ValueType> getSuccessor(@NotNull SequenceType sequence);
+    Node<KeyType, ValueType> getSuccessor(@NotNull KeyType key);
 
     /**
      * Creates a new successor and adds it to the node.
      *
-     * @param sequence The sequence, which corresponds to the successor to be created, as an
-     *                 instance of the generic type {@link SequenceType}. The sequence may not be
-     *                 null
+     * @param key The key, which corresponds to the successor to be created, as an instance of the
+     *            generic type {@link KeyType}. The key may not be null
      * @return The successor, which has been added, as an instance of the type {@link Node}. The
      * successor may not be null
      */
     @NotNull
-    default Node<SequenceType, ValueType> addSuccessor(@NotNull final SequenceType sequence) {
-        return addSuccessor(sequence, null);
+    default Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key) {
+        return addSuccessor(key, null);
     }
 
     /**
      * Adds a specific successor to the node.
      *
-     * @param sequence  The sequence, which corresponds to the successor to be created, as an
-     *                  instance of the generic type {@link SequenceType}. The sequence may not be
-     *                  null
+     * @param key       The key, which corresponds to the successor to be created, as an instance of
+     *                  the generic type {@link KeyType}. The key may not be null
      * @param successor The successor, which should be added, as an instance of the type {@link
      *                  Node} or null, if the successor should be created
      * @return The successor, which has been added, as an instance of the type {@link Node}. The
      * successor may not be null
      */
     @NotNull
-    Node<SequenceType, ValueType> addSuccessor(@NotNull final SequenceType sequence,
-                                               @Nullable final Node<SequenceType, ValueType> successor);
+    Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key,
+                                          @Nullable final Node<KeyType, ValueType> successor);
 
     /**
-     * Removes the successor, which corresponds to a specific sequence.
+     * Removes the successor, which corresponds to a specific key.
      *
-     * @param sequence The sequence, which corresponds to the successor, which should be removed, as
-     *                 an instance of the generic type {@link SequenceType}. The sequence may not be
-     *                 null
+     * @param key The key, which corresponds to the successor, which should be removed, as an
+     *            instance of the generic type {@link KeyType}. The key may not be null
      */
-    void removeSuccessor(@NotNull final SequenceType sequence);
+    void removeSuccessor(@NotNull final KeyType key);
 
     /**
      * Returns the number of successors for which values are set, i.e. {@link #isValueSet()} returns
@@ -162,7 +159,7 @@ public interface Node<SequenceType extends Sequence, ValueType> extends Iterable
      * predecessor is set
      */
     @Nullable
-    Node<SequenceType, ValueType> getPredecessor();
+    Node<KeyType, ValueType> getPredecessor();
 
     /**
      * Sets the predecessor of the node.
@@ -170,13 +167,13 @@ public interface Node<SequenceType extends Sequence, ValueType> extends Iterable
      * @param predecessor The predecessor, which should be set, as an instance of the type {@link
      *                    Node} or null, if no predecessor should be set
      */
-    void setPredecessor(@Nullable final Node<SequenceType, ValueType> predecessor);
+    void setPredecessor(@Nullable final Node<KeyType, ValueType> predecessor);
 
     /**
      * Creates and returns a deep copy of the node and its successors.
      *
      * @return The copy, which has been created, as an instance of the type {@link Node}
      */
-    Node<SequenceType, ValueType> clone();
+    Node<KeyType, ValueType> clone();
 
 }

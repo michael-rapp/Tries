@@ -14,7 +14,6 @@
 package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Node;
-import de.mrapp.tries.Sequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,12 +23,11 @@ import java.util.Map;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
-public class HashNode<SequenceType extends Sequence, ValueType> extends
-        AbstractNode<SequenceType, ValueType> {
+public class HashNode<KeyType, ValueType> extends AbstractNode<KeyType, ValueType> {
 
     private static final long serialVersionUID = 6241483145831567447L;
 
-    private final Map<SequenceType, Node<SequenceType, ValueType>> successors;
+    private final Map<KeyType, Node<KeyType, ValueType>> successors;
 
     public HashNode() {
         this.successors = new HashMap<>();
@@ -37,26 +35,26 @@ public class HashNode<SequenceType extends Sequence, ValueType> extends
 
     @NotNull
     @Override
-    protected final Node<SequenceType, ValueType> onAddSuccessor(
-            @NotNull final SequenceType sequence,
-            @Nullable final Node<SequenceType, ValueType> successor) {
-        Node<SequenceType, ValueType> successorToAdd =
+    protected final Node<KeyType, ValueType> onAddSuccessor(
+            @NotNull final KeyType key,
+            @Nullable final Node<KeyType, ValueType> successor) {
+        Node<KeyType, ValueType> successorToAdd =
                 successor == null ? new HashNode<>() : successor;
-        successors.put(sequence, successorToAdd);
+        successors.put(key, successorToAdd);
         return successorToAdd;
     }
 
     @Override
-    protected final Node<SequenceType, ValueType> onRemoveSuccessor(
-            @NotNull final SequenceType sequence) {
-        return successors.remove(sequence);
+    protected final Node<KeyType, ValueType> onRemoveSuccessor(
+            @NotNull final KeyType key) {
+        return successors.remove(key);
     }
 
     @Nullable
     @Override
-    public final Node<SequenceType, ValueType> getSuccessor(@NotNull final SequenceType sequence) {
-        ensureNotNull(sequence, "The sequence may not be null");
-        return successors.get(sequence);
+    public final Node<KeyType, ValueType> getSuccessor(@NotNull final KeyType key) {
+        ensureNotNull(key, "The key may not be null");
+        return successors.get(key);
     }
 
     @Override
@@ -66,13 +64,13 @@ public class HashNode<SequenceType extends Sequence, ValueType> extends
 
     @NotNull
     @Override
-    public final Iterator<SequenceType> iterator() {
+    public final Iterator<KeyType> iterator() {
         return successors.keySet().iterator();
     }
 
     @Override
-    public final Node<SequenceType, ValueType> clone() {
-        HashNode<SequenceType, ValueType> clone = new HashNode<>();
+    public final Node<KeyType, ValueType> clone() {
+        HashNode<KeyType, ValueType> clone = new HashNode<>();
         clone.setNodeValue(getNodeValue() != null ? getNodeValue().clone() : null);
         cloneSuccessors(this, clone);
         return clone;

@@ -189,8 +189,9 @@ public class StringTrieWrapper<ValueType> implements StringTrie<ValueType> {
 
     @Nullable
     @Override
-    public final Node<StringSequence, ValueType> getRootNode() {
-        return trie.getRootNode();
+    public final Node<String, ValueType> getRootNode() {
+        Node<StringSequence, ValueType> rootNode = trie.getRootNode();
+        return rootNode != null ? new StringNodeWrapper<>(rootNode) : null;
     }
 
     @NotNull
