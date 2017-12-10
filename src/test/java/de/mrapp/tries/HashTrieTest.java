@@ -83,11 +83,6 @@ public class HashTrieTest {
         trie.putAll(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public final void testContainsKeyThrowsExceptionIfKeyIsNull() {
-        trie.containsKey(null);
-    }
-
     /**
      * Adds "tea" to the trie.
      */
@@ -426,6 +421,7 @@ public class HashTrieTest {
         assertTrue(trie.containsKey(new StringSequence("A")));
         assertTrue(trie.containsKey(new StringSequence("B")));
         assertTrue(trie.containsKey(new StringSequence("")));
+        assertTrue(trie.containsKey(null));
     }
 
     @Test

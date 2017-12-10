@@ -59,7 +59,6 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
             private Path nextPath;
 
-            @SuppressWarnings("unchecked")
             @Nullable
             private Path fetchNext() {
                 Path next = null;
@@ -228,7 +227,6 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     @SuppressWarnings("unchecked")
     @Override
     public final boolean containsKey(final Object key) {
-        ensureNotNull(key, "The key may not be null");
         SequenceType sequence = (SequenceType) key;
         Node<SequenceType, ValueType> node = getNode(sequence);
         return node != null && node.getNodeValue() != null;
