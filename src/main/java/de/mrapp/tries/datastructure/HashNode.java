@@ -84,7 +84,7 @@ public class HashNode<KeyType, ValueType> extends AbstractNode<KeyType, ValueTyp
     }
 
     @Override
-    public final Node<KeyType, ValueType> clone() {
+    public final HashNode<KeyType, ValueType> clone() {
         HashNode<KeyType, ValueType> clone = new HashNode<>();
         clone.setNodeValue(getNodeValue() != null ? getNodeValue().clone() : null);
         cloneSuccessors(this, clone);
