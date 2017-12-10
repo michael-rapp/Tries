@@ -54,6 +54,13 @@ public class StringSequenceTest {
     }
 
     @Test
+    public final void testCompareTo() {
+        assertEquals(1, new StringSequence("b").compareTo(new StringSequence("a")));
+        assertEquals(0, new StringSequence("b").compareTo(new StringSequence("b")));
+        assertEquals(-1, new StringSequence("a").compareTo(new StringSequence("b")));
+    }
+
+    @Test
     public final void testToString() {
         String string = "foo";
         StringSequence stringSequence = new StringSequence(string);

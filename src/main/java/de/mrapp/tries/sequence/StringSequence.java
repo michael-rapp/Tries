@@ -14,17 +14,38 @@
 package de.mrapp.tries.sequence;
 
 import de.mrapp.tries.Sequence;
+import de.mrapp.tries.SortedStringTrie;
+import de.mrapp.tries.StringTrie;
 import org.jetbrains.annotations.NotNull;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
-public class StringSequence implements Sequence {
+/**
+ * A character sequence, which is backed by a {@link String}. It can be used as the keys of a {@link
+ * StringTrie} or {@link SortedStringTrie}.
+ *
+ * @author Michael Rapp
+ * @since 1.0.0
+ */
+public class StringSequence implements Sequence, Comparable<StringSequence> {
 
+    /**
+     * The constant serial version UID.
+     */
     private static final long serialVersionUID = -5315067045883935279L;
 
+    /**
+     * The string, which backs the character sequence.
+     */
     private final String string;
 
-    public StringSequence(final String string) {
+    /**
+     * Creates a new character sequence.
+     *
+     * @param string The string, which should back the sequence as a {@link String}. The string may
+     *               not be null
+     */
+    public StringSequence(@NotNull final String string) {
         ensureNotNull(string, "The string may not be null");
         this.string = string;
     }
@@ -44,6 +65,11 @@ public class StringSequence implements Sequence {
     @Override
     public final int length() {
         return string.length();
+    }
+
+    @Override
+    public final int compareTo(@NotNull final StringSequence o) {
+        return string.compareTo(o.string);
     }
 
     @Override
