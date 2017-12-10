@@ -17,9 +17,23 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.NavigableMap;
 
+/**
+ * Defines the interface of a sorted trie, which uses character sequences, represented by the class
+ * {@link String}, as keys. This is the character-oriented pendant of the interface {@link
+ * SortedTrie} and a specialization of the interface {@link StringTrie} for implementations that
+ * guarantee the trie's keys to be stored in a particular order. When iterating the trie, its
+ * entries, keys and values are guaranteed to be traversed in the correct order.
+ *
+ * @param <ValueType> The type of the values, which are stored by trie
+ * @author Michael Rapp
+ * @since 1.0.0
+ */
 public interface SortedStringTrie<ValueType> extends NavigableMap<String, ValueType>,
         StringTrie<ValueType> {
 
+    /**
+     * @see StringTrie#subTree(String)
+     */
     @NotNull
     @Override
     SortedStringTrie<ValueType> subTree(@NotNull final String key);
