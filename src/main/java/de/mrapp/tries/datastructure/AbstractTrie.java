@@ -171,7 +171,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             @NotNull final SequenceType sequence);
 
     protected abstract void removeSuccessor(@NotNull final Node<SequenceType, ValueType> node,
-                                            @Nullable final SequenceType sequence);
+                                            @NotNull final SequenceType sequence);
 
     @SuppressWarnings("unchecked")
     @Nullable
