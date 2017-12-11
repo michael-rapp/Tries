@@ -53,8 +53,11 @@ public class SortedListTrieTest {
                                   final String... successors) {
         assertNotNull(node);
         assertEquals(successors.length, node.getSuccessorCount());
+        Iterator<StringSequence> iterator = node.iterator();
 
         for (String successor : successors) {
+            StringSequence key = iterator.next();
+            assertEquals(successor, key.toString());
             getSuccessor(node, successor);
         }
     }
@@ -178,7 +181,7 @@ public class SortedListTrieTest {
         assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(5, trie.size());
         verifyRootNode(trie.getRootNode());
-        verifySuccessors(trie.getRootNode(), "t", "i");
+        verifySuccessors(trie.getRootNode(), "i", "t");
         Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "i");
         verifySuccessors(successor, "n");
         successor = getSuccessor(successor, "n");
@@ -199,7 +202,7 @@ public class SortedListTrieTest {
         assertEquals(string, trie.get(new StringSequence(string)));
         assertEquals(6, trie.size());
         verifyRootNode(trie.getRootNode());
-        verifySuccessors(trie.getRootNode(), "t", "i");
+        verifySuccessors(trie.getRootNode(), "i", "t");
         Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "i");
         verifySuccessors(successor, "n");
         successor = getSuccessor(successor, "n");
@@ -223,7 +226,7 @@ public class SortedListTrieTest {
         assertFalse(trie.isEmpty());
         assertEquals(7, trie.size());
         verifyRootNode(trie.getRootNode());
-        verifySuccessors(trie.getRootNode(), "t", "i", "A");
+        verifySuccessors(trie.getRootNode(), "A", "i", "t");
         Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "A");
         verifyLeaf(successor, null);
     }
@@ -239,7 +242,7 @@ public class SortedListTrieTest {
         assertFalse(trie.isEmpty());
         assertEquals(8, trie.size());
         verifyRootNode(trie.getRootNode());
-        verifySuccessors(trie.getRootNode(), "t", "i", "A", "B");
+        verifySuccessors(trie.getRootNode(), "A", "B", "i", "t");
         Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "B");
         verifyLeaf(successor, duplicate);
     }
@@ -338,14 +341,17 @@ public class SortedListTrieTest {
         testPutWithEmptyKey();
         Collection<String> values = trie.values();
         assertEquals(9, values.size());
-        assertTrue(values.contains("tea"));
-        assertTrue(values.contains("to"));
-        assertTrue(values.contains("ted"));
-        assertTrue(values.contains("ten"));
-        assertTrue(values.contains("inn"));
-        assertTrue(values.contains("in"));
-        assertTrue(values.contains(null));
-        assertTrue(values.contains("empty"));
+        Iterator<String> iterator = values.iterator();
+        assertEquals("empty", iterator.next());
+        assertEquals(null, iterator.next());
+        assertEquals("tea", iterator.next());
+        assertEquals("in", iterator.next());
+        assertEquals("to", iterator.next());
+        assertEquals("inn", iterator.next());
+        assertEquals("tea", iterator.next());
+        assertEquals("ted", iterator.next());
+        assertEquals("ten", iterator.next());
+        assertFalse(iterator.hasNext());
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -382,15 +388,17 @@ public class SortedListTrieTest {
         testPutWithEmptyKey();
         Collection<StringSequence> keys = trie.keySet();
         assertEquals(9, keys.size());
-        assertTrue(keys.contains(new StringSequence("tea")));
-        assertTrue(keys.contains(new StringSequence("to")));
-        assertTrue(keys.contains(new StringSequence("ted")));
-        assertTrue(keys.contains(new StringSequence("ten")));
-        assertTrue(keys.contains(new StringSequence("inn")));
-        assertTrue(keys.contains(new StringSequence("in")));
-        assertTrue(keys.contains(new StringSequence("A")));
-        assertTrue(keys.contains(new StringSequence("B")));
-        assertTrue(keys.contains(null));
+        Iterator<StringSequence> iterator = keys.iterator();
+        assertEquals(null, iterator.next());
+        assertEquals(new StringSequence("A"), iterator.next());
+        assertEquals(new StringSequence("B"), iterator.next());
+        assertEquals(new StringSequence("in"), iterator.next());
+        assertEquals(new StringSequence("to"), iterator.next());
+        assertEquals(new StringSequence("inn"), iterator.next());
+        assertEquals(new StringSequence("tea"), iterator.next());
+        assertEquals(new StringSequence("ted"), iterator.next());
+        assertEquals(new StringSequence("ten"), iterator.next());
+        assertFalse(iterator.hasNext());
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -429,24 +437,25 @@ public class SortedListTrieTest {
         testPutWithEmptyKey();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
         assertEquals(9, entrySet.size());
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("tea"), "tea")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("to"), "to")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("ted"), "ted")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("ten"), "ten")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("inn"), "inn")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("in"), "in")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("A"), (String) null)));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("B"), "tea")));
-        assertTrue(entrySet.contains(
-                new AbstractMap.SimpleImmutableEntry<>(null, "empty")));
+        Iterator<Map.Entry<StringSequence, String>> iterator = entrySet.iterator();
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(null, "empty"), iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("A"), (String) null),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("B"), "tea"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("in"), "in"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("inn"), "inn"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ten"), "ten"),
+                iterator.next());
+        assertFalse(iterator.hasNext());
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -557,7 +566,7 @@ public class SortedListTrieTest {
         assertEquals(5, trie.size());
         assertFalse(trie.isEmpty());
         verifyRootNode(trie.getRootNode());
-        verifySuccessors(trie.getRootNode(), "t", "i");
+        verifySuccessors(trie.getRootNode(), "i", "t");
         Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "i");
         verifySuccessors(successor, "n");
         successor = getSuccessor(successor, "n");
@@ -576,7 +585,7 @@ public class SortedListTrieTest {
         assertEquals(5, trie.size());
         assertFalse(trie.isEmpty());
         verifyRootNode(trie.getRootNode());
-        verifySuccessors(trie.getRootNode(), "t", "i");
+        verifySuccessors(trie.getRootNode(), "i", "t");
         Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "i");
         verifySuccessors(successor, "n");
         successor = getSuccessor(successor, "n");
