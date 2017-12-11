@@ -652,6 +652,38 @@ public class SortedListTrieTest {
     }
 
     @Test
+    public void testFirstEntry1() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.firstEntry();
+        assertNotNull(entry);
+        assertEquals(new StringSequence("in"), entry.getKey());
+        assertEquals("in", entry.getValue());
+    }
+
+    @Test
+    public void testFirstEntry2() {
+        testPutWithEmptyKey();
+        Map.Entry<StringSequence, String> entry = trie.firstEntry();
+        assertNotNull(entry);
+        assertNull(entry.getKey());
+        assertEquals("empty", entry.getValue());
+    }
+
+    @Test
+    public void testFirstKey1() {
+        testPut6();
+        StringSequence key = trie.firstKey();
+        assertEquals(new StringSequence("in"), key);
+    }
+
+    @Test
+    public void testFirstKey2() {
+        testPutWithEmptyKey();
+        StringSequence key = trie.firstKey();
+        assertNull(key);
+    }
+
+    @Test
     public void testHashCode() {
         SortedListTrie<StringSequence, String> trie1 = new SortedListTrie<>();
         SortedListTrie<StringSequence, String> trie2 = new SortedListTrie<>();

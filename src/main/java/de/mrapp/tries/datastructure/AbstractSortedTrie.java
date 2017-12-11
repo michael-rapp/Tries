@@ -100,12 +100,6 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> firstEntry() {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public final Entry<SequenceType, ValueType> lastEntry() {
         Node<SequenceType, ValueType> rootNode = getRootNode();
 
         if (rootNode != null) {
@@ -113,7 +107,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             SequenceType sequence = null;
             Iterator<SequenceType> iterator = currentNode.iterator();
 
-            while (iterator != null && iterator.hasNext()) {
+            while (currentNode != null && !currentNode.isValueSet() && iterator.hasNext()) {
                 SequenceType key = iterator.next();
                 currentNode = currentNode.getSuccessor(key);
                 sequence = SequenceUtil.concat(sequence, key);
@@ -125,6 +119,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             }
         }
 
+        return null;
+    }
+
+    @Override
+    public final Entry<SequenceType, ValueType> lastEntry() {
+        // TODO
         return null;
     }
 
