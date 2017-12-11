@@ -155,8 +155,13 @@ public class HashNodeTest {
         assertNotEquals(node1.hashCode(), node2.hashCode());
         node2.setNodeValue(new NodeValue<>("foo"));
         assertEquals(node1.hashCode(), node2.hashCode());
-        node1.addSuccessor("key");
+        node1.addSuccessor("foo");
         assertNotEquals(node1.hashCode(), node2.hashCode());
+        node2.addSuccessor("bar");
+        assertNotEquals(node1.hashCode(), node2.hashCode());
+        node1.addSuccessor("bar");
+        node2.addSuccessor("foo");
+        assertEquals(node1.hashCode(), node2.hashCode());
     }
 
     @Test
@@ -173,8 +178,13 @@ public class HashNodeTest {
         assertFalse(node1.equals(node2));
         node2.setNodeValue(new NodeValue<>("foo"));
         assertTrue(node1.equals(node2));
-        node1.addSuccessor("key");
+        node1.addSuccessor("foo");
         assertFalse(node1.equals(node2));
+        node2.addSuccessor("bar");
+        assertFalse(node1.equals(node2));
+        node1.addSuccessor("bar");
+        node2.addSuccessor("foo");
+        assertTrue(node1.equals(node2));
     }
 
 }
