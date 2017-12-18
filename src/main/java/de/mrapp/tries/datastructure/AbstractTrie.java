@@ -31,7 +31,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
     private class EntrySet extends AbstractSet<Map.Entry<SequenceType, ValueType>> {
 
-        private class LeafIterator implements Iterator<Map.Entry<SequenceType, ValueType>> {
+        private class ValueIterator implements Iterator<Map.Entry<SequenceType, ValueType>> {
 
             private class Path {
 
@@ -126,7 +126,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
                 return null;
             }
 
-            LeafIterator() {
+            ValueIterator() {
                 stack = new LinkedList<>();
 
                 if (rootNode != null) {
@@ -166,7 +166,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         @NotNull
         @Override
         public Iterator<Map.Entry<SequenceType, ValueType>> iterator() {
-            return new LeafIterator();
+            return new ValueIterator();
         }
 
         @Override
