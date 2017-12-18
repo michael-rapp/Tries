@@ -39,12 +39,12 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
                 private final SequenceType sequence;
 
-                private int index;
+                private Iterator<SequenceType> iterator;
 
                 Path(@Nullable final Node<SequenceType, ValueType> node) {
                     this.node = node;
                     this.sequence = null;
-                    this.index = -1;
+                    this.iterator = null;
                 }
 
                 Path(@NotNull final Node<SequenceType, ValueType> node,
@@ -54,7 +54,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
                     ensureFalse(sequence.isEmpty(), "The sequence may not be empty");
                     this.node = node;
                     this.sequence = sequence;
-                    this.index = -1;
+                    this.iterator = null;
                 }
 
             }
@@ -85,31 +85,22 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
             @Nullable
             private Path descend(final Path path) {
-                int successorCount = path.node.getSuccessorCount();
+                if (path.iterator == null) {
+                    path.iterator = path.node.iterator();
 
-                if (path.index == -1 && path.node.isValueSet()) {
-                    if (successorCount > 0) {
-                        path.index = 0;
-                        stack.push(path);
+                    if (path.node.isValueSet()) {
+                        if (path.iterator.hasNext()) {
+                            stack.push(path);
+                        }
+
+                        return null;
                     }
-
-                    return null;
                 }
 
-                int index = Math.max(0, path.index);
+                if (path.iterator != null && path.iterator.hasNext()) {
+                    SequenceType key = path.iterator.next();
 
-                if (successorCount > index) {
-                    Iterator<SequenceType> iterator = path.node.iterator();
-                    int i = 0;
-                    SequenceType key = null;
-
-                    while (i <= index) {
-                        key = iterator.next();
-                        i++;
-                    }
-
-                    if (successorCount > index + 1) {
-                        path.index = index + 1;
+                    if (path.iterator.hasNext()) {
                         stack.push(path);
                     }
 
