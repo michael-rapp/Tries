@@ -59,18 +59,38 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
             }
 
-            private final Deque<Path> queue;
+            private final Deque<Path> stack;
 
             private Path nextPath;
 
+            @Nullable
+            private Path fetchNext() {
+                while (!this.stack.isEmpty()) {
+                    Path path = this.stack.poll();
+                    Path previousPath = path;
+                    Path downPath = descend(path);
 
-            private Path down(final Path path) {
+                    while (downPath != null) {
+                        previousPath = downPath;
+                        downPath = descend(downPath);
+                    }
+
+                    if (previousPath.node.isValueSet()) {
+                        return previousPath;
+                    }
+                }
+
+                return null;
+            }
+
+            @Nullable
+            private Path descend(final Path path) {
                 int successorCount = path.node.getSuccessorCount();
 
                 if (path.index == -1 && path.node.isValueSet()) {
                     if (successorCount > 0) {
                         path.index = 0;
-                        queue.push(path);
+                        stack.push(path);
                     }
 
                     return null;
@@ -90,7 +110,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
                     if (successorCount > index + 1) {
                         path.index = index + 1;
-                        queue.push(path);
+                        stack.push(path);
                     }
 
                     if (key != null) {
@@ -106,31 +126,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
                 return null;
             }
 
-            @Nullable
-            private Path fetchNext() {
-                while (!this.queue.isEmpty()) {
-                    Path path = this.queue.poll();
-                    Path previousPath = path;
-                    Path downPath = down(path);
-
-                    while (downPath != null) {
-                        previousPath = downPath;
-                        downPath = down(downPath);
-                    }
-
-                    if (previousPath.node.isValueSet()) {
-                        return previousPath;
-                    }
-                }
-
-                return null;
-            }
-
             LeafIterator() {
-                queue = new LinkedList<>();
+                stack = new LinkedList<>();
 
                 if (rootNode != null) {
-                    queue.add(new Path(rootNode));
+                    stack.add(new Path(rootNode));
                     nextPath = fetchNext();
                 }
             }
