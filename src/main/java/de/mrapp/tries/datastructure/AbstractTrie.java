@@ -39,9 +39,12 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
                 private final SequenceType sequence;
 
+                private int index;
+
                 Path(@Nullable final Node<SequenceType, ValueType> node) {
                     this.node = node;
                     this.sequence = null;
+                    this.index = -1;
                 }
 
                 Path(@NotNull final Node<SequenceType, ValueType> node,
@@ -51,36 +54,76 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
                     ensureFalse(sequence.isEmpty(), "The sequence may not be empty");
                     this.node = node;
                     this.sequence = sequence;
+                    this.index = -1;
                 }
 
             }
 
-            private final Queue<Path> queue;
+            private final Deque<Path> queue;
 
             private Path nextPath;
 
-            @Nullable
-            private Path fetchNext() {
-                Path next = null;
 
-                while (!this.queue.isEmpty() && next == null) {
-                    Path path = this.queue.poll();
+            private Path down(final Path path) {
+                int successorCount = path.node.getSuccessorCount();
 
-                    if (path.node.isValueSet()) {
-                        next = path;
+                if (path.index == -1 && path.node.isValueSet()) {
+                    if (successorCount > 0) {
+                        path.index = 0;
+                        queue.push(path);
                     }
 
-                    for (SequenceType suffix : path.node) {
-                        Node<SequenceType, ValueType> successor = path.node.getSuccessor(suffix);
+                    return null;
+                }
+
+                int index = Math.max(0, path.index);
+
+                if (successorCount > index) {
+                    Iterator<SequenceType> iterator = path.node.iterator();
+                    int i = 0;
+                    SequenceType key = null;
+
+                    while (i <= index) {
+                        key = iterator.next();
+                        i++;
+                    }
+
+                    if (successorCount > index + 1) {
+                        path.index = index + 1;
+                        queue.push(path);
+                    }
+
+                    if (key != null) {
+                        Node<SequenceType, ValueType> successor = path.node.getSuccessor(key);
 
                         if (successor != null) {
-                            SequenceType sequence = SequenceUtil.concat(path.sequence, suffix);
-                            this.queue.add(new Path(successor, sequence));
+                            SequenceType sequence = SequenceUtil.concat(path.sequence, key);
+                            return new Path(successor, sequence);
                         }
                     }
                 }
 
-                return next;
+                return null;
+            }
+
+            @Nullable
+            private Path fetchNext() {
+                while (!this.queue.isEmpty()) {
+                    Path path = this.queue.poll();
+                    Path previousPath = path;
+                    Path downPath = down(path);
+
+                    while (downPath != null) {
+                        previousPath = downPath;
+                        downPath = down(downPath);
+                    }
+
+                    if (previousPath.node.isValueSet()) {
+                        return previousPath;
+                    }
+                }
+
+                return null;
             }
 
             LeafIterator() {

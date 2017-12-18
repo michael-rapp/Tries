@@ -346,11 +346,11 @@ public class SortedListTrieTest {
         assertEquals(null, iterator.next());
         assertEquals("tea", iterator.next());
         assertEquals("in", iterator.next());
-        assertEquals("to", iterator.next());
         assertEquals("inn", iterator.next());
         assertEquals("tea", iterator.next());
         assertEquals("ted", iterator.next());
         assertEquals("ten", iterator.next());
+        assertEquals("to", iterator.next());
         assertFalse(iterator.hasNext());
     }
 
@@ -389,15 +389,22 @@ public class SortedListTrieTest {
         Collection<StringSequence> keys = trie.keySet();
         assertEquals(9, keys.size());
         Iterator<StringSequence> iterator = keys.iterator();
+
+        while (iterator.hasNext()) {
+            StringSequence seq = iterator.next();
+            System.out.println("got = " + seq);
+        }
+
+        iterator = keys.iterator();
         assertEquals(null, iterator.next());
         assertEquals(new StringSequence("A"), iterator.next());
         assertEquals(new StringSequence("B"), iterator.next());
         assertEquals(new StringSequence("in"), iterator.next());
-        assertEquals(new StringSequence("to"), iterator.next());
         assertEquals(new StringSequence("inn"), iterator.next());
         assertEquals(new StringSequence("tea"), iterator.next());
         assertEquals(new StringSequence("ted"), iterator.next());
         assertEquals(new StringSequence("ten"), iterator.next());
+        assertEquals(new StringSequence("to"), iterator.next());
         assertFalse(iterator.hasNext());
     }
 
@@ -445,8 +452,6 @@ public class SortedListTrieTest {
                 iterator.next());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("in"), "in"),
                 iterator.next());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
-                iterator.next());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("inn"), "inn"),
                 iterator.next());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
@@ -454,6 +459,8 @@ public class SortedListTrieTest {
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
                 iterator.next());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ten"), "ten"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
                 iterator.next());
         assertFalse(iterator.hasNext());
     }
@@ -725,7 +732,7 @@ public class SortedListTrieTest {
     @Test
     public void testToString() {
         testPut3();
-        assertEquals("SortedListTrie [to=to, tea=tea, ted=ted]", trie.toString());
+        assertEquals("SortedListTrie [tea=tea, ted=ted, to=to]", trie.toString());
     }
 
 }

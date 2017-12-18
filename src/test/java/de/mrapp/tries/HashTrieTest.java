@@ -684,7 +684,7 @@ public class HashTrieTest {
     @Test
     public void testToString() {
         testPut3();
-        assertEquals("HashTrie [to=to, tea=tea, ted=ted]", trie.toString());
+        assertEquals("HashTrie [tea=tea, ted=ted, to=to]", trie.toString());
     }
 
 }
