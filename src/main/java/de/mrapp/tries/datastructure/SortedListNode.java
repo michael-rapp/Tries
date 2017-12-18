@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.RandomAccess;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
@@ -32,7 +33,8 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, ValueType> {
+public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, ValueType> implements
+        RandomAccess {
 
     /**
      * A comparator, which allows to compare keys to each other.
@@ -249,6 +251,20 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
         }
 
         return null;
+    }
+
+    @NotNull
+    @Override
+    public final KeyType getSuccessorKey(final int index) {
+        Edge<KeyType, ValueType> edge = successors.get(index);
+        return edge.key;
+    }
+
+    @NotNull
+    @Override
+    public final Node<KeyType, ValueType> getSuccessor(final int index) {
+        Edge<KeyType, ValueType> edge = successors.get(index);
+        return edge.successor;
     }
 
     @NotNull

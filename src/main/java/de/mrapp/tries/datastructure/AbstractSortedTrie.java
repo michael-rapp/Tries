@@ -105,13 +105,11 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         if (rootNode != null) {
             Node<SequenceType, ValueType> currentNode = rootNode;
             SequenceType sequence = null;
-            Iterator<SequenceType> iterator = currentNode.iterator();
 
-            while (currentNode != null && !currentNode.isValueSet() && iterator.hasNext()) {
-                SequenceType key = iterator.next();
-                currentNode = currentNode.getSuccessor(key);
+            while (currentNode != null && !currentNode.isValueSet()) {
+                SequenceType key = currentNode.getFirstSuccessorKey();
+                currentNode = currentNode.getFirstSuccessor();
                 sequence = SequenceUtil.concat(sequence, key);
-                iterator = currentNode != null ? currentNode.iterator() : null;
             }
 
             if (currentNode != null && currentNode.isValueSet()) {

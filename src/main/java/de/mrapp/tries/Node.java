@@ -80,6 +80,15 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
     int getSuccessorCount();
 
     /**
+     * Returns, whether the node has successors, or not.
+     *
+     * @return True, if the node has successors, false otherwise
+     */
+    default boolean hasSuccessors() {
+        return getSuccessorCount() > 0;
+    }
+
+    /**
      * Returns the successor of the node, which corresponds to a specific key.
      *
      * @param key The key of the successor, which should be returned, as an instance of the generic
@@ -133,6 +142,85 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      * @return The number of successor, for which values are set, as an {@link Integer} value
      */
     int getSuccessorValueCount();
+
+    /**
+     * Returns the key, which corresponds to the successor at a specific index. If the index is
+     * invalid, an {@link IndexOutOfBoundsException} is thrown. If the node's successor or are not
+     * sorted, an {@link UnsupportedOperationException} is thrown.
+     *
+     * @param index The index of the key, which should be returned, as an {@link Integer} value
+     * @return The key of the successor at the given index as an instance of the generic type {@link
+     * KeyType}. The key may not be null
+     */
+    @NotNull
+    default KeyType getSuccessorKey(final int index) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the key, which corresponds to the first successor. If the node's successors are not
+     * sorted, an {@link UnsupportedOperationException} is thrown.
+     *
+     * @return The key of the first successor as an instance of the generic type {@link KeyType} or
+     * null, if the node does not have any successors
+     */
+    @Nullable
+    default KeyType getFirstSuccessorKey() {
+        return hasSuccessors() ? getSuccessorKey(0) : null;
+    }
+
+    /**
+     * Returns the key, which corresponds to the last successor. If the node's successors are not
+     * sorted, an {@link UnsupportedOperationException} is thrown.
+     *
+     * @return The key of the last successor as an instance of the generic type {@link KeyType} or
+     * null, if the node does not have any successors
+     */
+    @Nullable
+    default KeyType getLastSuccessorKey() {
+        int successorCount = getSuccessorCount();
+        return successorCount > 0 ? getSuccessorKey(successorCount - 1) : null;
+    }
+
+    /**
+     * Returns the successor at a specific index. If the index is invalid, an {@link
+     * IndexOutOfBoundsException} is thrown. If the node's successor are not sorted, an {@link
+     * UnsupportedOperationException} is thrown.
+     *
+     * @param index The index of the successor, which which should be returned, as an {@link
+     *              Integer} value
+     * @return The successor at the given index as an instance of the type {@link Node}. The
+     * successor may not be null
+     */
+    @NotNull
+    default Node<KeyType, ValueType> getSuccessor(final int index) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the first successor. If the node's successors are not sorted, an {@link
+     * UnsupportedOperationException} is thrown.
+     *
+     * @return The first successor as an instance of the type {@link Node} or null, if the node does
+     * not have any successors
+     */
+    @Nullable
+    default Node<KeyType, ValueType> getFirstSuccessor() {
+        return hasSuccessors() ? getSuccessor(0) : null;
+    }
+
+    /**
+     * Returns the last successor. If the node's successors are not sorted, an {@link
+     * UnsupportedOperationException} is thrown.
+     *
+     * @return The last successor as an instance of the type {@link Node} or null, if the node does
+     * not have any successors
+     */
+    @Nullable
+    default Node<KeyType, ValueType> getLastSuccessor() {
+        int successorCount = getSuccessorCount();
+        return successorCount > 0 ? getSuccessor(successorCount) : null;
+    }
 
     /**
      * Increases the number of successors for which values are set by a specific amount. This causes

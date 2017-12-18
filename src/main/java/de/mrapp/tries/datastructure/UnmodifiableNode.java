@@ -28,13 +28,13 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * encapsulated node and throws {@link UnsupportedOperationException}s when calling a method, which
  * attempts to change the node's state.
  *
- * @param <SequenceType> The type of the sequences, which correspond to the node's successors
- * @param <ValueType>    The type of the node's value
+ * @param <KeyType>   The type of the sequences, which correspond to the node's successors
+ * @param <ValueType> The type of the node's value
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class UnmodifiableNode<SequenceType extends Sequence, ValueType> implements
-        Node<SequenceType, ValueType> {
+public class UnmodifiableNode<KeyType extends Sequence, ValueType> implements
+        Node<KeyType, ValueType> {
 
     /**
      * The constant serial version UID.
@@ -44,7 +44,7 @@ public class UnmodifiableNode<SequenceType extends Sequence, ValueType> implemen
     /**
      * The encapsulated node.
      */
-    private final Node<SequenceType, ValueType> node;
+    private final Node<KeyType, ValueType> node;
 
     /**
      * Creates a new unmodifiable node.
@@ -52,7 +52,7 @@ public class UnmodifiableNode<SequenceType extends Sequence, ValueType> implemen
      * @param node The node, which should be encapsulated, as an instance of the type {@link Node}.
      *             The node may not be null
      */
-    public UnmodifiableNode(@NotNull final Node<SequenceType, ValueType> node) {
+    public UnmodifiableNode(@NotNull final Node<KeyType, ValueType> node) {
         ensureNotNull(node, "The node may not be null");
         this.node = node;
     }
@@ -77,20 +77,32 @@ public class UnmodifiableNode<SequenceType extends Sequence, ValueType> implemen
 
     @Nullable
     @Override
-    public final Node<SequenceType, ValueType> getSuccessor(@NotNull final SequenceType key) {
-        Node<SequenceType, ValueType> successor = node.getSuccessor(key);
+    public final Node<KeyType, ValueType> getSuccessor(@NotNull final KeyType key) {
+        Node<KeyType, ValueType> successor = node.getSuccessor(key);
         return successor != null ? new UnmodifiableNode<>(successor) : null;
     }
 
     @NotNull
     @Override
-    public final Node<SequenceType, ValueType> addSuccessor(@NotNull final SequenceType key,
-                                                            @Nullable final Node<SequenceType, ValueType> successor) {
+    public final KeyType getSuccessorKey(final int index) {
+        return node.getSuccessorKey(index);
+    }
+
+    @NotNull
+    @Override
+    public final Node<KeyType, ValueType> getSuccessor(final int index) {
+        return node.getSuccessor(index);
+    }
+
+    @NotNull
+    @Override
+    public final Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key,
+                                                       @Nullable final Node<KeyType, ValueType> successor) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void removeSuccessor(@NotNull final SequenceType key) {
+    public final void removeSuccessor(@NotNull final KeyType key) {
         throw new UnsupportedOperationException();
     }
 
@@ -111,27 +123,27 @@ public class UnmodifiableNode<SequenceType extends Sequence, ValueType> implemen
 
     @Nullable
     @Override
-    public final Node<SequenceType, ValueType> getPredecessor() {
-        Node<SequenceType, ValueType> predecessor = node.getPredecessor();
+    public final Node<KeyType, ValueType> getPredecessor() {
+        Node<KeyType, ValueType> predecessor = node.getPredecessor();
         return predecessor != null ? new UnmodifiableNode<>(predecessor) : null;
     }
 
     @Override
-    public final void setPredecessor(@Nullable final Node<SequenceType, ValueType> predecessor) {
+    public final void setPredecessor(@Nullable final Node<KeyType, ValueType> predecessor) {
         throw new UnsupportedOperationException();
     }
 
     @NotNull
     @Override
-    public final Iterator<SequenceType> iterator() {
+    public final Iterator<KeyType> iterator() {
         return node.iterator();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public final Node<SequenceType, ValueType> clone() {
+    public final Node<KeyType, ValueType> clone() {
         try {
-            return (Node<SequenceType, ValueType>) super.clone();
+            return (Node<KeyType, ValueType>) super.clone();
         } catch (CloneNotSupportedException e) {
             // Should never happen
             return null;

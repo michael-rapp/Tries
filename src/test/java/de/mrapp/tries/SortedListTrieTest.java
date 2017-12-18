@@ -389,13 +389,6 @@ public class SortedListTrieTest {
         Collection<StringSequence> keys = trie.keySet();
         assertEquals(9, keys.size());
         Iterator<StringSequence> iterator = keys.iterator();
-
-        while (iterator.hasNext()) {
-            StringSequence seq = iterator.next();
-            System.out.println("got = " + seq);
-        }
-
-        iterator = keys.iterator();
         assertEquals(null, iterator.next());
         assertEquals(new StringSequence("A"), iterator.next());
         assertEquals(new StringSequence("B"), iterator.next());
