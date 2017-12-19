@@ -100,7 +100,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> firstEntry() {
-        Node<SequenceType, ValueType> currentNode = getRootNode();
+        Node<SequenceType, ValueType> currentNode = rootNode;
         SequenceType sequence = null;
 
         while (currentNode != null && !currentNode.isValueSet()) {
@@ -118,7 +118,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> lastEntry() {
-        Node<SequenceType, ValueType> currentNode = getRootNode();
+        Node<SequenceType, ValueType> currentNode = rootNode;
         SequenceType sequence = null;
 
         while (currentNode != null && !currentNode.isValueSet()) {
@@ -136,8 +136,58 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> pollFirstEntry() {
-        // TODO
-        return null;
+        Entry<SequenceType, ValueType> result = null;
+
+        if (rootNode != null) {
+            if (rootNode.isValueSet()) {
+                result = new AbstractMap.SimpleImmutableEntry<>(null, rootNode.getValue());
+                rootNode.setNodeValue(null);
+
+                if (!rootNode.hasSuccessors()) {
+                    clear();
+                }
+            } else {
+                Node<SequenceType, ValueType> currentNode = rootNode;
+                Node<SequenceType, ValueType> lastRetainedNode = rootNode;
+                SequenceType suffixToRemove = null;
+                SequenceType sequence = null;
+
+                while (currentNode != null && !currentNode.isValueSet()) {
+                    SequenceType key = currentNode.getFirstSuccessorKey();
+
+                    if (currentNode.getSuccessorCount() > 1 || currentNode.getValue() != null) {
+                        lastRetainedNode = currentNode;
+                        suffixToRemove = key;
+                    }
+
+                    currentNode = currentNode.getFirstSuccessor();
+                    sequence = SequenceUtil.concat(sequence, key);
+                }
+
+                if (currentNode != null && currentNode.isValueSet()) {
+                    if (currentNode.hasSuccessors()) {
+                        lastRetainedNode = null;
+                        suffixToRemove = null;
+                    }
+
+                    result = new AbstractMap.SimpleImmutableEntry<>(sequence,
+                            currentNode.getValue());
+                    currentNode.setNodeValue(null);
+
+                    if (lastRetainedNode == rootNode) {
+                        clear();
+                    } else {
+                        if (suffixToRemove != null) {
+                            removeSuccessor(lastRetainedNode, suffixToRemove);
+                        }
+
+                        modificationCount++;
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     @Override

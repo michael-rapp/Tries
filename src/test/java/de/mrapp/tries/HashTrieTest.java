@@ -610,6 +610,32 @@ public class HashTrieTest {
     }
 
     @Test
+    public void testRemoveEmptyKeyIfKeyIsTheOnlyOne() {
+        String string = "empty";
+        trie.put(new StringSequence(""), string);
+        String removed = trie.remove(new StringSequence(""));
+        assertEquals(string, removed);
+        assertNull(trie.get(new StringSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+        assertNull(trie.getRootNode());
+    }
+
+    @Test
+    public void testRemoveNullKeyIfKeyIsTheOnlyOne() {
+        String string = "empty";
+        trie.put(new StringSequence(""), string);
+        String removed = trie.remove(null);
+        assertEquals(string, removed);
+        assertNull(trie.get(new StringSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+        assertNull(trie.getRootNode());
+    }
+
+    @Test
     public void testSubTree1() {
         testPut7();
         HashTrie<StringSequence, String> subTrie = trie.subTree(new StringSequence("t"));

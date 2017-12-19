@@ -186,9 +186,9 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
     private static final long serialVersionUID = -9049598420902876017L;
 
-    private Node<SequenceType, ValueType> rootNode;
+    protected Node<SequenceType, ValueType> rootNode;
 
-    private long modificationCount;
+    protected long modificationCount;
 
     @NotNull
     protected abstract Node<SequenceType, ValueType> createRootNode();
@@ -355,7 +355,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
                 NodeValue<ValueType> previous = rootNode.setNodeValue(null);
 
                 if (!rootNode.hasSuccessors()) {
-                    rootNode = null;
+                    clear();
                 }
 
                 return previous != null ? previous.getValue() : null;
@@ -381,7 +381,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
                         suffix = pair.second;
 
                         if (suffix.isEmpty()) {
-                            if (successor.getSuccessorCount() > 0) {
+                            if (successor.hasSuccessors()) {
                                 lastRetainedNode = null;
                                 suffixToRemove = null;
                             }

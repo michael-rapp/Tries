@@ -619,6 +619,32 @@ public class SortedListTrieTest {
     }
 
     @Test
+    public void testRemoveEmptyKeyIfKeyIsTheOnlyOne() {
+        String string = "empty";
+        trie.put(new StringSequence(""), string);
+        String removed = trie.remove(new StringSequence(""));
+        assertEquals(string, removed);
+        assertNull(trie.get(new StringSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+        assertNull(trie.getRootNode());
+    }
+
+    @Test
+    public void testRemoveNullKeyIfKeyIsTheOnlyOne() {
+        String string = "empty";
+        trie.put(new StringSequence(""), string);
+        String removed = trie.remove(null);
+        assertEquals(string, removed);
+        assertNull(trie.get(new StringSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+        assertNull(trie.getRootNode());
+    }
+
+    @Test
     public void testSubTree1() {
         testPut7();
         SortedListTrie<StringSequence, String> subTrie = trie.subTree(new StringSequence("t"));
@@ -736,6 +762,64 @@ public class SortedListTrieTest {
         assertTrue(trie1.equals(trie2));
         trie1.put(new StringSequence("fob"), "value2");
         assertFalse(trie1.equals(trie2));
+    }
+
+    @Test
+    public void testPollFirstEntryIfTrieIsEmpty() {
+        Map.Entry<StringSequence, String> removed = trie.pollFirstEntry();
+        assertNull(removed);
+        assertTrue(trie.isEmpty());
+        assertNull(trie.getRootNode());
+    }
+
+    @Test
+    public void testPollFirstEntryIfKeyIsTheOnlyOne() {
+        testPut1();
+        String string = "tea";
+        Map.Entry<StringSequence, String> removed = trie.pollFirstEntry();
+        assertNotNull(removed);
+        assertEquals(new StringSequence(string), removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(new StringSequence(string)));
+        assertNull(trie.getRootNode());
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+    }
+
+    @Test
+    public void testPollFirstEntryIfKeyIsPrefix() {
+        testPut6();
+        String string = "in";
+        Map.Entry<StringSequence, String> removed = trie.pollFirstEntry();
+        assertNotNull(removed);
+        assertEquals(new StringSequence(string), removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(new StringSequence(string)));
+        assertEquals(5, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "i", "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "i");
+        verifySuccessors(successor, "n");
+        successor = getSuccessor(successor, "n");
+        verifySuccessors(successor, "n");
+        successor = getSuccessor(successor, "n");
+        verifyLeaf(successor, "inn");
+    }
+
+    @Test
+    public void testPollFirstEntryIfKeyIsEmpty() {
+        testPutWithEmptyKey();
+        String string = "empty";
+        Map.Entry<StringSequence, String> removed = trie.pollFirstEntry();
+        assertNotNull(removed);
+        assertNull(removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(new StringSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(8, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(trie.getRootNode());
     }
 
     @Test
