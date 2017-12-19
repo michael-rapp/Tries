@@ -353,6 +353,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         if (rootNode != null) {
             if (sequence == null || sequence.isEmpty()) {
                 NodeValue<ValueType> previous = rootNode.setNodeValue(null);
+
+                if (!rootNode.hasSuccessors()) {
+                    rootNode = null;
+                }
+
                 return previous != null ? previous.getValue() : null;
             } else {
                 Node<SequenceType, ValueType> lastRetainedNode = rootNode;
