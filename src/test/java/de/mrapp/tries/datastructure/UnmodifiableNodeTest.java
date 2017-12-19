@@ -92,6 +92,14 @@ public class UnmodifiableNodeTest {
         assertEquals(successor.hashCode(), unmodifiableNode.getSuccessor(index).hashCode());
     }
 
+    @Test
+    public final void testIndexOf() {
+        int index = 1;
+        StringSequence key = mock(StringSequence.class);
+        when(node.indexOf(key)).thenReturn(index);
+        assertEquals(index, unmodifiableNode.indexOf(key));
+    }
+
     @Test(expected = UnsupportedOperationException.class)
     public final void testAddSuccessor1() {
         unmodifiableNode.addSuccessor(mock(StringSequence.class));

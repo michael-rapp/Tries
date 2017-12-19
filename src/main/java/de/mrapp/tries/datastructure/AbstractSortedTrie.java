@@ -17,6 +17,7 @@ import de.mrapp.tries.Node;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.SortedTrie;
 import de.mrapp.tries.util.SequenceUtil;
+import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,20 +41,40 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * Returns the entry, which corresponds to the first or last entry of the trie.
      *
      * @param first True, if the first entry should be returned, false, if the last entry should be
-     *              returned.
+     *              returned
      * @return The entry, which corresponds to the first or last entry of the trie, depending on the
-     * given argument, or null, if the trie is empty
+     * given {@code first} argument, or null, if the trie is empty
      */
     @Nullable
     private Entry<SequenceType, ValueType> firstOrLastEntry(final boolean first) {
-        Node<SequenceType, ValueType> currentNode = rootNode;
-        SequenceType sequence = null;
+        return firstOrLastEntry(rootNode, null, first);
+    }
 
-        while (currentNode != null && !currentNode.isValueSet()) {
-            SequenceType key =
+    /**
+     * Returns the entry, which corresponds to the first or last entry of a subtrie.
+     *
+     * @param node  The root node of the subtrie as an instance of the type {@link Node} or null, if
+     *              the subtrie is empty
+     * @param key   The key of the subtrie's root node as an instance of the generic type {@link
+     *              SequenceType} or null, if the subtrie is empty
+     * @param first True, if the first entry should be returned, false, if the last entry should be
+     *              returned
+     * @return The entry, which corresponds to the first or last entry of the given subtrie,
+     * depending on the given {@code first} argument, or null, if the trie is empty
+     */
+    @Nullable
+    private Entry<SequenceType, ValueType> firstOrLastEntry(
+            @Nullable final Node<SequenceType, ValueType> node,
+            @Nullable final SequenceType key, final boolean first) {
+        Node<SequenceType, ValueType> currentNode = node;
+        SequenceType sequence = key;
+
+        while (currentNode != null &&
+                (!first || !currentNode.isValueSet()) && currentNode.hasSuccessors()) {
+            SequenceType successorKey =
                     first ? currentNode.getFirstSuccessorKey() : currentNode.getLastSuccessorKey();
             currentNode = first ? currentNode.getFirstSuccessor() : currentNode.getLastSuccessor();
-            sequence = SequenceUtil.concat(sequence, key);
+            sequence = SequenceUtil.concat(sequence, successorKey);
         }
 
         if (currentNode != null && currentNode.isValueSet()) {
@@ -121,6 +142,11 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         return result;
     }
 
+    @Nullable
+    protected abstract Pair<Integer, SequenceType> indexOf(
+            @NotNull final Node<SequenceType, ValueType> node,
+            @NotNull final SequenceType sequence);
+
     protected AbstractSortedTrie(@Nullable final Node<SequenceType, ValueType> node,
                                  @Nullable final Comparator<SequenceType> comparator) {
         super(node);
@@ -138,25 +164,26 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final SequenceType lowerKey(final SequenceType key) {
-        // TODO
-        return null;
+        Entry<SequenceType, ValueType> entry = lowerEntry(key);
+        return entry != null ? entry.getKey() : null;
     }
 
     @Override
     public final SequenceType higherKey(final SequenceType key) {
-        // TODO
-        return null;
+        Entry<SequenceType, ValueType> entry = higherEntry(key);
+        return entry != null ? entry.getKey() : null;
     }
 
     @Override
     public final SequenceType floorKey(final SequenceType key) {
-        return null;
+        Entry<SequenceType, ValueType> entry = floorEntry(key);
+        return entry != null ? entry.getKey() : null;
     }
 
     @Override
     public final SequenceType ceilingKey(final SequenceType key) {
-        // TODO
-        return null;
+        Entry<SequenceType, ValueType> entry = ceilingEntry(key);
+        return entry != null ? entry.getKey() : null;
     }
 
     @Override
@@ -173,7 +200,50 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> lowerEntry(final SequenceType key) {
-        // TODO
+        if (rootNode != null) {
+            Deque<Pair<Node<SequenceType, ValueType>, SequenceType>> stack = new LinkedList<>();
+            Node<SequenceType, ValueType> currentNode = rootNode;
+            SequenceType suffix = key;
+            stack.push(Pair.create(currentNode, suffix));
+
+            while (suffix != null && !suffix.isEmpty()) {
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(currentNode,
+                        suffix);
+
+                if (pair == null) {
+                    return null;
+                } else {
+                    stack.push(Pair.create(currentNode, suffix));
+                    currentNode = pair.first;
+                    suffix = pair.second;
+                }
+            }
+
+            while (currentNode != null && !stack.isEmpty()) {
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = stack.pop();
+                Node<SequenceType, ValueType> node = pair.first;
+
+                if (node.isValueSet()) {
+                    SequenceType lowerKey = SequenceUtil
+                            .subsequence(key, 0, key.length() - pair.second.length());
+                    return new AbstractMap.SimpleImmutableEntry<>(
+                            lowerKey.isEmpty() ? null : lowerKey, node.getValue());
+                } else if (node.getSuccessorCount() > 1) {
+                    Pair<Integer, SequenceType> indexPair = indexOf(node, pair.second);
+
+                    if (indexPair != null && indexPair.first > 0) {
+                        int index = indexPair.first - 1;
+                        Node<SequenceType, ValueType> successor = node.getSuccessor(index);
+                        SequenceType successorKey = node.getSuccessorKey(index);
+                        SequenceType prefix = SequenceUtil
+                                .subsequence(key, 0, key.length() - pair.second.length());
+                        prefix = SequenceUtil.concat(prefix, successorKey);
+                        return firstOrLastEntry(successor, prefix, false);
+                    }
+                }
+            }
+        }
+
         return null;
     }
 

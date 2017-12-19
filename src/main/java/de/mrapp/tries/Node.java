@@ -17,10 +17,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
+import java.util.RandomAccess;
+
+import static de.mrapp.util.Condition.ensureTrue;
 
 /**
  * Defines the interface, a node of a trie must implement. It extends the interface {@link Iterable}
  * to be able to iterate the keys, which correspond to the node's successors.
+ *
+ * If the successors of the node are sorted, sublasses must implement the interface {@link
+ * RandomAccess}.
  *
  * @param <KeyType>   The type of the keys, which are associated with the node's successors
  * @param <ValueType> The type of the node's value
@@ -166,6 +172,8 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      */
     @Nullable
     default KeyType getFirstSuccessorKey() {
+        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
+                UnsupportedOperationException.class);
         return hasSuccessors() ? getSuccessorKey(0) : null;
     }
 
@@ -178,13 +186,15 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      */
     @Nullable
     default KeyType getLastSuccessorKey() {
+        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
+                UnsupportedOperationException.class);
         int successorCount = getSuccessorCount();
         return successorCount > 0 ? getSuccessorKey(successorCount - 1) : null;
     }
 
     /**
      * Returns the successor at a specific index. If the index is invalid, an {@link
-     * IndexOutOfBoundsException} is thrown. If the node's successor are not sorted, an {@link
+     * IndexOutOfBoundsException} is thrown. If the node's successors are not sorted, an {@link
      * UnsupportedOperationException} is thrown.
      *
      * @param index The index of the successor, which which should be returned, as an {@link
@@ -206,6 +216,8 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      */
     @Nullable
     default Node<KeyType, ValueType> getFirstSuccessor() {
+        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
+                UnsupportedOperationException.class);
         return hasSuccessors() ? getSuccessor(0) : null;
     }
 
@@ -218,8 +230,23 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      */
     @Nullable
     default Node<KeyType, ValueType> getLastSuccessor() {
+        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
+                UnsupportedOperationException.class);
         int successorCount = getSuccessorCount();
         return successorCount > 0 ? getSuccessor(successorCount - 1) : null;
+    }
+
+    /**
+     * Returns the index of the successor, which corresponds to a specific key. If the node's
+     * successors are not sorted, an {@link UnsupportedOperationException} is thrown.
+     *
+     * @param key The key of the successor, whose index should be returned, as an instance of the
+     *            type {@link KeyType}. The key may not be null
+     * @return The index of the successor, which corresponds to the given key, as an {@link Integer}
+     * value or -1, if no such successor is available
+     */
+    default int indexOf(@NotNull KeyType key) {
+        throw new UnsupportedOperationException();
     }
 
     /**

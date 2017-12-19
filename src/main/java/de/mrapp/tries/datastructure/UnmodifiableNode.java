@@ -94,6 +94,11 @@ public class UnmodifiableNode<KeyType extends Sequence, ValueType> implements
         return node.getSuccessor(index);
     }
 
+    @Override
+    public final int indexOf(@NotNull final KeyType key) {
+        return node.indexOf(key);
+    }
+
     @NotNull
     @Override
     public final Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key,

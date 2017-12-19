@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests the functionality of the class {@link HashNode}.
@@ -119,6 +120,48 @@ public class HashNodeTest {
         node.increaseSuccessorValueCount(1);
         node.setPredecessor(predecessor);
         assertEquals(predecessor, node.getPredecessor());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testGetSuccessorByIndex() {
+        HashNode<String, String> node = new HashNode<>();
+        node.getSuccessor(0);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testGetFirstSuccessor() {
+        HashNode<String, String> node = new HashNode<>();
+        node.getFirstSuccessor();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testGetLastSuccessor() {
+        HashNode<String, String> node = new HashNode<>();
+        node.getLastSuccessor();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testGetSuccessorKey() {
+        HashNode<String, String> node = new HashNode<>();
+        node.getSuccessorKey(2);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testGetFirstSuccessorKey() {
+        HashNode<String, String> node = new HashNode<>();
+        node.getFirstSuccessorKey();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testGetLastSuccessorKey() {
+        HashNode<String, String> node = new HashNode<>();
+        node.getLastSuccessorKey();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testIndexOf() {
+        HashNode<String, String> node = new HashNode<>();
+        node.indexOf("c");
     }
 
     @Test

@@ -170,37 +170,6 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
     private final Comparator<KeyType> comparator;
 
     /**
-     * Searches for the index of the successor, which corresponds to a specific key, using binary
-     * search.
-     *
-     * @param key The key of the successor, whose index should be returned, as an instance of the
-     *            generic type {@link KeyType}. The key may not be null
-     * @return The index of the successor, which corresponds to the given key, as an {@link Integer}
-     * value or -1, if no such successor is available
-     */
-    private int indexOf(@NotNull final KeyType key) {
-        KeyComparator<KeyType> comparator = new KeyComparator<>(this.comparator);
-        int min = 0;
-        int max = successors.size() - 1;
-
-        while (min <= max) {
-            int pivot = (min + max) >>> 1;
-            Edge<KeyType, ValueType> edge = successors.get(pivot);
-            int order = comparator.compare(edge.key, key);
-
-            if (order < 0) {
-                min = pivot + 1;
-            } else if (order > 0) {
-                max = pivot - 1;
-            } else {
-                return pivot;
-            }
-        }
-
-        return -1;
-    }
-
-    /**
      * Creates a new node of a trie, which stores its successors in a sorted list.
      *
      * @param comparator The comparator, which should be used to compare the successors to each
@@ -265,6 +234,29 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
     public final Node<KeyType, ValueType> getSuccessor(final int index) {
         Edge<KeyType, ValueType> edge = successors.get(index);
         return edge.successor;
+    }
+
+    @Override
+    public final int indexOf(@NotNull final KeyType key) {
+        KeyComparator<KeyType> comparator = new KeyComparator<>(this.comparator);
+        int min = 0;
+        int max = successors.size() - 1;
+
+        while (min <= max) {
+            int pivot = (min + max) >>> 1;
+            Edge<KeyType, ValueType> edge = successors.get(pivot);
+            int order = comparator.compare(edge.key, key);
+
+            if (order < 0) {
+                min = pivot + 1;
+            } else if (order > 0) {
+                max = pivot - 1;
+            } else {
+                return pivot;
+            }
+        }
+
+        return -1;
     }
 
     @NotNull

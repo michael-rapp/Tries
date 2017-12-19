@@ -719,7 +719,7 @@ public class SortedListTrieTest {
     }
 
     @Test
-    public void testLastEntry() {
+    public void testLastEntry1() {
         testPut6();
         Map.Entry<StringSequence, String> entry = trie.lastEntry();
         assertNotNull(entry);
@@ -728,10 +728,44 @@ public class SortedListTrieTest {
     }
 
     @Test
-    public void testLastKey() {
+    public void testLastEntry2() {
+        testPut6();
+        trie.put(new StringSequence("too"), "too");
+        Map.Entry<StringSequence, String> entry = trie.lastEntry();
+        assertNotNull(entry);
+        assertEquals(new StringSequence("too"), entry.getKey());
+        assertEquals("too", entry.getValue());
+    }
+
+    @Test
+    public void testLastEntry3() {
+        trie.put(null, "empty");
+        Map.Entry<StringSequence, String> entry = trie.lastEntry();
+        assertNotNull(entry);
+        assertNull(entry.getKey());
+        assertEquals("empty", entry.getValue());
+    }
+
+    @Test
+    public void testLastKey1() {
         testPut6();
         StringSequence key = trie.lastKey();
         assertEquals(new StringSequence("to"), key);
+    }
+
+    @Test
+    public void testLastKey2() {
+        testPut6();
+        trie.put(new StringSequence("too"), "too");
+        StringSequence key = trie.lastKey();
+        assertEquals(new StringSequence("too"), key);
+    }
+
+    @Test
+    public void testLastKey3() {
+        trie.put(null, "empty");
+        StringSequence key = trie.lastKey();
+        assertNull(key);
     }
 
     @Test
@@ -879,6 +913,96 @@ public class SortedListTrieTest {
         assertEquals(0, trie.size());
         assertTrue(trie.isEmpty());
         assertNull(trie.getRootNode());
+    }
+
+    @Test
+    public void testLowerEntryIfKeyIsNotContained() {
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(new StringSequence("foo"));
+        assertNull(entry);
+    }
+
+    @Test
+    public void testLowerEntryIfLowerKeyIsPrefix() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(new StringSequence("inn"));
+        assertNotNull(entry);
+        assertEquals(new StringSequence("in"), entry.getKey());
+        assertEquals("in", entry.getValue());
+    }
+
+    @Test
+    public void testLowerEntryIfLowerKeySharesPredecessor() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(new StringSequence("ted"));
+        assertNotNull(entry);
+        assertEquals(new StringSequence("tea"), entry.getKey());
+        assertEquals("tea", entry.getValue());
+    }
+
+    @Test
+    public void testLowerEntryIfLowerKeySharesPrefix() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(new StringSequence("tea"));
+        assertNotNull(entry);
+        assertEquals(new StringSequence("inn"), entry.getKey());
+        assertEquals("inn", entry.getValue());
+    }
+
+    @Test
+    public void testLowerEntryIfLowerKeyIsNotAvailable() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(new StringSequence("A"));
+        assertNull(entry);
+    }
+
+    @Test
+    public void testLowerEntryIfLowerKeyIsEmpty() {
+        testPutWithEmptyKey();
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(new StringSequence("A"));
+        assertNotNull(entry);
+        assertNull(entry.getKey());
+        assertEquals("empty", entry.getValue());
+    }
+
+    @Test
+    public void testLowerKeyIfKeyIsNotContained() {
+        StringSequence lowerKey = trie.lowerKey(new StringSequence("foo"));
+        assertNull(lowerKey);
+    }
+
+    @Test
+    public void testLowerKeyIfLowerKeyIsPrefix() {
+        testPut6();
+        StringSequence lowerKey = trie.lowerKey(new StringSequence("inn"));
+        assertEquals(new StringSequence("in"), lowerKey);
+    }
+
+    @Test
+    public void testLowerKeyIfLowerKeySharesPredecessor() {
+        testPut6();
+        StringSequence lowerKey = trie.lowerKey(new StringSequence("ted"));
+        assertEquals(new StringSequence("tea"), lowerKey);
+    }
+
+    @Test
+    public void testLowerKeyIfLowerKeySharesPrefix() {
+        testPut6();
+        StringSequence lowerKey = trie.lowerKey(new StringSequence("tea"));
+        assertEquals(new StringSequence("inn"), lowerKey);
+    }
+
+    @Test
+    public void testLowerKeyIfLowerKeyIsNotAvailable() {
+        testPut6();
+        StringSequence lowerKey = trie.lowerKey(new StringSequence("A"));
+        assertNull(lowerKey);
+    }
+
+    @Test
+    public void testLowerKeyIfLowerKeyIsEmpty() {
+        testPutWithEmptyKey();
+        StringSequence lowerKey = trie.lowerKey(new StringSequence("A"));
+        assertNull(lowerKey);
     }
 
     @Test

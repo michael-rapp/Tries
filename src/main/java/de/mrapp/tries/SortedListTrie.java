@@ -116,6 +116,22 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
         node.removeSuccessor(sequence);
     }
 
+    @Nullable
+    @Override
+    protected final Pair<Integer, SequenceType> indexOf(
+            @NotNull final Node<SequenceType, ValueType> node,
+            @NotNull final SequenceType sequence) {
+        SequenceType prefix = SequenceUtil.subsequence(sequence, 0, 1);
+        int index = node.indexOf(prefix);
+
+        if (index != -1) {
+            SequenceType suffix = SequenceUtil.subsequence(sequence, 1);
+            return Pair.create(index, suffix);
+        }
+
+        return null;
+    }
+
     @Override
     public final String toString() {
         return "SortedListTrie " + entrySet().toString();
