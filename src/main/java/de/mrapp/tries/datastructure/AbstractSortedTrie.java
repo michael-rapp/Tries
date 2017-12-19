@@ -165,37 +165,67 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @Override
     public final SequenceType lowerKey(final SequenceType key) {
         Entry<SequenceType, ValueType> entry = lowerEntry(key);
-        return entry != null ? entry.getKey() : null;
+
+        if (entry != null) {
+            return entry.getKey();
+        }
+
+        throw new NoSuchElementException();
     }
 
     @Override
     public final SequenceType higherKey(final SequenceType key) {
         Entry<SequenceType, ValueType> entry = higherEntry(key);
-        return entry != null ? entry.getKey() : null;
+
+        if (entry != null) {
+            return entry.getKey();
+        }
+
+        throw new NoSuchElementException();
     }
 
     @Override
     public final SequenceType floorKey(final SequenceType key) {
         Entry<SequenceType, ValueType> entry = floorEntry(key);
-        return entry != null ? entry.getKey() : null;
+
+        if (entry != null) {
+            return entry.getKey();
+        }
+
+        throw new NoSuchElementException();
     }
 
     @Override
     public final SequenceType ceilingKey(final SequenceType key) {
         Entry<SequenceType, ValueType> entry = ceilingEntry(key);
-        return entry != null ? entry.getKey() : null;
+
+        if (entry != null) {
+            return entry.getKey();
+        }
+
+        throw new NoSuchElementException();
     }
 
     @Override
     public final SequenceType firstKey() {
         Entry<SequenceType, ValueType> entry = firstEntry();
-        return entry != null ? entry.getKey() : null;
+
+        if (entry != null) {
+            return entry.getKey();
+        }
+
+        throw new NoSuchElementException();
     }
 
     @Override
     public final SequenceType lastKey() {
         Entry<SequenceType, ValueType> entry = lastEntry();
-        return entry != null ? entry.getKey() : null;
+
+        if (entry != null) {
+            return entry.getKey();
+        }
+
+        throw new NoSuchElementException();
     }
 
     @Override
@@ -304,8 +334,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @NotNull
     @Override
     public final SortedMap<SequenceType, ValueType> headMap(final SequenceType toKey) {
-        // TODO
-        return null;
+        return headMap(toKey, false);
     }
 
     @Override
@@ -318,8 +347,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @NotNull
     @Override
     public final SortedMap<SequenceType, ValueType> tailMap(final SequenceType fromKey) {
-        // TODO
-        return null;
+        return tailMap(fromKey, true);
     }
 
     @Override

@@ -687,6 +687,11 @@ public class SortedListTrieTest {
     }
 
     @Test
+    public void testFirstEntryIfTrieIsEmpty() {
+        assertNull(trie.firstEntry());
+    }
+
+    @Test
     public void testFirstEntry1() {
         testPut6();
         Map.Entry<StringSequence, String> entry = trie.firstEntry();
@@ -704,6 +709,11 @@ public class SortedListTrieTest {
         assertEquals("empty", entry.getValue());
     }
 
+    @Test(expected = NoSuchElementException.class)
+    public void testFirstKeyIfTrieIsEmpty() {
+        trie.firstKey();
+    }
+
     @Test
     public void testFirstKey1() {
         testPut6();
@@ -716,6 +726,11 @@ public class SortedListTrieTest {
         testPutWithEmptyKey();
         StringSequence key = trie.firstKey();
         assertNull(key);
+    }
+
+    @Test
+    public void testLastEntryIfTrieIsEmpty() {
+        assertNull(trie.lastEntry());
     }
 
     @Test
@@ -744,6 +759,11 @@ public class SortedListTrieTest {
         assertNotNull(entry);
         assertNull(entry.getKey());
         assertEquals("empty", entry.getValue());
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testLastKeyIfTrieIsNull() {
+        trie.lastKey();
     }
 
     @Test
@@ -964,10 +984,9 @@ public class SortedListTrieTest {
         assertEquals("empty", entry.getValue());
     }
 
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void testLowerKeyIfKeyIsNotContained() {
-        StringSequence lowerKey = trie.lowerKey(new StringSequence("foo"));
-        assertNull(lowerKey);
+        trie.lowerKey(new StringSequence("foo"));
     }
 
     @Test
@@ -991,11 +1010,10 @@ public class SortedListTrieTest {
         assertEquals(new StringSequence("inn"), lowerKey);
     }
 
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void testLowerKeyIfLowerKeyIsNotAvailable() {
         testPut6();
-        StringSequence lowerKey = trie.lowerKey(new StringSequence("A"));
-        assertNull(lowerKey);
+        trie.lowerKey(new StringSequence("A"));
     }
 
     @Test
