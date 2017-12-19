@@ -822,7 +822,6 @@ public class SortedListTrieTest {
         verifyRootNode(trie.getRootNode());
     }
 
-
     @Test
     public void testPollLastEntryIfTrieIsEmpty() {
         Map.Entry<StringSequence, String> removed = trie.pollLastEntry();
@@ -881,7 +880,6 @@ public class SortedListTrieTest {
         assertTrue(trie.isEmpty());
         assertNull(trie.getRootNode());
     }
-
 
     @Test
     public void testToString() {
