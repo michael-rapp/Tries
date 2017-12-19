@@ -693,6 +693,22 @@ public class SortedListTrieTest {
     }
 
     @Test
+    public void testLastEntry() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.lastEntry();
+        assertNotNull(entry);
+        assertEquals(new StringSequence("to"), entry.getKey());
+        assertEquals("to", entry.getValue());
+    }
+
+    @Test
+    public void testLastKey() {
+        testPut6();
+        StringSequence key = trie.lastKey();
+        assertEquals(new StringSequence("to"), key);
+    }
+
+    @Test
     public void testHashCode() {
         SortedListTrie<StringSequence, String> trie1 = new SortedListTrie<>();
         SortedListTrie<StringSequence, String> trie2 = new SortedListTrie<>();

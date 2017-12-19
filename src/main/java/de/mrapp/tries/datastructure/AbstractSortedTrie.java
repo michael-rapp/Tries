@@ -100,21 +100,17 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> firstEntry() {
-        Node<SequenceType, ValueType> rootNode = getRootNode();
+        Node<SequenceType, ValueType> currentNode = getRootNode();
+        SequenceType sequence = null;
 
-        if (rootNode != null) {
-            Node<SequenceType, ValueType> currentNode = rootNode;
-            SequenceType sequence = null;
+        while (currentNode != null && !currentNode.isValueSet()) {
+            SequenceType key = currentNode.getFirstSuccessorKey();
+            currentNode = currentNode.getFirstSuccessor();
+            sequence = SequenceUtil.concat(sequence, key);
+        }
 
-            while (currentNode != null && !currentNode.isValueSet()) {
-                SequenceType key = currentNode.getFirstSuccessorKey();
-                currentNode = currentNode.getFirstSuccessor();
-                sequence = SequenceUtil.concat(sequence, key);
-            }
-
-            if (currentNode != null && currentNode.isValueSet()) {
-                return new AbstractMap.SimpleImmutableEntry<>(sequence, currentNode.getValue());
-            }
+        if (currentNode != null && currentNode.isValueSet()) {
+            return new AbstractMap.SimpleImmutableEntry<>(sequence, currentNode.getValue());
         }
 
         return null;
@@ -122,7 +118,19 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> lastEntry() {
-        // TODO
+        Node<SequenceType, ValueType> currentNode = getRootNode();
+        SequenceType sequence = null;
+
+        while (currentNode != null && !currentNode.isValueSet()) {
+            SequenceType key = currentNode.getLastSuccessorKey();
+            currentNode = currentNode.getLastSuccessor();
+            sequence = SequenceUtil.concat(sequence, key);
+        }
+
+        if (currentNode != null && currentNode.isValueSet()) {
+            return new AbstractMap.SimpleImmutableEntry<>(sequence, currentNode.getValue());
+        }
+
         return null;
     }
 

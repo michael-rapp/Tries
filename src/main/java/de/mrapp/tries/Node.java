@@ -219,7 +219,7 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
     @Nullable
     default Node<KeyType, ValueType> getLastSuccessor() {
         int successorCount = getSuccessorCount();
-        return successorCount > 0 ? getSuccessor(successorCount) : null;
+        return successorCount > 0 ? getSuccessor(successorCount - 1) : null;
     }
 
     /**
