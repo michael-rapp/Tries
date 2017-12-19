@@ -36,6 +36,33 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      */
     protected final Comparator<SequenceType> comparator;
 
+    /**
+     * Returns the entry, which corresponds to the first or last entry of the trie.
+     *
+     * @param first True, if the first entry should be returned, false, if the last entry should be
+     *              returned.
+     * @return The entry, which corresponds to the first or last entry of the trie, depending on the
+     * given argument, or null, if the trie is empty
+     */
+    @Nullable
+    private Entry<SequenceType, ValueType> firstOrLastEntry(final boolean first) {
+        Node<SequenceType, ValueType> currentNode = rootNode;
+        SequenceType sequence = null;
+
+        while (currentNode != null && !currentNode.isValueSet()) {
+            SequenceType key =
+                    first ? currentNode.getFirstSuccessorKey() : currentNode.getLastSuccessorKey();
+            currentNode = first ? currentNode.getFirstSuccessor() : currentNode.getLastSuccessor();
+            sequence = SequenceUtil.concat(sequence, key);
+        }
+
+        if (currentNode != null && currentNode.isValueSet()) {
+            return new AbstractMap.SimpleImmutableEntry<>(sequence, currentNode.getValue());
+        }
+
+        return null;
+    }
+
     protected AbstractSortedTrie(@Nullable final Node<SequenceType, ValueType> node,
                                  @Nullable final Comparator<SequenceType> comparator) {
         super(node);
@@ -100,38 +127,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> firstEntry() {
-        Node<SequenceType, ValueType> currentNode = rootNode;
-        SequenceType sequence = null;
-
-        while (currentNode != null && !currentNode.isValueSet()) {
-            SequenceType key = currentNode.getFirstSuccessorKey();
-            currentNode = currentNode.getFirstSuccessor();
-            sequence = SequenceUtil.concat(sequence, key);
-        }
-
-        if (currentNode != null && currentNode.isValueSet()) {
-            return new AbstractMap.SimpleImmutableEntry<>(sequence, currentNode.getValue());
-        }
-
-        return null;
+        return firstOrLastEntry(true);
     }
 
     @Override
     public final Entry<SequenceType, ValueType> lastEntry() {
-        Node<SequenceType, ValueType> currentNode = rootNode;
-        SequenceType sequence = null;
-
-        while (currentNode != null && !currentNode.isValueSet()) {
-            SequenceType key = currentNode.getLastSuccessorKey();
-            currentNode = currentNode.getLastSuccessor();
-            sequence = SequenceUtil.concat(sequence, key);
-        }
-
-        if (currentNode != null && currentNode.isValueSet()) {
-            return new AbstractMap.SimpleImmutableEntry<>(sequence, currentNode.getValue());
-        }
-
-        return null;
+        return firstOrLastEntry(false);
     }
 
     @Override
