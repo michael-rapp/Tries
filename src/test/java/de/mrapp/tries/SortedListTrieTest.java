@@ -822,6 +822,67 @@ public class SortedListTrieTest {
         verifyRootNode(trie.getRootNode());
     }
 
+
+    @Test
+    public void testPollLastEntryIfTrieIsEmpty() {
+        Map.Entry<StringSequence, String> removed = trie.pollLastEntry();
+        assertNull(removed);
+        assertTrue(trie.isEmpty());
+        assertNull(trie.getRootNode());
+    }
+
+    @Test
+    public void testPollLastEntryIfKeyIsTheOnlyOne() {
+        testPut1();
+        String string = "tea";
+        Map.Entry<StringSequence, String> removed = trie.pollLastEntry();
+        assertNotNull(removed);
+        assertEquals(new StringSequence(string), removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(new StringSequence(string)));
+        assertNull(trie.getRootNode());
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+    }
+
+    @Test
+    public void testPollLastEntryIfKeyIsPrefix() {
+        testPut6();
+        trie.put(new StringSequence("too"), "too");
+        String string = "to";
+        Map.Entry<StringSequence, String> removed = trie.pollLastEntry();
+        assertNotNull(removed);
+        assertEquals(new StringSequence(string), removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(new StringSequence(string)));
+        assertEquals(6, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(trie.getRootNode());
+        verifySuccessors(trie.getRootNode(), "i", "t");
+        Node<StringSequence, String> successor = getSuccessor(trie.getRootNode(), "t");
+        verifySuccessors(successor, "e", "o");
+        successor = getSuccessor(successor, "o");
+        verifySuccessors(successor, "o");
+        successor = getSuccessor(successor, "o");
+        verifyLeaf(successor, "too");
+    }
+
+    @Test
+    public void testPollLastEntryIfKeyIsEmpty() {
+        String string = "empty";
+        trie.put(new StringSequence(""), string);
+        Map.Entry<StringSequence, String> removed = trie.pollLastEntry();
+        assertNotNull(removed);
+        assertNull(removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(new StringSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+        assertNull(trie.getRootNode());
+    }
+
+
     @Test
     public void testToString() {
         testPut3();
