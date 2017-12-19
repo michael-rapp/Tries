@@ -132,18 +132,54 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     }
 
     @Override
-    public final Entry<SequenceType, ValueType> lowerEntry(final SequenceType key) {
-        Node<SequenceType, ValueType> node = getNode(key);
-
-        if (node != null) {
-            // TODO
-        }
-
-        return null;
+    public final Comparator<? super SequenceType> comparator() {
+        return comparator;
     }
 
     @Override
     public final SequenceType lowerKey(final SequenceType key) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public final SequenceType higherKey(final SequenceType key) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public final SequenceType floorKey(final SequenceType key) {
+        return null;
+    }
+
+    @Override
+    public final SequenceType ceilingKey(final SequenceType key) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public final SequenceType firstKey() {
+        Entry<SequenceType, ValueType> entry = firstEntry();
+        return entry != null ? entry.getKey() : null;
+    }
+
+    @Override
+    public final SequenceType lastKey() {
+        Entry<SequenceType, ValueType> entry = lastEntry();
+        return entry != null ? entry.getKey() : null;
+    }
+
+    @Override
+    public final Entry<SequenceType, ValueType> lowerEntry(final SequenceType key) {
+        // TODO
+        return null;
+    }
+
+
+    @Override
+    public final Entry<SequenceType, ValueType> higherEntry(final SequenceType key) {
         // TODO
         return null;
     }
@@ -155,30 +191,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     }
 
     @Override
-    public final SequenceType floorKey(final SequenceType key) {
-        return null;
-    }
-
-    @Override
     public final Entry<SequenceType, ValueType> ceilingEntry(final SequenceType key) {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public final SequenceType ceilingKey(final SequenceType key) {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public final Entry<SequenceType, ValueType> higherEntry(final SequenceType key) {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public final SequenceType higherKey(final SequenceType key) {
         // TODO
         return null;
     }
@@ -203,6 +216,51 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         return pollFirstOrLastEntry(false);
     }
 
+    @NotNull
+    @Override
+    public final SortedMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
+                                                           final SequenceType toKey) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public final NavigableMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
+                                                              final boolean fromInclusive,
+                                                              final SequenceType toKey,
+                                                              final boolean toInclusive) {
+        // TODO
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public final SortedMap<SequenceType, ValueType> headMap(final SequenceType toKey) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public final NavigableMap<SequenceType, ValueType> headMap(final SequenceType toKey,
+                                                               final boolean inclusive) {
+        // TODO
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public final SortedMap<SequenceType, ValueType> tailMap(final SequenceType fromKey) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public final NavigableMap<SequenceType, ValueType> tailMap(final SequenceType fromKey,
+                                                               final boolean inclusive) {
+        // TODO
+        return null;
+    }
+
     @Override
     public final NavigableMap<SequenceType, ValueType> descendingMap() {
         // TODO
@@ -219,68 +277,6 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     public final NavigableSet<SequenceType> descendingKeySet() {
         // TODO
         return null;
-    }
-
-    @Override
-    public final NavigableMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
-                                                              final boolean fromInclusive,
-                                                              final SequenceType toKey,
-                                                              final boolean toInclusive) {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public final NavigableMap<SequenceType, ValueType> headMap(final SequenceType toKey,
-                                                               final boolean inclusive) {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public final NavigableMap<SequenceType, ValueType> tailMap(final SequenceType fromKey,
-                                                               final boolean inclusive) {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public final Comparator<? super SequenceType> comparator() {
-        return comparator;
-    }
-
-    @NotNull
-    @Override
-    public final SortedMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
-                                                           final SequenceType toKey) {
-        // TODO
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public final SortedMap<SequenceType, ValueType> headMap(final SequenceType toKey) {
-        // TODO
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public final SortedMap<SequenceType, ValueType> tailMap(final SequenceType fromKey) {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public final SequenceType firstKey() {
-        Entry<SequenceType, ValueType> entry = firstEntry();
-        return entry != null ? entry.getKey() : null;
-    }
-
-    @Override
-    public final SequenceType lastKey() {
-        Entry<SequenceType, ValueType> entry = lastEntry();
-        return entry != null ? entry.getKey() : null;
     }
 
 }
