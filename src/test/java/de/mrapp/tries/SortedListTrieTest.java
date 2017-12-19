@@ -1024,6 +1024,62 @@ public class SortedListTrieTest {
     }
 
     @Test
+    public void testHigherEntryIfKeyIsNotContained() {
+        Map.Entry<StringSequence, String> entry = trie.higherEntry(new StringSequence("foo"));
+        assertNull(entry);
+    }
+
+    @Test
+    public void testHigherEntryIfHigherKeySharesPrefix() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.higherEntry(new StringSequence("in"));
+        assertNotNull(entry);
+        assertEquals(new StringSequence("inn"), entry.getKey());
+        assertEquals("inn", entry.getValue());
+    }
+
+    @Test
+    public void testHigherEntryIfHigherKeySharesPredecessor() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.higherEntry(new StringSequence("inn"));
+        assertNotNull(entry);
+        assertEquals(new StringSequence("tea"), entry.getKey());
+        assertEquals("tea", entry.getValue());
+    }
+
+    @Test
+    public void testHigherEntryIfHigherKeyIsNotAvailable() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.higherEntry(new StringSequence("to"));
+        assertNull(entry);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testHigherKeyIfKeyIsNotContained() {
+        trie.higherKey(new StringSequence("foo"));
+    }
+
+    @Test
+    public void testHigherKeyIfHigherKeySharesPrefix() {
+        testPut6();
+        StringSequence key = trie.higherKey(new StringSequence("in"));
+        assertEquals(new StringSequence("inn"), key);
+    }
+
+    @Test
+    public void testHigherKeyIfHigherKeySharesPredecessor() {
+        testPut6();
+        StringSequence key = trie.higherKey(new StringSequence("inn"));
+        assertEquals(new StringSequence("tea"), key);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testHigherKeyIfHigherKeyIsNotAvailable() {
+        testPut6();
+        trie.higherKey(new StringSequence("to"));
+    }
+
+    @Test
     public void testToString() {
         testPut3();
         assertEquals("SortedListTrie [tea=tea, ted=ted, to=to]", trie.toString());

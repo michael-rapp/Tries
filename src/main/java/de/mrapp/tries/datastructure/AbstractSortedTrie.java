@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 
 public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueType> extends
         AbstractTrie<SequenceType, ValueType> implements SortedTrie<SequenceType, ValueType> {
@@ -142,6 +143,73 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         return result;
     }
 
+    /**
+     * Returns a stack, which contains all nodes, which must be traversed in order to reach the
+     * node, which corresponds to a specific key.
+     *
+     * @param key The key of the node, the path should be retrieved for, as an instance of the
+     *            generic type {@link SequenceType}
+     * @return A stack, which contains all nodes, which must be traversed in order to reach the
+     * node, which corresponds to the given key, as an instance of the type {@link Deque} or null,
+     * if no node with the given key is available
+     */
+    @Nullable
+    private Deque<Pair<Node<SequenceType, ValueType>, SequenceType>> getPathToNode(
+            final SequenceType key) {
+        if (rootNode != null) {
+            Deque<Pair<Node<SequenceType, ValueType>, SequenceType>> stack = new LinkedList<>();
+            Node<SequenceType, ValueType> currentNode = rootNode;
+            SequenceType suffix = key;
+            stack.push(Pair.create(currentNode, suffix));
+
+            while (suffix != null && !suffix.isEmpty()) {
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(currentNode,
+                        suffix);
+
+                if (pair == null) {
+                    return null;
+                } else {
+                    stack.push(Pair.create(currentNode, suffix));
+                    currentNode = pair.first;
+                    suffix = pair.second;
+                }
+            }
+
+            if (currentNode != null) {
+                stack.push(Pair.create(currentNode, null));
+                return stack;
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private Map.Entry<SequenceType, ValueType> getLowerOrHigherEntry(final SequenceType originalKey,
+                                                                     final Node<SequenceType, ValueType> node,
+                                                                     final SequenceType key,
+                                                                     @NotNull final Function<Integer, Integer> indexFunction,
+                                                                     final boolean higher) {
+        if (node.getSuccessorCount() > 1) {
+            Pair<Integer, SequenceType> indexPair = indexOf(node, key);
+
+            if (indexPair != null) {
+                int index = indexFunction.apply(indexPair.first);
+
+                if (index >= 0 && index < node.getSuccessorCount()) {
+                    Node<SequenceType, ValueType> successor = node.getSuccessor(index);
+                    SequenceType successorKey = node.getSuccessorKey(index);
+                    SequenceType prefix = SequenceUtil
+                            .subsequence(originalKey, 0, originalKey.length() - key.length());
+                    prefix = SequenceUtil.concat(prefix, successorKey);
+                    return firstOrLastEntry(successor, prefix, higher);
+                }
+            }
+        }
+
+        return null;
+    }
+
     @Nullable
     protected abstract Pair<Integer, SequenceType> indexOf(
             @NotNull final Node<SequenceType, ValueType> node,
@@ -230,45 +298,25 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> lowerEntry(final SequenceType key) {
-        if (rootNode != null) {
-            Deque<Pair<Node<SequenceType, ValueType>, SequenceType>> stack = new LinkedList<>();
-            Node<SequenceType, ValueType> currentNode = rootNode;
-            SequenceType suffix = key;
-            stack.push(Pair.create(currentNode, suffix));
+        Deque<Pair<Node<SequenceType, ValueType>, SequenceType>> stack = getPathToNode(key);
 
-            while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(currentNode,
-                        suffix);
+        if (stack != null) {
+            stack.pop();
 
-                if (pair == null) {
-                    return null;
-                } else {
-                    stack.push(Pair.create(currentNode, suffix));
-                    currentNode = pair.first;
-                    suffix = pair.second;
-                }
-            }
-
-            while (currentNode != null && !stack.isEmpty()) {
+            while (!stack.isEmpty()) {
                 Pair<Node<SequenceType, ValueType>, SequenceType> pair = stack.pop();
-                Node<SequenceType, ValueType> node = pair.first;
 
-                if (node.isValueSet()) {
+                if (pair.first.isValueSet()) {
                     SequenceType lowerKey = SequenceUtil
                             .subsequence(key, 0, key.length() - pair.second.length());
                     return new AbstractMap.SimpleImmutableEntry<>(
-                            lowerKey.isEmpty() ? null : lowerKey, node.getValue());
-                } else if (node.getSuccessorCount() > 1) {
-                    Pair<Integer, SequenceType> indexPair = indexOf(node, pair.second);
+                            lowerKey.isEmpty() ? null : lowerKey, pair.first.getValue());
+                } else {
+                    Map.Entry<SequenceType, ValueType> entry = getLowerOrHigherEntry(key,
+                            pair.first, pair.second, index -> index - 1, false);
 
-                    if (indexPair != null && indexPair.first > 0) {
-                        int index = indexPair.first - 1;
-                        Node<SequenceType, ValueType> successor = node.getSuccessor(index);
-                        SequenceType successorKey = node.getSuccessorKey(index);
-                        SequenceType prefix = SequenceUtil
-                                .subsequence(key, 0, key.length() - pair.second.length());
-                        prefix = SequenceUtil.concat(prefix, successorKey);
-                        return firstOrLastEntry(successor, prefix, false);
+                    if (entry != null) {
+                        return entry;
                     }
                 }
             }
@@ -277,10 +325,30 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         return null;
     }
 
-
     @Override
     public final Entry<SequenceType, ValueType> higherEntry(final SequenceType key) {
-        // TODO
+        Deque<Pair<Node<SequenceType, ValueType>, SequenceType>> stack = getPathToNode(key);
+
+        if (stack != null) {
+            Node<SequenceType, ValueType> node = stack.pop().first;
+
+            if (node.hasSuccessors()) {
+                Node<SequenceType, ValueType> successor = node.getFirstSuccessor();
+                SequenceType successorKey = node.getFirstSuccessorKey();
+                return firstOrLastEntry(successor, SequenceUtil.concat(key, successorKey), true);
+            } else {
+                while (!stack.isEmpty()) {
+                    Pair<Node<SequenceType, ValueType>, SequenceType> pair = stack.pop();
+                    Entry<SequenceType, ValueType> entry = getLowerOrHigherEntry(key, pair.first,
+                            pair.second, index -> index + 1, true);
+
+                    if (entry != null) {
+                        return entry;
+                    }
+                }
+            }
+        }
+
         return null;
     }
 
