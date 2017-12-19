@@ -66,6 +66,13 @@ public class StringTrieWrapperTest {
     }
 
     @Test
+    public final void testContainsKeyWithNullParameter() {
+        boolean containsKey = true;
+        when(trie.containsKey(null)).thenReturn(containsKey);
+        assertEquals(containsKey, trieWrapper.containsKey(null));
+    }
+
+    @Test
     public final void testContainsValue() {
         String value = "value";
         boolean containsValue = true;
@@ -82,6 +89,13 @@ public class StringTrieWrapperTest {
     }
 
     @Test
+    public final void testGetWithNullParameter() {
+        String value = "value";
+        when(trie.get(null)).thenReturn(value);
+        assertEquals(value, trieWrapper.get(null));
+    }
+
+    @Test
     public final void testPut() {
         String key = "key";
         String value = "value";
@@ -91,11 +105,26 @@ public class StringTrieWrapperTest {
     }
 
     @Test
+    public final void testPutWithNullParameter() {
+        String value = "value";
+        String previous = "previous";
+        when(trie.put(null, value)).thenReturn(previous);
+        assertEquals(previous, trieWrapper.put(null, value));
+    }
+
+    @Test
     public final void testRemove() {
         String key = "key";
         String value = "value";
         when(trie.remove(new StringSequence(key))).thenReturn(value);
         assertEquals(value, trieWrapper.remove(key));
+    }
+
+    @Test
+    public final void testRemoveWithNullParameter() {
+        String value = "value";
+        when(trie.remove(null)).thenReturn(value);
+        assertEquals(value, trieWrapper.remove(null));
     }
 
     @Test
@@ -130,10 +159,12 @@ public class StringTrieWrapperTest {
         Set<StringSequence> keySet = new HashSet<>();
         keySet.add(new StringSequence(key1));
         keySet.add(new StringSequence(key2));
+        keySet.add(null);
         when(trie.keySet()).thenReturn(keySet);
         Set<String> actualKeySet = trieWrapper.keySet();
         assertEquals(keySet.size(), actualKeySet.size());
-        assertTrue(keySet.stream().allMatch(x -> actualKeySet.contains(x.toString())));
+        assertTrue(keySet.stream()
+                .allMatch(x -> actualKeySet.contains(x != null ? x.toString() : null)));
     }
 
     @Test
@@ -151,16 +182,19 @@ public class StringTrieWrapperTest {
         String key2 = "key2";
         String value1 = "value1";
         String value2 = "value2";
+        String value3 = "value3";
         Set<Map.Entry<StringSequence, String>> entrySet = new HashSet<>();
         entrySet.add(new AbstractMap.SimpleImmutableEntry<>(
                 new StringSequence(key1), value1));
         entrySet.add(new AbstractMap.SimpleImmutableEntry<>(
                 new StringSequence(key2), value2));
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(null, value3));
         when(trie.entrySet()).thenReturn(entrySet);
         Set<Map.Entry<String, String>> actualEntrySet = trieWrapper.entrySet();
         assertTrue(entrySet.stream().allMatch(x -> actualEntrySet
                 .contains(
-                        new AbstractMap.SimpleImmutableEntry<String, String>(x.getKey().toString(),
+                        new AbstractMap.SimpleImmutableEntry<String, String>(
+                                x.getKey() != null ? x.getKey().toString() : null,
                                 x.getValue()))));
     }
 
