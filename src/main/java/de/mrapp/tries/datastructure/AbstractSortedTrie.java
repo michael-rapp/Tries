@@ -256,14 +256,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> floorEntry(final SequenceType key) {
-        // TODO
-        return null;
+        return lowerEntry(key);
     }
 
     @Override
     public final Entry<SequenceType, ValueType> ceilingEntry(final SequenceType key) {
-        // TODO
-        return null;
+        return higherEntry(key);
     }
 
     @Override
