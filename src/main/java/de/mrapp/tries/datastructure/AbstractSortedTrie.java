@@ -386,8 +386,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @Override
     public final SortedMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
                                                            final SequenceType toKey) {
-        // TODO
-        return null;
+        return subMap(fromKey, true, toKey, false);
     }
 
     @Override
@@ -439,8 +438,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final NavigableSet<SequenceType> descendingKeySet() {
-        // TODO
-        return null;
+        return descendingMap().navigableKeySet();
     }
 
 }
