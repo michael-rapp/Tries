@@ -18,7 +18,7 @@ import de.mrapp.tries.Trie;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * An unmodifiable and empty trie.
+ * An immutable and empty trie.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by trie

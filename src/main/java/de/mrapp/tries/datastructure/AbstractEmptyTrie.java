@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * An abstract base class for all unmodifiable and empty tries.
+ * An abstract base class for all immutable and empty tries.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by trie
