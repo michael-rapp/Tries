@@ -16,16 +16,795 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.Node;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.SortedTrie;
+import de.mrapp.tries.util.EntryUtil;
 import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
 
+import static de.mrapp.util.Condition.*;
+
 public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueType> extends
         AbstractTrie<SequenceType, ValueType> implements SortedTrie<SequenceType, ValueType> {
+
+    private static class KeySet<K extends Sequence> extends AbstractSet<K> implements
+            NavigableSet<K> {
+
+        private final NavigableMap<K, ?> map;
+
+        KeySet(@NotNull final NavigableMap<K, ?> map) {
+            ensureNotNull(map, "The map may not be null");
+            this.map = map;
+        }
+
+        @NotNull
+        @Override
+        public Iterator<K> iterator() {
+            // TODO
+            return null;
+        }
+
+        @NotNull
+        @Override
+        public Iterator<K> descendingIterator() {
+            // TODO
+            return null;
+        }
+
+        @Override
+        public int size() {
+            return map.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return map.isEmpty();
+        }
+
+        @SuppressWarnings("SuspiciousMethodCalls")
+        @Override
+        public boolean contains(final Object o) {
+            return map.containsKey(o);
+        }
+
+        @Override
+        public void clear() {
+            map.clear();
+        }
+
+        @Override
+        public K lower(final K e) {
+            return map.lowerKey(e);
+        }
+
+        @Override
+        public K floor(final K e) {
+            return map.floorKey(e);
+        }
+
+        @Override
+        public K ceiling(final K e) {
+            return map.ceilingKey(e);
+        }
+
+        @Override
+        public K higher(final K e) {
+            return map.higherKey(e);
+        }
+
+        @Override
+        public K first() {
+            return map.firstKey();
+        }
+
+        @Override
+        public K last() {
+            return map.lastKey();
+        }
+
+        @Override
+        public Comparator<? super K> comparator() {
+            return map.comparator();
+        }
+
+        @Override
+        public K pollFirst() {
+            return EntryUtil.getKey(map.pollFirstEntry());
+        }
+
+        @Override
+        public K pollLast() {
+            return EntryUtil.getKey(map.pollLastEntry());
+        }
+
+        @Override
+        public boolean remove(final Object o) {
+            int oldSize = size();
+            map.remove(o);
+            return size() != oldSize;
+        }
+
+        @NotNull
+        @Override
+        public NavigableSet<K> subSet(final K fromElement, final boolean fromInclusive,
+                                      final K toElement, final boolean toInclusive) {
+            return new KeySet<>(map.subMap(fromElement, fromInclusive, toElement, toInclusive));
+        }
+
+        @NotNull
+        @Override
+        public NavigableSet<K> headSet(final K toElement, final boolean inclusive) {
+            return new KeySet<>(map.headMap(toElement, inclusive));
+        }
+
+        @NotNull
+        @Override
+        public NavigableSet<K> tailSet(final K fromElement, final boolean inclusive) {
+            return new KeySet<>(map.tailMap(fromElement, inclusive));
+        }
+
+        @NotNull
+        @Override
+        public SortedSet<K> subSet(final K fromElement, final K toElement) {
+            return subSet(fromElement, true, toElement, false);
+        }
+
+        @NotNull
+        @Override
+        public SortedSet<K> headSet(final K toElement) {
+            return headSet(toElement, false);
+        }
+
+        @NotNull
+        @Override
+        public SortedSet<K> tailSet(final K fromElement) {
+            return tailSet(fromElement, true);
+        }
+
+        @NotNull
+        @Override
+        public NavigableSet<K> descendingSet() {
+            return new KeySet<>(map.descendingMap());
+        }
+
+        @Override
+        public Spliterator<K> spliterator() {
+            // TODO
+            return null;
+        }
+
+    }
+
+    private abstract static class AbstractSubMap<K extends Sequence, V> extends
+            AbstractMap<K, V> implements NavigableMap<K, V>, Serializable {
+
+        protected abstract class AbstractEntrySet extends AbstractSet<Map.Entry<K, V>> {
+
+            private transient int size = -1;
+
+            private transient long sizeModificationCount;
+
+            @SuppressWarnings("unchecked")
+            private K getKey(final Object o) {
+                if (!(o instanceof Map.Entry))
+                    return null;
+                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
+                K key = (K) entry.getKey();
+                if (!isInRange(key))
+                    return null;
+                Node<K, V> node = trie.getNode(key);
+                if (node == null)
+                    return null;
+                if (node.getValue() == null) {
+                    if (entry.getValue() != null)
+                        return null;
+                } else if (!node.getValue().equals(entry.getValue()))
+                    return null;
+                return key;
+            }
+
+            @Override
+            public final int size() {
+                if (fromStart && toEnd) {
+                    return trie.size();
+                } else if (size == -1 || sizeModificationCount != trie.modificationCount) {
+                    sizeModificationCount = trie.modificationCount;
+                    size = 0;
+
+                    for (Object ignored : this) {
+                        size++;
+                    }
+                }
+
+                return size;
+            }
+
+            @Override
+            public final boolean isEmpty() {
+                Map.Entry<K, V> entry = getLowestEntry();
+                return entry == null || isTooHigh(entry.getKey());
+            }
+
+            @Override
+            public final boolean contains(final Object o) {
+                return getKey(o) != null;
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                Optional<K> optional = Optional.ofNullable(getKey(o));
+                optional.ifPresent(trie::remove);
+                return optional.isPresent();
+            }
+
+        }
+
+        protected abstract class AbstractIterator implements Iterator<Map.Entry<K, V>> {
+
+            final Object fenceKey;
+            long modificationCount;
+            Map.Entry<K, V> lastReturned;
+            Map.Entry<K, V> next;
+
+            AbstractIterator(@Nullable final Map.Entry<K, V> first,
+                             @Nullable final Map.Entry<K, V> fence) {
+                this.fenceKey = fence != null ? fence.getKey() : UNBOUND_KEY;
+                this.modificationCount = trie.modificationCount;
+                this.next = first;
+                this.lastReturned = null;
+            }
+
+            @Override
+            public final boolean hasNext() {
+                return next != null && next.getKey() != fenceKey;
+            }
+
+            @Override
+            public final void remove() {
+                ensureNotNull(lastReturned, null, IllegalStateException.class);
+                ensureEqual(modificationCount, trie.modificationCount, null,
+                        ConcurrentModificationException.class);
+                trie.remove(lastReturned.getKey());
+                lastReturned = null;
+                modificationCount = trie.modificationCount;
+            }
+
+        }
+
+        /**
+         * The constant serial version UID.
+         */
+        private static final long serialVersionUID = 2179020779953916850L;
+
+        private static final Object UNBOUND_KEY = new Object();
+
+        /**
+         * The backing trie.
+         */
+        protected final AbstractSortedTrie<K, V> trie;
+
+        private final KeyComparator<K> comparator;
+
+        final K fromKey, toKey;
+        final boolean fromStart, toEnd;
+        final boolean fromInclusive, toInclusive;
+
+        private boolean isTooLow(@NotNull final K key) {
+            if (!fromStart) {
+                int c = comparator.compare(key, fromKey);
+                return c < 0 || (c == 0 && !fromInclusive);
+            }
+
+            return false;
+        }
+
+        private boolean isTooHigh(@NotNull final K key) {
+            if (!toEnd) {
+                int c = comparator.compare(key, toKey);
+                return c > 0 || (c == 0 && !toInclusive);
+            }
+
+            return false;
+        }
+
+        private boolean isInRange(@NotNull final K key) {
+            return !isTooLow(key) && !isTooHigh(key);
+        }
+
+        private boolean isInClosedRange(@NotNull final K key) {
+            return (fromStart || comparator.compare(key, fromKey) >= 0) &&
+                    (toEnd || comparator.compare(toKey, key) >= 0);
+        }
+
+        final boolean isInRange(@NotNull final K key, final boolean inclusive) {
+            return inclusive ? isInRange(key) : isInClosedRange(key);
+        }
+
+        @Nullable
+        final Map.Entry<K, V> getLowestEntry() {
+            Map.Entry<K, V> entry =
+                    (fromStart ? trie.firstEntry() :
+                            (fromInclusive ? trie.ceilingEntry(fromKey) :
+                                    trie.higherEntry(fromKey)));
+            return (entry == null || isTooHigh(entry.getKey())) ? null : entry;
+        }
+
+        @Nullable
+        final Map.Entry<K, V> getHighestEntry() {
+            Map.Entry<K, V> entry =
+                    (toEnd ? trie.lastEntry() :
+                            (toInclusive ? trie.floorEntry(toKey) :
+                                    trie.lowerEntry(toKey)));
+            return (entry == null || isTooLow(entry.getKey())) ? null : entry;
+        }
+
+        @Nullable
+        final Map.Entry<K, V> getCeilingEntry(@NotNull final K key) {
+            if (isTooLow(key)) {
+                return getLowestEntry();
+            }
+
+            Map.Entry<K, V> entry = trie.ceilingEntry(key);
+            return (entry == null || isTooHigh(entry.getKey())) ? null : entry;
+        }
+
+        @Nullable
+        final Map.Entry<K, V> getHigherEntry(@NotNull final K key) {
+            if (isTooLow(key)) {
+                return getLowestEntry();
+            }
+
+            Map.Entry<K, V> entry = trie.higherEntry(key);
+            return (entry == null || isTooHigh(entry.getKey())) ? null : entry;
+        }
+
+        @Nullable
+        final Map.Entry<K, V> getFloorEntry(@NotNull final K key) {
+            if (isTooHigh(key)) {
+                return getHighestEntry();
+            }
+
+            Map.Entry<K, V> entry = trie.floorEntry(key);
+            return (entry == null || isTooLow(entry.getKey())) ? null : entry;
+        }
+
+        @Nullable
+        final Map.Entry<K, V> getLowerKey(@NotNull final K key) {
+            if (isTooHigh(key)) {
+                return getHighestEntry();
+            }
+
+            Map.Entry<K, V> entry = trie.lowerEntry(key);
+            return (entry == null || isTooLow(entry.getKey())) ? null : entry;
+        }
+
+        /**
+         * Returns the absolute high fence for ascending traversal
+         */
+        @Nullable
+        final Map.Entry<K, V> getHighFence() {
+            return (toEnd ? null :
+                    (toInclusive ? trie.higherEntry(toKey) : trie.ceilingEntry(toKey)));
+        }
+
+        /**
+         * Return the absolute low protected fence for descending traversal
+         */
+        @Nullable
+        final Map.Entry<K, V> getLowFence() {
+            return (fromStart ? null : (fromInclusive ? trie.lowerEntry(fromKey) : trie.floorEntry(
+                    fromKey)));
+        }
+
+        protected abstract Map.Entry<K, V> onGetLowestEntry();
+
+        protected abstract Map.Entry<K, V> onGetHighestEntry();
+
+        protected abstract Map.Entry<K, V> onGetCeilingEntry(@NotNull final K key);
+
+        protected abstract Map.Entry<K, V> onGetHigherEntry(@NotNull final K key);
+
+        protected abstract Map.Entry<K, V> onGetFloorEntry(@NotNull final K key);
+
+        protected abstract Map.Entry<K, V> onGetLowerEntry(@NotNull final K key);
+
+        AbstractSubMap(@NotNull final AbstractSortedTrie<K, V> trie,
+                       final boolean fromStart, @Nullable final K fromKey,
+                       final boolean fromInclusive, final boolean toEnd, @Nullable final K toKey,
+                       final boolean toInclusive) {
+            this.trie = trie;
+            this.comparator = new KeyComparator<>(trie.comparator());
+
+            if (!fromStart && !toEnd && comparator.compare(fromKey, toKey) > 0) {
+                throw new IllegalArgumentException("fromKey > toKey");
+            }
+
+            this.fromStart = fromStart;
+            this.fromKey = fromKey;
+            this.fromInclusive = fromInclusive;
+            this.toEnd = toEnd;
+            this.toKey = toKey;
+            this.toInclusive = toInclusive;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return (fromStart && toEnd) ? trie.isEmpty() : entrySet().isEmpty();
+        }
+
+        @Override
+        public int size() {
+            return (fromStart && toEnd) ? trie.size() : entrySet().size();
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public boolean containsKey(final Object key) {
+            return isInRange((K) key) && trie.containsKey(key);
+        }
+
+        @Override
+        public V put(final K key, final V value) {
+            ensureTrue(isInRange(key), "Key out of range");
+            return trie.put(key, value);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public V get(final Object key) {
+            return !isInRange((K) key) ? null : trie.get(key);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public V remove(final Object key) {
+            return !isInRange((K) key) ? null : trie.remove(key);
+        }
+
+        @Override
+        public Map.Entry<K, V> ceilingEntry(final K key) {
+            return onGetCeilingEntry(key);
+        }
+
+        @Override
+        public K ceilingKey(final K key) {
+            return EntryUtil.getKey(onGetCeilingEntry(key));
+        }
+
+        @Override
+        public Map.Entry<K, V> higherEntry(final K key) {
+            return onGetHigherEntry(key);
+        }
+
+        @Override
+        public K higherKey(final K key) {
+            return EntryUtil.getKey(onGetHigherEntry(key));
+        }
+
+        @Override
+        public Map.Entry<K, V> floorEntry(final K key) {
+            return onGetFloorEntry(key);
+        }
+
+        @Override
+        public K floorKey(final K key) {
+            return EntryUtil.getKey(onGetFloorEntry(key));
+        }
+
+        @Override
+        public Map.Entry<K, V> lowerEntry(final K key) {
+            return onGetLowerEntry(key);
+        }
+
+        @Override
+        public K lowerKey(final K key) {
+            return EntryUtil.getKey(onGetLowerEntry(key));
+        }
+
+        @Override
+        public K firstKey() {
+            return EntryUtil.getKeyOrThrowException(onGetLowestEntry());
+        }
+
+        @Override
+        public K lastKey() {
+            return EntryUtil.getKeyOrThrowException(onGetHighestEntry());
+        }
+
+        @Override
+        public Map.Entry<K, V> firstEntry() {
+            return onGetLowestEntry();
+        }
+
+        @Override
+        public Map.Entry<K, V> lastEntry() {
+            return onGetHighestEntry();
+        }
+
+        @Override
+        public Map.Entry<K, V> pollFirstEntry() {
+            Map.Entry<K, V> entry = onGetLowestEntry();
+
+            if (entry != null) {
+                trie.remove(entry.getKey());
+            }
+
+            return entry;
+        }
+
+        @Override
+        public Map.Entry<K, V> pollLastEntry() {
+            Map.Entry<K, V> entry = onGetHighestEntry();
+
+            if (entry != null) {
+                trie.remove(entry.getKey());
+            }
+
+            return entry;
+        }
+
+        @NotNull
+        @Override
+        public Set<K> keySet() {
+            return navigableKeySet();
+        }
+
+        @Override
+        public NavigableSet<K> descendingKeySet() {
+            return descendingMap().navigableKeySet();
+        }
+
+        @NotNull
+        @Override
+        public SortedMap<K, V> subMap(final K fromKey, final K toKey) {
+            return subMap(fromKey, true, toKey, false);
+        }
+
+        @NotNull
+        @Override
+        public SortedMap<K, V> headMap(final K toKey) {
+            return headMap(toKey, false);
+        }
+
+        @NotNull
+        @Override
+        public SortedMap<K, V> tailMap(final K fromKey) {
+            return tailMap(fromKey, true);
+        }
+
+        @NotNull
+        @Override
+        public NavigableSet<K> navigableKeySet() {
+            return new KeySet<>(this);
+        }
+
+    }
+
+    private static class AscendingSubMap<K extends Sequence, V> extends AbstractSubMap<K, V> {
+
+        private class EntrySet extends AbstractEntrySet {
+
+            @NotNull
+            @Override
+            public Iterator<Entry<K, V>> iterator() {
+                return new AbstractIterator(getLowestEntry(), getHighFence()) {
+
+                    @Override
+                    public Map.Entry<K, V> next() {
+                        ensureEqual(modificationCount, trie.modificationCount, null,
+                                ConcurrentModificationException.class);
+                        ensureNotNull(next, null, NoSuchElementException.class);
+                        ensureFalse(next.getKey() == fenceKey, null, NoSuchElementException.class);
+                        Map.Entry<K, V> entry = next;
+                        next = trie.higherEntry(entry.getKey());
+                        lastReturned = entry;
+                        return entry;
+                    }
+
+                };
+            }
+
+        }
+
+        /**
+         * The constant serial version UID.
+         */
+        private static final long serialVersionUID = 5937476665504869649L;
+
+        AscendingSubMap(@NotNull final AbstractSortedTrie<K, V> trie, final boolean fromStart,
+                        @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
+                        @Nullable final K toKey, final boolean toInclusive) {
+            super(trie, fromStart, fromKey, fromInclusive, toEnd, toKey, toInclusive);
+        }
+
+        @Override
+        public Comparator<? super K> comparator() {
+            return trie.comparator();
+        }
+
+        @Override
+        public NavigableMap<K, V> subMap(final K fromKey, final boolean fromInclusive,
+                                         final K toKey, final boolean toInclusive) {
+            ensureTrue(isInRange(fromKey, fromInclusive), "fromKey out of range");
+            ensureTrue(isInRange(toKey, toInclusive), "toKey out of range");
+            return new AscendingSubMap<>(trie, false, fromKey, fromInclusive, false, toKey,
+                    toInclusive);
+        }
+
+        @Override
+        public NavigableMap<K, V> headMap(final K to, final boolean inclusive) {
+            ensureTrue(isInRange(to, inclusive), "Key out of range");
+            return new AscendingSubMap<>(trie, fromStart, fromKey, fromInclusive, false, to,
+                    inclusive);
+        }
+
+        @Override
+        public NavigableMap<K, V> tailMap(final K from, final boolean inclusive) {
+            ensureTrue(isInRange(from, inclusive), "Key out of range");
+            return new AscendingSubMap<>(trie, false, from, inclusive, toEnd, toKey, toInclusive);
+        }
+
+        @Override
+        public NavigableMap<K, V> descendingMap() {
+            return new DescendingSubMap<>(trie, fromStart, fromKey, fromInclusive, toEnd, toKey,
+                    toInclusive);
+        }
+
+        @NotNull
+        @Override
+        public Set<Map.Entry<K, V>> entrySet() {
+            return new EntrySet();
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetLowestEntry() {
+            return getLowestEntry();
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetHighestEntry() {
+            return getHighestEntry();
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetCeilingEntry(@NotNull final K key) {
+            return getCeilingEntry(key);
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetHigherEntry(@NotNull final K key) {
+            return getHigherEntry(key);
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetFloorEntry(@NotNull final K key) {
+            return getFloorEntry(key);
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetLowerEntry(@NotNull final K key) {
+            return getLowerKey(key);
+        }
+
+    }
+
+    private static final class DescendingSubMap<K extends Sequence, V> extends
+            AbstractSubMap<K, V> {
+
+        private class EntrySet extends AbstractEntrySet {
+
+            @NotNull
+            @Override
+            public Iterator<Map.Entry<K, V>> iterator() {
+                return new AbstractIterator(getHighestEntry(), getLowFence()) {
+
+                    @Override
+                    public Entry<K, V> next() {
+                        ensureEqual(modificationCount, trie.modificationCount, null,
+                                ConcurrentModificationException.class);
+                        ensureNotNull(next, null, NoSuchElementException.class);
+                        ensureFalse(next.getKey() == fenceKey, null, NoSuchElementException.class);
+                        Map.Entry<K, V> entry = next;
+                        next = trie.lowerEntry(entry.getKey());
+                        lastReturned = entry;
+                        return entry;
+                    }
+
+                };
+            }
+
+        }
+
+        /**
+         * The constant serial version UID.
+         */
+        private static final long serialVersionUID = 912986545866120460L;
+
+        private final Comparator<? super K> reverseComparator;
+
+        DescendingSubMap(@NotNull final AbstractSortedTrie<K, V> trie,
+                         final boolean fromStart, @Nullable final K fromKey,
+                         final boolean fromInclusive, final boolean toEnd, @Nullable final K toKey,
+                         final boolean toInclusive) {
+            super(trie, fromStart, fromKey, fromInclusive, toEnd, toKey, toInclusive);
+            this.reverseComparator =
+                    trie.comparator() != null ? Collections.reverseOrder(trie.comparator()) : null;
+        }
+
+        @Override
+        public Comparator<? super K> comparator() {
+            return reverseComparator;
+        }
+
+        @Override
+        public NavigableMap<K, V> subMap(final K fromKey, final boolean fromInclusive,
+                                         final K toKey, final boolean toInclusive) {
+            ensureTrue(isInRange(fromKey, fromInclusive), "fromKey out of range");
+            ensureTrue(isInRange(toKey, toInclusive), "fromKey out of range");
+            return new DescendingSubMap<>(trie, false, toKey, toInclusive, false, fromKey,
+                    fromInclusive);
+        }
+
+        @Override
+        public NavigableMap<K, V> headMap(final K to, final boolean inclusive) {
+            ensureTrue(isInRange(to, inclusive), "Key out of range");
+            return new DescendingSubMap<>(trie, false, to, inclusive, toEnd, toKey, toInclusive);
+        }
+
+        @Override
+        public NavigableMap<K, V> tailMap(final K from, final boolean inclusive) {
+            ensureTrue(isInRange(from, inclusive), "Key out of range");
+            return new DescendingSubMap<>(trie, fromStart, fromKey, fromInclusive, false, from,
+                    inclusive);
+        }
+
+        @Override
+        public NavigableMap<K, V> descendingMap() {
+            return new AscendingSubMap<>(trie, fromStart, fromKey, fromInclusive, toEnd, toKey,
+                    toInclusive);
+        }
+
+        @NotNull
+        @Override
+        public Set<Map.Entry<K, V>> entrySet() {
+            return new EntrySet();
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetLowestEntry() {
+            return getHighestEntry();
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetHighestEntry() {
+            return getLowestEntry();
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetCeilingEntry(@NotNull final K key) {
+            return getFloorEntry(key);
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetHigherEntry(@NotNull final K key) {
+            return getLowerKey(key);
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetFloorEntry(@NotNull final K key) {
+            return getCeilingEntry(key);
+        }
+
+        @Override
+        protected Map.Entry<K, V> onGetLowerEntry(@NotNull final K key) {
+            return getHigherEntry(key);
+        }
+
+    }
 
     /**
      * The constant serial version UID.
@@ -36,7 +815,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * The comparator, which is used to compare sequences to each other, or null, if the natural
      * order of the sequences is used.
      */
-    protected final Comparator<SequenceType> comparator;
+    protected final Comparator<? super SequenceType> comparator;
 
     /**
      * Returns the entry, which corresponds to the first or last entry of the trie.
@@ -216,7 +995,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             @NotNull final SequenceType sequence);
 
     protected AbstractSortedTrie(@Nullable final Node<SequenceType, ValueType> node,
-                                 @Nullable final Comparator<SequenceType> comparator) {
+                                 @Nullable final Comparator<? super SequenceType> comparator) {
         super(node);
         this.comparator = comparator;
     }
@@ -389,13 +1168,14 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         return subMap(fromKey, true, toKey, false);
     }
 
+    @NotNull
     @Override
     public final NavigableMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
                                                               final boolean fromInclusive,
                                                               final SequenceType toKey,
                                                               final boolean toInclusive) {
-        // TODO
-        return null;
+        return new AscendingSubMap<>(this, false, fromKey, fromInclusive, false, toKey,
+                toInclusive);
     }
 
     @NotNull
@@ -404,11 +1184,11 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         return headMap(toKey, false);
     }
 
+    @NotNull
     @Override
     public final NavigableMap<SequenceType, ValueType> headMap(final SequenceType toKey,
                                                                final boolean inclusive) {
-        // TODO
-        return null;
+        return new AscendingSubMap<>(this, true, null, true, false, toKey, inclusive);
     }
 
     @NotNull
@@ -420,20 +1200,18 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @Override
     public final NavigableMap<SequenceType, ValueType> tailMap(final SequenceType fromKey,
                                                                final boolean inclusive) {
-        // TODO
-        return null;
+        return new AscendingSubMap<>(this, false, fromKey, inclusive, true, null, true);
     }
 
+    @NotNull
     @Override
     public final NavigableMap<SequenceType, ValueType> descendingMap() {
-        // TODO
-        return null;
+        return new DescendingSubMap<>(this, true, null, true, true, null, true);
     }
 
     @Override
     public final NavigableSet<SequenceType> navigableKeySet() {
-        // TODO
-        return null;
+        return new KeySet<>(this);
     }
 
     @Override

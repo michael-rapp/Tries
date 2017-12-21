@@ -186,9 +186,9 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
     private static final long serialVersionUID = -9049598420902876017L;
 
-    protected Node<SequenceType, ValueType> rootNode;
+    Node<SequenceType, ValueType> rootNode;
 
-    protected long modificationCount;
+    long modificationCount;
 
     @NotNull
     protected abstract Node<SequenceType, ValueType> createRootNode();

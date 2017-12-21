@@ -37,41 +37,6 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
         RandomAccess {
 
     /**
-     * A comparator, which allows to compare keys to each other.
-     *
-     * @param <K> The type of the keys
-     */
-    private static class KeyComparator<K> implements Comparator<K> {
-
-        /**
-         * The comparator, which is used to compare keys.
-         */
-        private final Comparator<K> comparator;
-
-        /**
-         * Creates a new comparator, which allows to compare keys to each other.
-         *
-         * @param comparator The comparator, which should be used to compare keys, as an instance of
-         *                   the type {@link Comparator} or null, if the natural order of the keys
-         *                   should be used
-         */
-        KeyComparator(@Nullable final Comparator<K> comparator) {
-            this.comparator = comparator;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public int compare(final K o1, final K o2) {
-            if (comparator != null) {
-                return comparator.compare(o1, o2);
-            } else {
-                return ((Comparable<K>) o1).compareTo(o2);
-            }
-        }
-
-    }
-
-    /**
      * A directed edge, which references a successor of a node.
      *
      * @param <K> The type of the key, the successor corresponds to
@@ -111,7 +76,7 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
          *                   the natural order of the keys should be used
          */
         Edge(@NotNull final K key, @NotNull final Node<K, V> successor,
-             @Nullable final Comparator<K> comparator) {
+             @Nullable final Comparator<? super K> comparator) {
             ensureNotNull(key, "The key may not be null");
             ensureNotNull(successor, "The successor may not be null");
             this.key = key;
@@ -167,7 +132,7 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
      * The comparator, which is used to compare the successors of the node to each other, or null,
      * if the natural order of the successors' keys is used.
      */
-    private final Comparator<KeyType> comparator;
+    private final Comparator<? super KeyType> comparator;
 
     /**
      * Creates a new node of a trie, which stores its successors in a sorted list.
@@ -176,7 +141,7 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
      *                   other, as an instance of the type {@link Comparator} or null, if the
      *                   natural order of the successors' keys should be used
      */
-    public SortedListNode(@Nullable final Comparator<KeyType> comparator) {
+    public SortedListNode(@Nullable final Comparator<? super KeyType> comparator) {
         this.successors = new SortedArrayList<>();
         this.comparator = comparator;
     }

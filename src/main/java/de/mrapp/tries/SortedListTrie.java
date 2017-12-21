@@ -32,7 +32,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
     private static final long serialVersionUID = -1139777657107659140L;
 
     private SortedListTrie(@Nullable final Node<SequenceType, ValueType> node,
-                           @Nullable final Comparator<SequenceType> comparator) {
+                           @Nullable final Comparator<? super SequenceType> comparator) {
         super(node, comparator);
     }
 
