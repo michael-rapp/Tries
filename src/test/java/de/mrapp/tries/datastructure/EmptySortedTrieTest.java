@@ -246,4 +246,9 @@ public class EmptySortedTrieTest {
         trie.subTree(new StringSequence("foo"));
     }
 
+    @Test
+    public final void testToString() {
+        assertEquals("EmptySortedTrie[]", trie.toString());
+    }
+
 }

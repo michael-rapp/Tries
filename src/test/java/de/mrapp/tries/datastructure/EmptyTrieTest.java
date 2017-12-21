@@ -106,4 +106,9 @@ public class EmptyTrieTest {
         trie.subTree(new StringSequence("foo"));
     }
 
+    @Test
+    public final void testToString() {
+        assertEquals("EmptyTrie[]", trie.toString());
+    }
+
 }

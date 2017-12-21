@@ -190,4 +190,9 @@ public class SingletonSortedTrie<SequenceType extends Sequence, ValueType> exten
         throw new NoSuchElementException();
     }
 
+    @Override
+    public final String toString() {
+        return "SingletonSortedTrie[" + key + "=" + value + "]";
+    }
+
 }

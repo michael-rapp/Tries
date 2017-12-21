@@ -140,4 +140,9 @@ public class SingletonTrieTest {
         trie.subTree(new StringSequence("nop"));
     }
 
+    @Test
+    public final void testToString() {
+        assertEquals("SingletonTrie[foo=bar]", trie.toString());
+    }
+
 }

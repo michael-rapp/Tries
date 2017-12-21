@@ -58,4 +58,9 @@ public class SingletonTrie<SequenceType extends Sequence, ValueType> extends
         throw new NoSuchElementException();
     }
 
+    @Override
+    public final String toString() {
+        return "SingletonTrie[" + key + "=" + value + "]";
+    }
+
 }

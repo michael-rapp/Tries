@@ -171,4 +171,9 @@ public class EmptySortedTrie<SequenceType extends Sequence, ValueType> extends
         throw new NoSuchElementException();
     }
 
+    @Override
+    public final String toString() {
+        return "EmptySortedTrie[]";
+    }
+
 }
