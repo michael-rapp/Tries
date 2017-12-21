@@ -117,4 +117,13 @@ public class TriesTest {
         verify(trie, times(1)).isEmpty();
     }
 
+    @Test
+    public final void testUnmodifiableSortedTrie() {
+        SortedTrie<StringSequence, String> trie = mock(SortedTrie.class);
+        SortedTrie<StringSequence, String> unmodifiableTrie = Tries.unmodifiableSortedTrie(trie);
+        assertTrue(unmodifiableTrie instanceof UnmodifiableSortedTrie);
+        unmodifiableTrie.isEmpty();
+        verify(trie, times(1)).isEmpty();
+    }
+
 }

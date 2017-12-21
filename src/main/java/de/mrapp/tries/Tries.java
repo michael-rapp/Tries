@@ -220,4 +220,25 @@ public final class Tries {
         return new UnmodifiableTrie<>(trie);
     }
 
+    /**
+     * Returns an unmodifiable view of a specific {@link SortedTrie}. This method allows modules to
+     * provide users with "read-only" access to internal tries. Query operations on the returned
+     * trie "read through" to the specified trie, whereas attempts to modify the returned trie
+     * result in an {@link UnsupportedOperationException}.
+     *
+     * The returned trie will be serializable if the specified trie is serializable.
+     *
+     * @param <K>  The type of the sequences, which are used as the trie's keys
+     * @param <V>  The type of the values, which are stored by trie
+     * @param trie The trie for which an unmodifiable view should be returned as an instance of the
+     *             type {@link SortedTrie}. The trie may not be null
+     * @return An unmodifiable view of the given trie as an instance of the type {@link SortedTrie}.
+     * The view may not be null
+     */
+    @NotNull
+    public static <K extends Sequence, V> SortedTrie<K, V> unmodifiableSortedTrie(
+            @NotNull final SortedTrie<K, V> trie) {
+        return new UnmodifiableSortedTrie<>(trie);
+    }
+
 }
