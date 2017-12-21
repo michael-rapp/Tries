@@ -13,11 +13,9 @@
  */
 package de.mrapp.tries;
 
-import de.mrapp.tries.datastructure.EmptySortedTrie;
-import de.mrapp.tries.datastructure.EmptyTrie;
-import de.mrapp.tries.datastructure.SortedStringTrieWrapper;
-import de.mrapp.tries.datastructure.StringTrieWrapper;
+import de.mrapp.tries.datastructure.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class consists exclusively of static methods that operate on or return tries. It can be
@@ -67,7 +65,7 @@ public final class Tries {
     }
 
     /**
-     * Returns the empty {@link Trie} (immutable). This trie is serializable.
+     * Returns the empty {@link Trie} (immutable). The returned trie is serializable.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by trie
@@ -81,7 +79,7 @@ public final class Tries {
     }
 
     /**
-     * Returns the empty {@link SortedTrie} (immutable). This trie is serializable.
+     * Returns the empty {@link SortedTrie} (immutable). The returned trie is serializable.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by trie
@@ -96,7 +94,7 @@ public final class Tries {
     }
 
     /**
-     * Returns the empty {@link StringTrie} (immutable). This trie is serializable.
+     * Returns the empty {@link StringTrie} (immutable). The returned trie is serializable.
      *
      * @param <V> The type of the values, which are stored by the trie
      * @return The empty trie as an instance of the type {@link StringTrie}. The trie may not be
@@ -110,7 +108,7 @@ public final class Tries {
     }
 
     /**
-     * Returns the empty {@link SortedStringTrie} (immutable). This trie is serializable.
+     * Returns the empty {@link SortedStringTrie} (immutable). The returned trie is serializable.
      *
      * @param <V> The type of the values, which are stored by the trie
      * @return The empty trie as an instance of the type {@link SortedStringTrie}. The trie may not
@@ -121,6 +119,25 @@ public final class Tries {
     @NotNull
     public static <V> SortedStringTrie<V> emptySortedStringTrie() {
         return (SortedStringTrie<V>) EMPTY_SORTED_STRING_TRIE;
+    }
+
+    /**
+     * Returns an immutable trie, which only contains a single entry. The returned trie is
+     * serializable.
+     *
+     * @param <K>   The type of the sequences, which are used as the trie's keys
+     * @param <V>   The type of the values, which are stored by trie
+     * @param key   The key of the entry, which should be stored in the trie, as an instance of the
+     *              generic type {@link K} or null
+     * @param value The value of the entry, which should be stored in the trie, as an instance of
+     *              the generic type {@link V} or null
+     * @return An immutable trie, which contains the given key-value mapping, as an instance of the
+     * type {@link Trie}. The trie may not be null
+     */
+    @NotNull
+    public static <K extends Sequence, V> Trie<K, V> singletonTrie(@Nullable final K key,
+                                                                   @Nullable final V value) {
+        return new SingletonTrie<>(key, value);
     }
 
 }
