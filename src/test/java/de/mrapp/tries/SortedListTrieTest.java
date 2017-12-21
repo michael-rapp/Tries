@@ -1080,12 +1080,6 @@ public class SortedListTrieTest {
     }
 
     @Test
-    public void testToString() {
-        testPut3();
-        assertEquals("SortedListTrie [tea=tea, ted=ted, to=to]", trie.toString());
-    }
-
-    @Test
     public void testDescendingMap() {
         testPut6();
         NavigableMap<StringSequence, String> map = trie.descendingMap();
@@ -1095,6 +1089,12 @@ public class SortedListTrieTest {
         assertEquals(trie.higherKey(trie.firstKey()), map.lowerKey(map.lastKey()));
         assertEquals(trie.lastKey(), map.firstKey());
         assertEquals(trie.lowerKey(trie.lastKey()), map.higherKey(map.firstKey()));
+    }
+
+    @Test
+    public void testToString() {
+        testPut3();
+        assertEquals("SortedListTrie [tea=tea, ted=ted, to=to]", trie.toString());
     }
 
 }
