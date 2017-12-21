@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests the functionality of the class {@link Tries}.
@@ -105,6 +106,15 @@ public class TriesTest {
         assertEquals(1, trie.size());
         assertTrue(trie.containsKey(key));
         assertTrue(trie.containsValue(value));
+    }
+
+    @Test
+    public final void testUnmodifiableTrie() {
+        Trie<StringSequence, String> trie = mock(Trie.class);
+        Trie<StringSequence, String> unmodifiableTrie = Tries.unmodifiableTrie(trie);
+        assertTrue(unmodifiableTrie instanceof UnmodifiableTrie);
+        unmodifiableTrie.isEmpty();
+        verify(trie, times(1)).isEmpty();
     }
 
 }
