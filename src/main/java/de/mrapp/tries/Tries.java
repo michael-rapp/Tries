@@ -14,6 +14,7 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.*;
+import de.mrapp.tries.sequence.StringSequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -158,6 +159,44 @@ public final class Tries {
             @Nullable final K key,
             @Nullable final V value) {
         return new SingletonSortedTrie<>(key, value);
+    }
+
+    /**
+     * Returns an immutable {@link StringTrie}, which only contains a single entry. The returned
+     * trie is serializable.
+     *
+     * @param <V>   The type of the values, which are stored by trie
+     * @param key   The key of the entry, which should be stored in the trie, as a {@link String} or
+     *              null
+     * @param value The value of the entry, which should be stored in the trie, as an instance of
+     *              the generic type {@link V} or null
+     * @return An immutable trie, which contains the given key-value mapping, as an instance of the
+     * type {@link StringTrie}. The trie may not be null
+     */
+    @NotNull
+    public static <V> StringTrie<V> singletonStringTrie(@Nullable final String key,
+                                                        @Nullable final V value) {
+        return new StringTrieWrapper<>(
+                new SingletonTrie<>(key != null ? new StringSequence(key) : null, value));
+    }
+
+    /**
+     * Returns an immutable {@link SortedStringTrie}, which only contains a single entry. The
+     * returned trie is serializable.
+     *
+     * @param <V>   The type of the values, which are stored by trie
+     * @param key   The key of the entry, which should be stored in the trie, as a {@link String} or
+     *              null
+     * @param value The value of the entry, which should be stored in the trie, as an instance of
+     *              the generic type {@link V} or null
+     * @return An immutable trie, which contains the given key-value mapping, as an instance of the
+     * type {@link SortedStringTrie}. The trie may not be null
+     */
+    @NotNull
+    public static <V> SortedStringTrie<V> singletonSortedStringTrie(@Nullable final String key,
+                                                                    @Nullable final V value) {
+        return new SortedStringTrieWrapper<>(
+                new SingletonSortedTrie<>(key != null ? new StringSequence(key) : null, value));
     }
 
 }

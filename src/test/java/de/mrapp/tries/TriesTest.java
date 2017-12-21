@@ -31,6 +31,7 @@ public class TriesTest {
     public final void testEmptyTrie() {
         Trie<StringSequence, String> trie = Tries.emptyTrie();
         assertTrue(trie instanceof EmptyTrie);
+        assertTrue(trie.isEmpty());
         assertEquals(Tries.emptyTrie(), trie);
         assertEquals(Tries.EMPTY_TRIE, trie);
     }
@@ -39,6 +40,7 @@ public class TriesTest {
     public final void testEmptySortedTrie() {
         SortedTrie<StringSequence, String> trie = Tries.emptySortedTrie();
         assertTrue(trie instanceof EmptySortedTrie);
+        assertTrue(trie.isEmpty());
         assertEquals(Tries.emptySortedTrie(), trie);
         assertEquals(Tries.EMPTY_SORTED_TRIE, trie);
     }
@@ -47,6 +49,7 @@ public class TriesTest {
     public final void testEmptyStringTrie() {
         StringTrie<String> trie = Tries.emptyStringTrie();
         assertTrue(trie instanceof StringTrieWrapper);
+        assertTrue(trie.isEmpty());
         assertEquals(Tries.emptyStringTrie(), trie);
         assertEquals(Tries.EMPTY_STRING_TRIE, trie);
     }
@@ -55,6 +58,7 @@ public class TriesTest {
     public final void testEmptySortedStringTrie() {
         SortedStringTrie<String> trie = Tries.emptySortedStringTrie();
         assertTrue(trie instanceof SortedStringTrieWrapper);
+        assertTrue(trie.isEmpty());
         assertEquals(Tries.emptySortedStringTrie(), trie);
         assertEquals(Tries.EMPTY_SORTED_STRING_TRIE, trie);
     }
@@ -65,6 +69,7 @@ public class TriesTest {
         String value = "bar";
         Trie<StringSequence, String> trie = Tries.singletonTrie(key, value);
         assertTrue(trie instanceof SingletonTrie);
+        assertEquals(1, trie.size());
         assertTrue(trie.containsKey(key));
         assertTrue(trie.containsValue(value));
     }
@@ -75,6 +80,29 @@ public class TriesTest {
         String value = "bar";
         SortedTrie<StringSequence, String> trie = Tries.singletonSortedTrie(key, value);
         assertTrue(trie instanceof SingletonSortedTrie);
+        assertEquals(1, trie.size());
+        assertTrue(trie.containsKey(key));
+        assertTrue(trie.containsValue(value));
+    }
+
+    @Test
+    public final void testSingletonStringTrie() {
+        String key = "foo";
+        String value = "value";
+        StringTrie<String> trie = Tries.singletonStringTrie(key, value);
+        assertTrue(trie instanceof StringTrieWrapper);
+        assertEquals(1, trie.size());
+        assertTrue(trie.containsKey(key));
+        assertTrue(trie.containsValue(value));
+    }
+
+    @Test
+    public final void testSingletonSortedStringTrie() {
+        String key = "foo";
+        String value = "bar";
+        SortedStringTrie<String> trie = Tries.singletonSortedStringTrie(key, value);
+        assertTrue(trie instanceof SortedStringTrieWrapper);
+        assertEquals(1, trie.size());
         assertTrue(trie.containsKey(key));
         assertTrue(trie.containsValue(value));
     }
