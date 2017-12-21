@@ -145,4 +145,46 @@ public class SingletonTrieTest {
         assertEquals("SingletonTrie[foo=bar]", trie.toString());
     }
 
+    @Test
+    public final void testHashCode() {
+        Trie<StringSequence, String> trie1 = new SingletonTrie<>(null, null);
+        Trie<StringSequence, String> trie2 = new SingletonTrie<>(null, null);
+        assertEquals(trie1.hashCode(), trie1.hashCode());
+        assertEquals(trie1.hashCode(), trie2.hashCode());
+        trie1 = new SingletonTrie<>(new StringSequence("key1"), null);
+        assertNotEquals(trie1.hashCode(), trie2.hashCode());
+        trie2 = new SingletonTrie<>(new StringSequence("key2"), null);
+        assertNotEquals(trie1.hashCode(), trie2.hashCode());
+        trie2 = new SingletonTrie<>(new StringSequence("key1"), null);
+        assertEquals(trie1.hashCode(), trie2.hashCode());
+        trie1 = new SingletonTrie<>(null, "value1");
+        assertNotEquals(trie1.hashCode(), trie2.hashCode());
+        trie2 = new SingletonTrie<>(null, "value2");
+        assertNotEquals(trie1.hashCode(), trie2.hashCode());
+        trie2 = new SingletonTrie<>(null, "value1");
+        assertEquals(trie1.hashCode(), trie2.hashCode());
+    }
+
+    @Test
+    public final void testEquals() {
+        Trie<StringSequence, String> trie1 = new SingletonTrie<>(null, null);
+        Trie<StringSequence, String> trie2 = new SingletonTrie<>(null, null);
+        assertFalse(trie1.equals(null));
+        assertFalse(trie2.equals(new Object()));
+        assertTrue(trie1.equals(trie1));
+        assertTrue(trie1.equals(trie2));
+        trie1 = new SingletonTrie<>(new StringSequence("key1"), null);
+        assertFalse(trie1.equals(trie2));
+        trie2 = new SingletonTrie<>(new StringSequence("key2"), null);
+        assertFalse(trie1.equals(trie2));
+        trie2 = new SingletonTrie<>(new StringSequence("key1"), null);
+        assertTrue(trie1.equals(trie2));
+        trie1 = new SingletonTrie<>(null, "value1");
+        assertFalse(trie1.equals(trie2));
+        trie2 = new SingletonTrie<>(null, "value2");
+        assertFalse(trie1.equals(trie2));
+        trie2 = new SingletonTrie<>(null, "value1");
+        assertTrue(trie1.equals(trie2));
+    }
+
 }
