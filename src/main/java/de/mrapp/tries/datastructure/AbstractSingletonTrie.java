@@ -42,12 +42,12 @@ public abstract class AbstractSingletonTrie<SequenceType extends Sequence, Value
     /**
      * The key of the entry, which is contained by the trie.
      */
-    private final SequenceType key;
+    final SequenceType key;
 
     /**
      * The value of the entry, which is contained by the trie.
      */
-    private final ValueType value;
+    final ValueType value;
 
     /**
      * The root node of the trie.

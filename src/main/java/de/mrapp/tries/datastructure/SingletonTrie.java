@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.NoSuchElementException;
 
 /**
- * An immutable trie, which contains only a single entry.
+ * An immutable {@link Trie}, which contains only a single entry.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by trie
@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * @since 1.0.0
  */
 public class SingletonTrie<SequenceType extends Sequence, ValueType> extends
-        AbstractSingletonTrie<SequenceType, ValueType> implements Trie<SequenceType, ValueType> {
+        AbstractSingletonTrie<SequenceType, ValueType> {
 
     /**
      * The constant serial version UID.
@@ -37,7 +37,7 @@ public class SingletonTrie<SequenceType extends Sequence, ValueType> extends
     private static final long serialVersionUID = 2294508044056874929L;
 
     /**
-     * Creates a new immutable trie, which only contains a single entry.
+     * Creates a new immutable {@link Trie}, which only contains a single entry.
      *
      * @param key   The key of the entry as an instance of the generic type {@link SequenceType} or
      *              null

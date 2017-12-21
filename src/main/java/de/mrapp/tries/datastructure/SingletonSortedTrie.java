@@ -16,25 +16,37 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.SortedTrie;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 /**
- * An unmodifiable and empty sorted trie.
+ * An immutable {@link SortedTrie}, which contains only a single entry.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by trie
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class EmptySortedTrie<SequenceType extends Sequence, ValueType> extends
-        AbstractEmptyTrie<SequenceType, ValueType> implements
+public class SingletonSortedTrie<SequenceType extends Sequence, ValueType> extends
+        AbstractSingletonTrie<SequenceType, ValueType> implements
         SortedTrie<SequenceType, ValueType> {
 
     /**
      * The constant serial version UID.
      */
-    private static final long serialVersionUID = 6336443796163476401L;
+    private static final long serialVersionUID = -1053546882360839829L;
+
+    /**
+     * Creates a new immutable {@link SortedTrie}, which only contains a single entry.
+     *
+     * @param key   The key of the entry as an instance of the generic type {@link SequenceType} or
+     *              null
+     * @param value The value of the entry as an instance of the generic type {@link ValueType} or
+     */
+    public SingletonSortedTrie(@Nullable final SequenceType key, @Nullable final ValueType value) {
+        super(key, value);
+    }
 
     @Override
     public final Entry<SequenceType, ValueType> lowerEntry(final SequenceType key) {
@@ -78,12 +90,12 @@ public class EmptySortedTrie<SequenceType extends Sequence, ValueType> extends
 
     @Override
     public final Entry<SequenceType, ValueType> firstEntry() {
-        return null;
+        return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 
     @Override
     public final Entry<SequenceType, ValueType> lastEntry() {
-        return null;
+        return new AbstractMap.SimpleImmutableEntry<>(key, value);
     }
 
     @Override
@@ -98,17 +110,19 @@ public class EmptySortedTrie<SequenceType extends Sequence, ValueType> extends
 
     @Override
     public final NavigableMap<SequenceType, ValueType> descendingMap() {
-        return Collections.emptyNavigableMap();
+        return this;
     }
 
     @Override
     public final NavigableSet<SequenceType> navigableKeySet() {
-        return Collections.emptyNavigableSet();
+        NavigableSet<SequenceType> navigableSet = new TreeSet<>();
+        navigableSet.add(key);
+        return navigableSet;
     }
 
     @Override
     public final NavigableSet<SequenceType> descendingKeySet() {
-        return Collections.emptyNavigableSet();
+        return navigableKeySet();
     }
 
     @Override
@@ -116,19 +130,20 @@ public class EmptySortedTrie<SequenceType extends Sequence, ValueType> extends
                                                               final boolean fromInclusive,
                                                               final SequenceType toKey,
                                                               final boolean toInclusive) {
-        return Collections.emptyNavigableMap();
+        return fromInclusive && toInclusive && containsKey(fromKey) && containsKey(toKey) ? this :
+                Collections.emptyNavigableMap();
     }
 
     @Override
     public final NavigableMap<SequenceType, ValueType> headMap(final SequenceType toKey,
                                                                final boolean inclusive) {
-        return Collections.emptyNavigableMap();
+        return inclusive && containsKey(toKey) ? this : Collections.emptyNavigableMap();
     }
 
     @Override
     public final NavigableMap<SequenceType, ValueType> tailMap(final SequenceType fromKey,
                                                                final boolean inclusive) {
-        return Collections.emptyNavigableMap();
+        return inclusive && containsKey(fromKey) ? this : Collections.emptyNavigableMap();
     }
 
     @Override
@@ -140,34 +155,38 @@ public class EmptySortedTrie<SequenceType extends Sequence, ValueType> extends
     @Override
     public final SortedMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
                                                            final SequenceType toKey) {
-        return Collections.emptySortedMap();
+        return containsKey(fromKey) && containsKey(toKey) ? this : Collections.emptySortedMap();
     }
 
     @NotNull
     @Override
     public final SortedMap<SequenceType, ValueType> headMap(final SequenceType toKey) {
-        return Collections.emptySortedMap();
+        return containsKey(toKey) ? this : Collections.emptySortedMap();
     }
 
     @NotNull
     @Override
     public final SortedMap<SequenceType, ValueType> tailMap(final SequenceType fromKey) {
-        return Collections.emptySortedMap();
+        return containsKey(fromKey) ? this : Collections.emptySortedMap();
     }
 
     @Override
     public final SequenceType firstKey() {
-        throw new NoSuchElementException();
+        return key;
     }
 
     @Override
     public final SequenceType lastKey() {
-        throw new NoSuchElementException();
+        return key;
     }
 
     @NotNull
     @Override
     public final SortedTrie<SequenceType, ValueType> subTree(@NotNull final SequenceType sequence) {
+        if (containsKey(sequence)) {
+            return this;
+        }
+
         throw new NoSuchElementException();
     }
 
