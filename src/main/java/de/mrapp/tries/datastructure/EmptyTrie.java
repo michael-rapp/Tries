@@ -32,83 +32,13 @@ import java.util.Set;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class EmptyTrie<SequenceType extends Sequence, ValueType> implements
-        Trie<SequenceType, ValueType> {
+public class EmptyTrie<SequenceType extends Sequence, ValueType> extends
+        AbstractEmptyTrie<SequenceType, ValueType> {
 
     /**
      * The constant serial version UID.
      */
     private static final long serialVersionUID = 8066375897452793032L;
-
-    @Override
-    public final int size() {
-        return 0;
-    }
-
-    @Override
-    public final boolean isEmpty() {
-        return true;
-    }
-
-    @Override
-    public final boolean containsKey(final Object key) {
-        return false;
-    }
-
-    @Override
-    public final boolean containsValue(final Object value) {
-        return false;
-    }
-
-    @Override
-    public final ValueType get(final Object key) {
-        return null;
-    }
-
-    @Override
-    public final ValueType put(final SequenceType key, final ValueType value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final ValueType remove(final Object key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final void putAll(@NotNull final Map<? extends SequenceType, ? extends ValueType> map) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final void clear() {
-        throw new UnsupportedOperationException();
-    }
-
-    @NotNull
-    @Override
-    public final Set<SequenceType> keySet() {
-        return Collections.emptySet();
-    }
-
-    @NotNull
-    @Override
-    public final Collection<ValueType> values() {
-        return Collections.emptyList();
-    }
-
-    @NotNull
-    @Override
-    public final Set<Entry<SequenceType, ValueType>> entrySet() {
-        return Collections.emptySet();
-    }
-
-
-    @Nullable
-    @Override
-    public final Node<SequenceType, ValueType> getRootNode() {
-        return null;
-    }
 
     @NotNull
     @Override
