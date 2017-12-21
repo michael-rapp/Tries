@@ -15,6 +15,8 @@ package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.EmptySortedTrie;
 import de.mrapp.tries.datastructure.EmptyTrie;
+import de.mrapp.tries.datastructure.SortedStringTrieWrapper;
+import de.mrapp.tries.datastructure.StringTrieWrapper;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
@@ -42,6 +44,22 @@ public class TriesTest {
         assertTrue(trie instanceof EmptySortedTrie);
         assertEquals(Tries.emptySortedTrie(), trie);
         assertEquals(Tries.EMPTY_SORTED_TRIE, trie);
+    }
+
+    @Test
+    public final void testEmptyStringTrie() {
+        StringTrie<String> trie = Tries.emptyStringTrie();
+        assertTrue(trie instanceof StringTrieWrapper);
+        assertEquals(Tries.emptyStringTrie(), trie);
+        assertEquals(Tries.EMPTY_STRING_TRIE, trie);
+    }
+
+    @Test
+    public final void testEmptySortedStringTrie() {
+        SortedStringTrie<String> trie = Tries.emptySortedStringTrie();
+        assertTrue(trie instanceof SortedStringTrieWrapper);
+        assertEquals(Tries.emptySortedStringTrie(), trie);
+        assertEquals(Tries.EMPTY_SORTED_STRING_TRIE, trie);
     }
 
 }
