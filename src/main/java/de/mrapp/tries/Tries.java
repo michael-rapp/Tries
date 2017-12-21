@@ -13,6 +13,7 @@
  */
 package de.mrapp.tries;
 
+import de.mrapp.tries.datastructure.EmptySortedTrie;
 import de.mrapp.tries.datastructure.EmptyTrie;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +32,13 @@ public final class Tries {
      * @see #emptyTrie()
      */
     public static final Trie<?, ?> EMPTY_TRIE = new EmptyTrie<>();
+
+    /**
+     * The empty sorted trie (immutable). This trie is serializable.
+     *
+     * @see #emptySortedTrie()
+     */
+    public static final SortedTrie<?, ?> EMPTY_SORTED_TRIE = new EmptySortedTrie<>();
 
     /**
      * Creates a new class that exclusively consists of static methods that operate on or return
@@ -52,6 +60,20 @@ public final class Tries {
     @NotNull
     public static <K extends Sequence, V> Trie<K, V> emptyTrie() {
         return (Trie<K, V>) EMPTY_TRIE;
+    }
+
+    /**
+     * Returns the empty sorted trie (immutable). This trie is serializable.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by trie
+     * @return The empty sorted trie as an instance of the type {@link SortedTrie}. The trie may not
+     * be null
+     * @see #EMPTY_SORTED_TRIE
+     */
+    @SuppressWarnings("unchecked")
+    public static <K extends Sequence, V> SortedTrie<K, V> emptySortedTrie() {
+        return (SortedTrie<K, V>) EMPTY_SORTED_TRIE;
     }
 
 }

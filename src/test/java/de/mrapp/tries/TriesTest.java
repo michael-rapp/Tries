@@ -13,6 +13,7 @@
  */
 package de.mrapp.tries;
 
+import de.mrapp.tries.datastructure.EmptySortedTrie;
 import de.mrapp.tries.datastructure.EmptyTrie;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
@@ -33,6 +34,14 @@ public class TriesTest {
         assertTrue(trie instanceof EmptyTrie);
         assertEquals(Tries.emptyTrie(), trie);
         assertEquals(Tries.EMPTY_TRIE, trie);
+    }
+
+    @Test
+    public final void testEmptySortedTrie() {
+        SortedTrie<StringSequence, String> trie = Tries.emptySortedTrie();
+        assertTrue(trie instanceof EmptySortedTrie);
+        assertEquals(Tries.emptySortedTrie(), trie);
+        assertEquals(Tries.EMPTY_SORTED_TRIE, trie);
     }
 
 }
