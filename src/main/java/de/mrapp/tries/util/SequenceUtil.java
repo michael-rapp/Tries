@@ -17,6 +17,8 @@ import de.mrapp.tries.Sequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
+
 import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
@@ -26,6 +28,41 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * @since 1.0.0
  */
 public class SequenceUtil {
+
+    /**
+     * A comparator, which allows to compare sequences to each other.
+     *
+     * @param <T> The type of the sequences
+     */
+    private static class SequenceComparator<T> implements Comparator<T> {
+
+        /**
+         * The comparator, which is used to compare keys.
+         */
+        private final Comparator<? super T> comparator;
+
+        /**
+         * Creates a new comparator, which allows to compare keys to each other.
+         *
+         * @param comparator The comparator, which should be used to compare keys, as an instance of
+         *                   the type {@link Comparator} or null, if the natural order of the keys
+         *                   should be used
+         */
+        SequenceComparator(@Nullable final Comparator<? super T> comparator) {
+            this.comparator = comparator;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public final int compare(final T o1, final T o2) {
+            if (comparator != null) {
+                return comparator.compare(o1, o2);
+            } else {
+                return ((Comparable<? super T>) o1).compareTo(o2);
+            }
+        }
+
+    }
 
     /**
      * Creates a new utility class, which provides methods for handling sequences.
@@ -111,6 +148,22 @@ public class SequenceUtil {
         }
 
         return (T) prefix.concat(suffix);
+    }
+
+    /**
+     * Creates and returns a comparator, which allows to compare sequences.
+     *
+     * @param comparator The comparator, which should be used to compare the sequences, as an
+     *                   instance of the type {@link Comparator} or null, if the natural order
+     *                   should be used
+     * @param <T>        The type of the sequences
+     * @return The comparator, which has been created, as an instance of the type {@link
+     * Comparator}. The comparator may not be null
+     */
+    @NotNull
+    public static <T> Comparator<T> comparator(
+            @Nullable final Comparator<? super T> comparator) {
+        return new SequenceComparator<>(comparator);
     }
 
 }

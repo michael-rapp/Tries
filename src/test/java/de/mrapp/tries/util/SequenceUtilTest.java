@@ -16,7 +16,10 @@ package de.mrapp.tries.util;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
+import java.util.Comparator;
+
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests the functionality of the class {@link SequenceUtil}.
@@ -76,6 +79,25 @@ public class SequenceUtilTest {
     public final void testConcatIfSecondSequenceIsNull() {
         StringSequence sequence = new StringSequence("foo");
         assertEquals(sequence, SequenceUtil.concat(sequence, null));
+    }
+
+    @Test
+    public final void testCompareIfComparatorIsNotNull() {
+        StringSequence sequence1 = new StringSequence("foo");
+        StringSequence sequence2 = new StringSequence("bar");
+        Comparator<StringSequence> comparator = mock(Comparator.class);
+        Comparator<StringSequence> sequenceComparator = SequenceUtil.comparator(comparator);
+        sequenceComparator.compare(sequence1, sequence2);
+        verify(comparator, times(1)).compare(sequence1, sequence2);
+    }
+
+    @Test
+    public final void testCompareIfComparatorIsNull() {
+        StringSequence sequence1 = new StringSequence("foo");
+        StringSequence sequence2 = new StringSequence("bar");
+        Comparator<StringSequence> sequenceComparator = SequenceUtil.comparator(null);
+        int c = sequenceComparator.compare(sequence1, sequence2);
+        assertEquals("foo".compareTo("bar"), c);
     }
 
 }

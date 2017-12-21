@@ -14,6 +14,7 @@
 package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Node;
+import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.SortedArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,7 +63,7 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
         /**
          * The comparator, which is used to compare the keys of edges with each other.
          */
-        private final KeyComparator<K> comparator;
+        private final Comparator<K> comparator;
 
         /**
          * Creates a new directed edge, which references the successor of a node.
@@ -81,7 +82,7 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
             ensureNotNull(successor, "The successor may not be null");
             this.key = key;
             this.successor = successor;
-            this.comparator = new KeyComparator<>(comparator);
+            this.comparator = SequenceUtil.comparator(comparator);
         }
 
         @SuppressWarnings("unchecked")
@@ -203,7 +204,7 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
 
     @Override
     public final int indexOf(@NotNull final KeyType key) {
-        KeyComparator<KeyType> comparator = new KeyComparator<>(this.comparator);
+        Comparator<KeyType> comparator = SequenceUtil.comparator(this.comparator);
         int min = 0;
         int max = successors.size() - 1;
 

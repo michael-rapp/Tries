@@ -287,7 +287,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          */
         protected final AbstractSortedTrie<K, V> trie;
 
-        private final KeyComparator<K> comparator;
+        private final Comparator<K> comparator;
 
         final K fromKey, toKey;
         final boolean fromStart, toEnd;
@@ -417,7 +417,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                        final boolean fromInclusive, final boolean toEnd, @Nullable final K toKey,
                        final boolean toInclusive) {
             this.trie = trie;
-            this.comparator = new KeyComparator<>(trie.comparator());
+            this.comparator = SequenceUtil.comparator(trie.comparator);
 
             if (!fromStart && !toEnd && comparator.compare(fromKey, toKey) > 0) {
                 throw new IllegalArgumentException("fromKey > toKey");
