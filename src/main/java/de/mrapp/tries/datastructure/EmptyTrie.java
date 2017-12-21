@@ -13,16 +13,9 @@
  */
 package de.mrapp.tries.datastructure;
 
-import de.mrapp.tries.Node;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.Trie;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * An unmodifiable and empty trie.
