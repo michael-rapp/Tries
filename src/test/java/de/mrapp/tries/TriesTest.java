@@ -126,4 +126,13 @@ public class TriesTest {
         verify(trie, times(1)).isEmpty();
     }
 
+    @Test
+    public final void testUnmodifiableStringTrie() {
+        StringTrie<String> trie = mock(StringTrie.class);
+        StringTrie<String> unmodifiableTrie = Tries.unmodifiableStringTrie(trie);
+        assertTrue(unmodifiableTrie instanceof UnmodifiableStringTrie);
+        unmodifiableTrie.isEmpty();
+        verify(trie, times(1)).isEmpty();
+    }
+
 }
