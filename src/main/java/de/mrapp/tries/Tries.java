@@ -122,7 +122,7 @@ public final class Tries {
     }
 
     /**
-     * Returns an immutable trie, which only contains a single entry. The returned trie is
+     * Returns an immutable {@link Trie}, which only contains a single entry. The returned trie is
      * serializable.
      *
      * @param <K>   The type of the sequences, which are used as the trie's keys
@@ -138,6 +138,26 @@ public final class Tries {
     public static <K extends Sequence, V> Trie<K, V> singletonTrie(@Nullable final K key,
                                                                    @Nullable final V value) {
         return new SingletonTrie<>(key, value);
+    }
+
+    /**
+     * Returns an immutable {@link SortedTrie}, which only contains a single entry. The returned
+     * trie is serializable.
+     *
+     * @param <K>   The type of the sequences, which are used as the trie's keys
+     * @param <V>   The type of the values, which are stored by trie
+     * @param key   The key of the entry, which should be stored in the trie, as an instance of the
+     *              generic type {@link K} or null
+     * @param value The value of the entry, which should be stored in the trie, as an instance of
+     *              the generic type {@link V} or null
+     * @return An immutable trie, which contains the given key-value mapping, as an instance of the
+     * type {@link SortedTrie}. The trie may not be null
+     */
+    @NotNull
+    public static <K extends Sequence, V> SortedTrie<K, V> singletonSortedTrie(
+            @Nullable final K key,
+            @Nullable final V value) {
+        return new SingletonSortedTrie<>(key, value);
     }
 
 }

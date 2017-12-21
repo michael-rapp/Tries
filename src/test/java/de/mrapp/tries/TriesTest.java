@@ -69,4 +69,14 @@ public class TriesTest {
         assertTrue(trie.containsValue(value));
     }
 
+    @Test
+    public final void testSingletonSortedTrie() {
+        StringSequence key = new StringSequence("foo");
+        String value = "bar";
+        SortedTrie<StringSequence, String> trie = Tries.singletonSortedTrie(key, value);
+        assertTrue(trie instanceof SingletonSortedTrie);
+        assertTrue(trie.containsKey(key));
+        assertTrue(trie.containsValue(value));
+    }
+
 }
