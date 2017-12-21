@@ -241,12 +241,9 @@ public class EmptySortedTrieTest {
         trie.lastKey();
     }
 
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public final void testSubTree() {
-        SortedTrie<StringSequence, String> subTrie = trie.subTree(new StringSequence("foo"));
-        assertNotNull(subTrie);
-        assertTrue(subTrie instanceof EmptySortedTrie);
-        assertEquals(trie, subTrie);
+        trie.subTree(new StringSequence("foo"));
     }
 
 }

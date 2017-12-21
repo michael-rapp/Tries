@@ -16,8 +16,7 @@ package de.mrapp.tries.util;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * Tests the functionality of the class {@link SequenceUtil}.
@@ -25,6 +24,13 @@ import static org.junit.Assert.assertNull;
  * @author Michael Rapp
  */
 public class SequenceUtilTest {
+
+    @Test
+    public final void testIsEmpty() {
+        assertTrue(SequenceUtil.isEmpty(null));
+        assertTrue(SequenceUtil.isEmpty(new StringSequence("")));
+        assertFalse(SequenceUtil.isEmpty(new StringSequence("foo")));
+    }
 
     @Test
     public final void testSubsequenceWithStartParameter() {

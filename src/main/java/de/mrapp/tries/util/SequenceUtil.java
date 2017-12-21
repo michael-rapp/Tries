@@ -35,6 +35,17 @@ public class SequenceUtil {
     }
 
     /**
+     * Returns, whether a specific sequence is null or empty.
+     *
+     * @param sequence The sequence, which should be checked, as an instance of the type {@link
+     *                 Sequence} or null
+     * @return True, if the given sequence is null or empty, false otherwise
+     */
+    public static boolean isEmpty(@Nullable final Sequence sequence) {
+        return sequence == null || sequence.isEmpty();
+    }
+
+    /**
      * Returns a subsequence of a specific sequence, starting at a specific index and spanning to
      * the end. If the given start index is invalid, an {@link IndexOutOfBoundsException} will be
      * thrown.

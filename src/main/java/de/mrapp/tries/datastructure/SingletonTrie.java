@@ -16,28 +16,45 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.Trie;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.NoSuchElementException;
 
 /**
- * An immutable and empty trie.
+ * An immutable trie, which contains only a single entry.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by trie
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class EmptyTrie<SequenceType extends Sequence, ValueType> extends
-        AbstractEmptyTrie<SequenceType, ValueType> {
+public class SingletonTrie<SequenceType extends Sequence, ValueType> extends
+        AbstractSingletonTrie<SequenceType, ValueType> implements Trie<SequenceType, ValueType> {
 
     /**
      * The constant serial version UID.
      */
-    private static final long serialVersionUID = 8066375897452793032L;
+    private static final long serialVersionUID = 2294508044056874929L;
+
+    /**
+     * Creates a new immutable trie, which only contains a single entry.
+     *
+     * @param key   The key of the entry as an instance of the generic type {@link SequenceType} or
+     *              null
+     * @param value The value of the entry as an instance of the generic type {@link ValueType} or
+     *              null
+     */
+    public SingletonTrie(@Nullable final SequenceType key, @Nullable final ValueType value) {
+        super(key, value);
+    }
 
     @NotNull
     @Override
     public final Trie<SequenceType, ValueType> subTree(@NotNull final SequenceType sequence) {
+        if (containsKey(sequence)) {
+            return this;
+        }
+
         throw new NoSuchElementException();
     }
 

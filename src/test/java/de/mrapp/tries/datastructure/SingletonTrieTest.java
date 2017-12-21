@@ -13,6 +13,7 @@
  */
 package de.mrapp.tries.datastructure;
 
+import de.mrapp.tries.Node;
 import de.mrapp.tries.Trie;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
@@ -22,37 +23,44 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 /**
- * Tests the functionality of the class {@link EmptyTrie}.
+ * Tests the functionality of the class {@link SingletonTrie}.
  *
  * @author Michael Rapp
  */
-public class EmptyTrieTest {
+public class SingletonTrieTest {
 
-    private final Trie<StringSequence, String> trie = new EmptyTrie<>();
+    private final StringSequence key = new StringSequence("foo");
+
+    private final String value = "bar";
+
+    private final Trie<StringSequence, String> trie = new SingletonTrie<>(key, value);
 
     @Test
     public final void testSize() {
-        assertEquals(0, trie.size());
+        assertEquals(1, trie.size());
     }
 
     @Test
     public final void testIsEmpty() {
-        assertTrue(trie.isEmpty());
+        assertFalse(trie.isEmpty());
     }
 
     @Test
     public final void testContainsKey() {
-        assertFalse(trie.containsKey(new StringSequence("foo")));
+        assertFalse(trie.containsKey(new StringSequence("nop")));
+        assertTrue(trie.containsKey(key));
     }
 
     @Test
     public final void testContainsValue() {
-        assertFalse(trie.containsValue("bar"));
+        assertFalse(trie.containsValue("nop"));
+        assertTrue(trie.containsValue(value));
     }
 
     @Test
     public final void testGet() {
-        assertNull(trie.get(new StringSequence("foo")));
+        assertNull(trie.get(new StringSequence("nop")));
+        assertEquals(value, trie.get(key));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -79,31 +87,57 @@ public class EmptyTrieTest {
     public final void testKeySet() {
         Set<StringSequence> set = trie.keySet();
         assertNotNull(set);
-        assertTrue(set.isEmpty());
+        assertEquals(1, set.size());
+        assertEquals(key, set.iterator().next());
     }
 
     @Test
     public final void testValues() {
         Collection<String> values = trie.values();
         assertNotNull(values);
-        assertTrue(values.isEmpty());
+        assertEquals(1, values.size());
+        assertEquals(value, values.iterator().next());
     }
 
     @Test
     public final void testEntrySet() {
         Set<Map.Entry<StringSequence, String>> set = trie.entrySet();
         assertNotNull(set);
-        assertTrue(set.isEmpty());
+        assertEquals(1, set.size());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(key, value), set.iterator().next());
     }
 
     @Test
     public final void testGetRootNode() {
-        assertNull(trie.getRootNode());
+        Node<StringSequence, String> rootNode = trie.getRootNode();
+        assertTrue(rootNode instanceof UnmodifiableNode);
+        assertNull(rootNode.getNodeValue());
+        Node<StringSequence, String> successor = rootNode.getSuccessor(key);
+        assertNotNull(successor);
+        assertEquals(value, successor.getValue());
+        assertFalse(successor.hasSuccessors());
+    }
+
+    @Test
+    public final void testGetRootNodeIfKeyIsNull() {
+        Trie<StringSequence, String> trie = new SingletonTrie<>(null, value);
+        Node<StringSequence, String> rootNode = trie.getRootNode();
+        assertTrue(rootNode instanceof UnmodifiableNode);
+        assertEquals(value, rootNode.getValue());
+        assertFalse(rootNode.hasSuccessors());
+    }
+
+    @Test
+    public final void testSubTreeIfKeyIsContained() {
+        Trie<StringSequence, String> subTrie = trie.subTree(key);
+        assertNotNull(subTrie);
+        assertTrue(subTrie instanceof SingletonTrie);
+        assertEquals(trie, subTrie);
     }
 
     @Test(expected = NoSuchElementException.class)
     public final void testSubTree() {
-        trie.subTree(new StringSequence("foo"));
+        trie.subTree(new StringSequence("nop"));
     }
 
 }
