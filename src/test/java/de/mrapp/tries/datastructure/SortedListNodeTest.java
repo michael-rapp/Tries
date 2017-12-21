@@ -15,6 +15,7 @@ package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
+import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -32,7 +33,7 @@ public class SortedListNodeTest {
 
     @Test
     public final void testConstructor() {
-        SortedListNode<String, String> node = new SortedListNode<>(null);
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
         assertEquals(0, node.getSuccessorCount());
         assertEquals(0, node.getSuccessorValueCount());
         assertNull(node.getPredecessor());
@@ -46,7 +47,7 @@ public class SortedListNodeTest {
     public final void testSetNodeValue() {
         String value = "value";
         NodeValue<String> nodeValue = new NodeValue<>(value);
-        SortedListNode<String, String> node = new SortedListNode<>(null);
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
         node.setNodeValue(nodeValue);
         assertEquals(nodeValue, node.getNodeValue());
         assertEquals(value, node.getValue());
@@ -55,51 +56,51 @@ public class SortedListNodeTest {
 
     @Test
     public final void testAddSuccessor1() {
-        String key = "key";
-        SortedListNode<String, String> node = new SortedListNode<>(null);
-        Node<String, String> successor = node.addSuccessor(key);
+        StringSequence key = new StringSequence("key");
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        Node<StringSequence, String> successor = node.addSuccessor(key);
         assertNotNull(successor);
         assertEquals(1, node.getSuccessorCount());
         assertEquals(successor, node.getSuccessor(key));
         assertEquals(0, node.getSuccessorValueCount());
-        Iterator<String> iterator = node.iterator();
+        Iterator<StringSequence> iterator = node.iterator();
         assertEquals(key, iterator.next());
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public final void testAddSuccessor2() {
-        String key = "key";
-        Node<String, String> successor = new SortedListNode<>(null);
+        StringSequence key = new StringSequence("key");
+        Node<StringSequence, String> successor = new SortedListNode<>(null);
         successor.setNodeValue(new NodeValue<>("value"));
-        SortedListNode<String, String> node = new SortedListNode<>(null);
-        Node<String, String> result = node.addSuccessor(key, successor);
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        Node<StringSequence, String> result = node.addSuccessor(key, successor);
         assertEquals(successor, result);
         assertEquals(1, node.getSuccessorCount());
         assertEquals(successor, node.getSuccessor(key));
         assertEquals(1, node.getSuccessorValueCount());
-        Iterator<String> iterator = node.iterator();
+        Iterator<StringSequence> iterator = node.iterator();
         assertEquals(key, iterator.next());
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public final void testRemoveSuccessor() {
-        String key = "key";
-        SortedListNode<String, String> node = new SortedListNode<>(null);
+        StringSequence key = new StringSequence("key");
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
         node.addSuccessor(key);
         node.removeSuccessor(key);
         assertEquals(0, node.getSuccessorCount());
         assertNull(node.getSuccessor(key));
         assertEquals(0, node.getSuccessorValueCount());
-        Iterator<String> iterator = node.iterator();
+        Iterator<StringSequence> iterator = node.iterator();
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public final void testIncreaseSuccessorValueCount() {
         int by = 2;
-        SortedListNode<String, String> node = new SortedListNode<>(null);
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
         node.increaseSuccessorValueCount(by);
         assertEquals(by, node.getSuccessorValueCount());
     }
@@ -107,7 +108,7 @@ public class SortedListNodeTest {
     @Test
     public final void testDecreaseSuccessorValueCount() {
         int by = 2;
-        SortedListNode<String, String> node = new SortedListNode<>(null);
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
         node.increaseSuccessorValueCount(by);
         node.decreaseSuccessorValueCount(by);
         assertEquals(0, node.getSuccessorValueCount());
@@ -115,8 +116,8 @@ public class SortedListNodeTest {
 
     @Test
     public final void testSetPredecessor() {
-        Node<String, String> predecessor = new SortedListNode<>(null);
-        SortedListNode<String, String> node = new SortedListNode<>(null);
+        Node<StringSequence, String> predecessor = new SortedListNode<>(null);
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
         node.increaseSuccessorValueCount(1);
         node.setPredecessor(predecessor);
         assertEquals(predecessor, node.getPredecessor());
@@ -124,98 +125,98 @@ public class SortedListNodeTest {
 
     @Test
     public final void testGetSuccessorByIndex() {
-        Node<String, String> successor = mock(Node.class);
-        SortedListNode<String, String> node = new SortedListNode<>(null);
-        node.addSuccessor("a");
-        node.addSuccessor("b");
-        node.addSuccessor("c", successor);
-        node.addSuccessor("d");
-        node.addSuccessor("e");
-        node.addSuccessor("f");
+        Node<StringSequence, String> successor = mock(Node.class);
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        node.addSuccessor(new StringSequence("a"));
+        node.addSuccessor(new StringSequence("b"));
+        node.addSuccessor(new StringSequence("c"), successor);
+        node.addSuccessor(new StringSequence("d"));
+        node.addSuccessor(new StringSequence("e"));
+        node.addSuccessor(new StringSequence("f"));
         assertEquals(successor, node.getSuccessor(2));
     }
 
     @Test
     public final void testGetFirstSuccessor() {
-        Node<String, String> successor = mock(Node.class);
-        SortedListNode<String, String> node = new SortedListNode<>(null);
-        node.addSuccessor("a", successor);
-        node.addSuccessor("b");
-        node.addSuccessor("c");
-        node.addSuccessor("d");
-        node.addSuccessor("e");
-        node.addSuccessor("f");
+        Node<StringSequence, String> successor = mock(Node.class);
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        node.addSuccessor(new StringSequence("a"), successor);
+        node.addSuccessor(new StringSequence("b"));
+        node.addSuccessor(new StringSequence("c"));
+        node.addSuccessor(new StringSequence("d"));
+        node.addSuccessor(new StringSequence("e"));
+        node.addSuccessor(new StringSequence("f"));
         assertEquals(successor, node.getFirstSuccessor());
     }
 
     @Test
     public final void testGetLastSuccessor() {
-        Node<String, String> successor = mock(Node.class);
-        SortedListNode<String, String> node = new SortedListNode<>(null);
-        node.addSuccessor("a");
-        node.addSuccessor("b");
-        node.addSuccessor("c");
-        node.addSuccessor("d");
-        node.addSuccessor("e");
-        node.addSuccessor("f", successor);
+        Node<StringSequence, String> successor = mock(Node.class);
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        node.addSuccessor(new StringSequence("a"));
+        node.addSuccessor(new StringSequence("b"));
+        node.addSuccessor(new StringSequence("c"));
+        node.addSuccessor(new StringSequence("d"));
+        node.addSuccessor(new StringSequence("e"));
+        node.addSuccessor(new StringSequence("f"), successor);
         assertEquals(successor, node.getLastSuccessor());
     }
 
     @Test
     public final void testGetSuccessorKey() {
-        SortedListNode<String, String> node = new SortedListNode<>(null);
-        node.addSuccessor("a");
-        node.addSuccessor("b");
-        node.addSuccessor("c");
-        node.addSuccessor("d");
-        node.addSuccessor("e");
-        node.addSuccessor("f");
-        assertEquals("c", node.getSuccessorKey(2));
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        node.addSuccessor(new StringSequence("a"));
+        node.addSuccessor(new StringSequence("b"));
+        node.addSuccessor(new StringSequence("c"));
+        node.addSuccessor(new StringSequence("d"));
+        node.addSuccessor(new StringSequence("e"));
+        node.addSuccessor(new StringSequence("f"));
+        assertEquals(new StringSequence("c"), node.getSuccessorKey(2));
     }
 
     @Test
     public final void testGetFirstSuccessorKey() {
-        SortedListNode<String, String> node = new SortedListNode<>(null);
-        node.addSuccessor("a");
-        node.addSuccessor("b");
-        node.addSuccessor("c");
-        node.addSuccessor("d");
-        node.addSuccessor("e");
-        node.addSuccessor("f");
-        assertEquals("a", node.getFirstSuccessorKey());
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        node.addSuccessor(new StringSequence("a"));
+        node.addSuccessor(new StringSequence("b"));
+        node.addSuccessor(new StringSequence("c"));
+        node.addSuccessor(new StringSequence("d"));
+        node.addSuccessor(new StringSequence("e"));
+        node.addSuccessor(new StringSequence("f"));
+        assertEquals(new StringSequence("a"), node.getFirstSuccessorKey());
     }
 
     @Test
     public final void testGetLastSuccessorKey() {
-        SortedListNode<String, String> node = new SortedListNode<>(null);
-        node.addSuccessor("a");
-        node.addSuccessor("b");
-        node.addSuccessor("c");
-        node.addSuccessor("d");
-        node.addSuccessor("e");
-        node.addSuccessor("f");
-        assertEquals("f", node.getLastSuccessorKey());
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        node.addSuccessor(new StringSequence("a"));
+        node.addSuccessor(new StringSequence("b"));
+        node.addSuccessor(new StringSequence("c"));
+        node.addSuccessor(new StringSequence("d"));
+        node.addSuccessor(new StringSequence("e"));
+        node.addSuccessor(new StringSequence("f"));
+        assertEquals(new StringSequence("f"), node.getLastSuccessorKey());
     }
 
     @Test
     public final void testIndexOf() {
-        SortedListNode<String, String> node = new SortedListNode<>(null);
-        node.addSuccessor("a");
-        node.addSuccessor("b");
-        node.addSuccessor("c");
-        node.addSuccessor("d");
-        node.addSuccessor("e");
-        node.addSuccessor("f");
-        assertEquals(2, node.indexOf("c"));
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        node.addSuccessor(new StringSequence("a"));
+        node.addSuccessor(new StringSequence("b"));
+        node.addSuccessor(new StringSequence("c"));
+        node.addSuccessor(new StringSequence("d"));
+        node.addSuccessor(new StringSequence("e"));
+        node.addSuccessor(new StringSequence("f"));
+        assertEquals(2, node.indexOf(new StringSequence("c")));
     }
 
     @Test
     public final void testClone() {
-        String key = "key";
-        SortedListNode<String, String> node = new SortedListNode<>(null);
+        StringSequence key = new StringSequence("key");
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
         node.setNodeValue(new NodeValue<>("value"));
         node.addSuccessor(key);
-        Node<String, String> clone = node.clone();
+        Node<StringSequence, String> clone = node.clone();
         assertTrue(node.equals(clone));
         assertFalse(node == clone);
         assertFalse(node.getSuccessor(key) == clone.getSuccessor(key));
@@ -224,8 +225,8 @@ public class SortedListNodeTest {
     @Test
     public final void testToString() {
         String value = "value";
-        String key = "key";
-        SortedListNode<String, String> node = new SortedListNode<>(null);
+        StringSequence key = new StringSequence("key");
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
         node.setNodeValue(new NodeValue<>(value));
         node.addSuccessor(key);
         assertEquals("Node{value=" + value + ", successors=[" + key + "]}", node.toString());
@@ -233,8 +234,8 @@ public class SortedListNodeTest {
 
     @Test
     public final void testHashCode() {
-        SortedListNode<String, String> node1 = new SortedListNode<>(null);
-        SortedListNode<String, String> node2 = new SortedListNode<>(null);
+        SortedListNode<StringSequence, String> node1 = new SortedListNode<>(null);
+        SortedListNode<StringSequence, String> node2 = new SortedListNode<>(null);
         assertEquals(node1.hashCode(), node1.hashCode());
         assertEquals(node1.hashCode(), node2.hashCode());
         node1.setNodeValue(new NodeValue<>("foo"));
@@ -243,19 +244,19 @@ public class SortedListNodeTest {
         assertNotEquals(node1.hashCode(), node2.hashCode());
         node2.setNodeValue(new NodeValue<>("foo"));
         assertEquals(node1.hashCode(), node2.hashCode());
-        node1.addSuccessor("foo");
+        node1.addSuccessor(new StringSequence("foo"));
         assertNotEquals(node1.hashCode(), node2.hashCode());
-        node2.addSuccessor("bar");
+        node2.addSuccessor(new StringSequence("bar"));
         assertNotEquals(node1.hashCode(), node2.hashCode());
-        node1.addSuccessor("bar");
-        node2.addSuccessor("foo");
+        node1.addSuccessor(new StringSequence("bar"));
+        node2.addSuccessor(new StringSequence("foo"));
         assertEquals(node1.hashCode(), node2.hashCode());
     }
 
     @Test
     public final void testEquals() {
-        SortedListNode<String, String> node1 = new SortedListNode<>(null);
-        SortedListNode<String, String> node2 = new SortedListNode<>(null);
+        SortedListNode<StringSequence, String> node1 = new SortedListNode<>(null);
+        SortedListNode<StringSequence, String> node2 = new SortedListNode<>(null);
         assertFalse(node1.equals(null));
         assertFalse(node1.equals(new Object()));
         assertTrue(node1.equals(node1));
@@ -266,12 +267,12 @@ public class SortedListNodeTest {
         assertFalse(node1.equals(node2));
         node2.setNodeValue(new NodeValue<>("foo"));
         assertTrue(node1.equals(node2));
-        node1.addSuccessor("foo");
+        node1.addSuccessor(new StringSequence("foo"));
         assertFalse(node1.equals(node2));
-        node2.addSuccessor("bar");
+        node2.addSuccessor(new StringSequence("bar"));
         assertFalse(node1.equals(node2));
-        node1.addSuccessor("bar");
-        node2.addSuccessor("foo");
+        node1.addSuccessor(new StringSequence("bar"));
+        node2.addSuccessor(new StringSequence("foo"));
         assertTrue(node1.equals(node2));
     }
 

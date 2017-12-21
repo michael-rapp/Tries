@@ -15,6 +15,7 @@ package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
+import de.mrapp.tries.Sequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +30,7 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public abstract class AbstractNode<KeyType, ValueType> implements
+public abstract class AbstractNode<KeyType extends Sequence, ValueType> implements
         Node<KeyType, ValueType> {
 
     /**

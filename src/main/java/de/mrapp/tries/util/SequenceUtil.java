@@ -161,7 +161,7 @@ public class SequenceUtil {
      * Comparator}. The comparator may not be null
      */
     @NotNull
-    public static <T> Comparator<T> comparator(
+    public static <T extends Sequence> Comparator<T> comparator(
             @Nullable final Comparator<? super T> comparator) {
         return new SequenceComparator<>(comparator);
     }

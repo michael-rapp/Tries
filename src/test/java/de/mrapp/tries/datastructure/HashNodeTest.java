@@ -15,6 +15,7 @@ package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
+import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -32,7 +33,7 @@ public class HashNodeTest {
 
     @Test
     public final void testConstructor() {
-        HashNode<String, String> node = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         assertEquals(0, node.getSuccessorCount());
         assertEquals(0, node.getSuccessorValueCount());
         assertNull(node.getPredecessor());
@@ -46,7 +47,7 @@ public class HashNodeTest {
     public final void testSetNodeValue() {
         String value = "value";
         NodeValue<String> nodeValue = new NodeValue<>(value);
-        HashNode<String, String> node = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.setNodeValue(nodeValue);
         assertEquals(nodeValue, node.getNodeValue());
         assertEquals(value, node.getValue());
@@ -55,51 +56,51 @@ public class HashNodeTest {
 
     @Test
     public final void testAddSuccessor1() {
-        String key = "key";
-        HashNode<String, String> node = new HashNode<>();
-        Node<String, String> successor = node.addSuccessor(key);
+        StringSequence key = new StringSequence("key");
+        HashNode<StringSequence, String> node = new HashNode<>();
+        Node<StringSequence, String> successor = node.addSuccessor(key);
         assertNotNull(successor);
         assertEquals(1, node.getSuccessorCount());
         assertEquals(successor, node.getSuccessor(key));
         assertEquals(0, node.getSuccessorValueCount());
-        Iterator<String> iterator = node.iterator();
+        Iterator<StringSequence> iterator = node.iterator();
         assertEquals(key, iterator.next());
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public final void testAddSuccessor2() {
-        String key = "key";
-        Node<String, String> successor = new HashNode<>();
+        StringSequence key = new StringSequence("key");
+        Node<StringSequence, String> successor = new HashNode<>();
         successor.setNodeValue(new NodeValue<>("value"));
-        HashNode<String, String> node = new HashNode<>();
-        Node<String, String> result = node.addSuccessor(key, successor);
+        HashNode<StringSequence, String> node = new HashNode<>();
+        Node<StringSequence, String> result = node.addSuccessor(key, successor);
         assertEquals(successor, result);
         assertEquals(1, node.getSuccessorCount());
         assertEquals(successor, node.getSuccessor(key));
         assertEquals(1, node.getSuccessorValueCount());
-        Iterator<String> iterator = node.iterator();
+        Iterator<StringSequence> iterator = node.iterator();
         assertEquals(key, iterator.next());
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public final void testRemoveSuccessor() {
-        String key = "key";
-        HashNode<String, String> node = new HashNode<>();
+        StringSequence key = new StringSequence("key");
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.addSuccessor(key);
         node.removeSuccessor(key);
         assertEquals(0, node.getSuccessorCount());
         assertNull(node.getSuccessor(key));
         assertEquals(0, node.getSuccessorValueCount());
-        Iterator<String> iterator = node.iterator();
+        Iterator<StringSequence> iterator = node.iterator();
         assertFalse(iterator.hasNext());
     }
 
     @Test
     public final void testIncreaseSuccessorValueCount() {
         int by = 2;
-        HashNode<String, String> node = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.increaseSuccessorValueCount(by);
         assertEquals(by, node.getSuccessorValueCount());
     }
@@ -107,7 +108,7 @@ public class HashNodeTest {
     @Test
     public final void testDecreaseSuccessorValueCount() {
         int by = 2;
-        HashNode<String, String> node = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.increaseSuccessorValueCount(by);
         node.decreaseSuccessorValueCount(by);
         assertEquals(0, node.getSuccessorValueCount());
@@ -115,8 +116,8 @@ public class HashNodeTest {
 
     @Test
     public final void testSetPredecessor() {
-        Node<String, String> predecessor = new HashNode<>();
-        HashNode<String, String> node = new HashNode<>();
+        Node<StringSequence, String> predecessor = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.increaseSuccessorValueCount(1);
         node.setPredecessor(predecessor);
         assertEquals(predecessor, node.getPredecessor());
@@ -124,53 +125,53 @@ public class HashNodeTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public final void testGetSuccessorByIndex() {
-        HashNode<String, String> node = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.getSuccessor(0);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public final void testGetFirstSuccessor() {
-        HashNode<String, String> node = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.getFirstSuccessor();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public final void testGetLastSuccessor() {
-        HashNode<String, String> node = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.getLastSuccessor();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public final void testGetSuccessorKey() {
-        HashNode<String, String> node = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.getSuccessorKey(2);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public final void testGetFirstSuccessorKey() {
-        HashNode<String, String> node = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.getFirstSuccessorKey();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public final void testGetLastSuccessorKey() {
-        HashNode<String, String> node = new HashNode<>();
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.getLastSuccessorKey();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public final void testIndexOf() {
-        HashNode<String, String> node = new HashNode<>();
-        node.indexOf("c");
+        HashNode<StringSequence, String> node = new HashNode<>();
+        node.indexOf(new StringSequence("c"));
     }
 
     @Test
     public final void testClone() {
-        String key = "key";
-        HashNode<String, String> node = new HashNode<>();
+        StringSequence key = new StringSequence("key");
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.setNodeValue(new NodeValue<>("value"));
         node.addSuccessor(key);
-        Node<String, String> clone = node.clone();
+        Node<StringSequence, String> clone = node.clone();
         assertTrue(node.equals(clone));
         assertFalse(node == clone);
         assertFalse(node.getSuccessor(key) == clone.getSuccessor(key));
@@ -179,8 +180,8 @@ public class HashNodeTest {
     @Test
     public final void testToString() {
         String value = "value";
-        String key = "key";
-        HashNode<String, String> node = new HashNode<>();
+        StringSequence key = new StringSequence("key");
+        HashNode<StringSequence, String> node = new HashNode<>();
         node.setNodeValue(new NodeValue<>(value));
         node.addSuccessor(key);
         assertEquals("Node{value=" + value + ", successors=[" + key + "]}", node.toString());
@@ -188,8 +189,8 @@ public class HashNodeTest {
 
     @Test
     public final void testHashCode() {
-        HashNode<String, String> node1 = new HashNode<>();
-        HashNode<String, String> node2 = new HashNode<>();
+        HashNode<StringSequence, String> node1 = new HashNode<>();
+        HashNode<StringSequence, String> node2 = new HashNode<>();
         assertEquals(node1.hashCode(), node1.hashCode());
         assertEquals(node1.hashCode(), node2.hashCode());
         node1.setNodeValue(new NodeValue<>("foo"));
@@ -198,19 +199,19 @@ public class HashNodeTest {
         assertNotEquals(node1.hashCode(), node2.hashCode());
         node2.setNodeValue(new NodeValue<>("foo"));
         assertEquals(node1.hashCode(), node2.hashCode());
-        node1.addSuccessor("foo");
+        node1.addSuccessor(new StringSequence("foo"));
         assertNotEquals(node1.hashCode(), node2.hashCode());
-        node2.addSuccessor("bar");
+        node2.addSuccessor(new StringSequence("bar"));
         assertNotEquals(node1.hashCode(), node2.hashCode());
-        node1.addSuccessor("bar");
-        node2.addSuccessor("foo");
+        node1.addSuccessor(new StringSequence("bar"));
+        node2.addSuccessor(new StringSequence("foo"));
         assertEquals(node1.hashCode(), node2.hashCode());
     }
 
     @Test
     public final void testEquals() {
-        HashNode<String, String> node1 = new HashNode<>();
-        HashNode<String, String> node2 = new HashNode<>();
+        HashNode<StringSequence, String> node1 = new HashNode<>();
+        HashNode<StringSequence, String> node2 = new HashNode<>();
         assertFalse(node1.equals(null));
         assertFalse(node1.equals(new Object()));
         assertTrue(node1.equals(node1));
@@ -221,12 +222,12 @@ public class HashNodeTest {
         assertFalse(node1.equals(node2));
         node2.setNodeValue(new NodeValue<>("foo"));
         assertTrue(node1.equals(node2));
-        node1.addSuccessor("foo");
+        node1.addSuccessor(new StringSequence("foo"));
         assertFalse(node1.equals(node2));
-        node2.addSuccessor("bar");
+        node2.addSuccessor(new StringSequence("bar"));
         assertFalse(node1.equals(node2));
-        node1.addSuccessor("bar");
-        node2.addSuccessor("foo");
+        node1.addSuccessor(new StringSequence("bar"));
+        node2.addSuccessor(new StringSequence("foo"));
         assertTrue(node1.equals(node2));
     }
 

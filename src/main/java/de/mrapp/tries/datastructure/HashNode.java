@@ -14,6 +14,7 @@
 package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Node;
+import de.mrapp.tries.Sequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +32,8 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class HashNode<KeyType, ValueType> extends AbstractNode<KeyType, ValueType> {
+public class HashNode<KeyType extends Sequence, ValueType> extends
+        AbstractNode<KeyType, ValueType> {
 
     /**
      * The constant serial version UID.

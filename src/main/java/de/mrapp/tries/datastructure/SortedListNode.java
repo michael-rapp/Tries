@@ -14,6 +14,7 @@
 package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Node;
+import de.mrapp.tries.Sequence;
 import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.SortedArrayList;
 import org.jetbrains.annotations.NotNull;
@@ -34,8 +35,8 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, ValueType> implements
-        RandomAccess {
+public class SortedListNode<KeyType extends Sequence, ValueType> extends
+        AbstractNode<KeyType, ValueType> implements RandomAccess {
 
     /**
      * A directed edge, which references a successor of a node.
@@ -43,7 +44,8 @@ public class SortedListNode<KeyType, ValueType> extends AbstractNode<KeyType, Va
      * @param <K> The type of the key, the successor corresponds to
      * @param <V> The type of the successor's value
      */
-    private static class Edge<K, V> implements Serializable, Comparable<Edge<K, V>> {
+    private static class Edge<K extends Sequence, V> implements Serializable,
+            Comparable<Edge<K, V>> {
 
         /**
          * The constant serial version UID.
