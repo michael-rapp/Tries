@@ -165,6 +165,7 @@ public class UnmodifiableNode<KeyType extends Sequence, ValueType> implements
         return node.hashCode();
     }
 
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override
     public final boolean equals(final Object obj) {
         return node.equals(obj);
