@@ -15,10 +15,27 @@ package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.StringTrieWrapper;
 
+/**
+ * An unsorted trie, which uses hash maps for storing the successors of nodes. It is the pendant of
+ * the class {@link HashTrie} for using character sequences as keys. This trie implementation has
+ * the same properties as a {@link HashTrie}. It should be preferred when using character sequences,
+ * because it offers a less complex API.
+ *
+ * @param <ValueType>
+ * @author Michael Rapp
+ * @since 1.0.0
+ */
 public class StringHashTrie<ValueType> extends StringTrieWrapper<ValueType> {
 
+    /**
+     * The constant serial version UID.
+     */
     private static final long serialVersionUID = -7644211622938905272L;
 
+    /**
+     * Creates a new empty, unsorted trie for storing character sequences, which uses hash maps for
+     * storing the successors of nodes.
+     */
     public StringHashTrie() {
         super(new HashTrie<>());
     }

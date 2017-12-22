@@ -32,6 +32,8 @@ import java.util.NoSuchElementException;
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by trie
+ * @author Michael Rapp
+ * @since 1.0.0
  */
 public class HashTrie<SequenceType extends Sequence, ValueType> extends
         AbstractTrie<SequenceType, ValueType> {
