@@ -293,7 +293,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         final boolean fromStart, toEnd;
         final boolean fromInclusive, toInclusive;
 
-        private boolean isTooLow(@NotNull final K key) {
+        private boolean isTooLow(@Nullable final K key) {
             if (!fromStart) {
                 int c = comparator.compare(key, fromKey);
                 return c < 0 || (c == 0 && !fromInclusive);
@@ -302,7 +302,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return false;
         }
 
-        private boolean isTooHigh(@NotNull final K key) {
+        private boolean isTooHigh(@Nullable final K key) {
             if (!toEnd) {
                 int c = comparator.compare(key, toKey);
                 return c > 0 || (c == 0 && !toInclusive);
@@ -311,16 +311,16 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return false;
         }
 
-        private boolean isInRange(@NotNull final K key) {
+        private boolean isInRange(@Nullable final K key) {
             return !isTooLow(key) && !isTooHigh(key);
         }
 
-        private boolean isInClosedRange(@NotNull final K key) {
+        private boolean isInClosedRange(@Nullable final K key) {
             return (fromStart || comparator.compare(key, fromKey) >= 0) &&
                     (toEnd || comparator.compare(toKey, key) >= 0);
         }
 
-        final boolean isInRange(@NotNull final K key, final boolean inclusive) {
+        final boolean isInRange(@Nullable final K key, final boolean inclusive) {
             return inclusive ? isInRange(key) : isInClosedRange(key);
         }
 
@@ -343,7 +343,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         @Nullable
-        final Map.Entry<K, V> getCeilingEntry(@NotNull final K key) {
+        final Map.Entry<K, V> getCeilingEntry(@Nullable final K key) {
             if (isTooLow(key)) {
                 return getLowestEntry();
             }
@@ -353,7 +353,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         @Nullable
-        final Map.Entry<K, V> getHigherEntry(@NotNull final K key) {
+        final Map.Entry<K, V> getHigherEntry(@Nullable final K key) {
             if (isTooLow(key)) {
                 return getLowestEntry();
             }
@@ -363,7 +363,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         @Nullable
-        final Map.Entry<K, V> getFloorEntry(@NotNull final K key) {
+        final Map.Entry<K, V> getFloorEntry(@Nullable final K key) {
             if (isTooHigh(key)) {
                 return getHighestEntry();
             }
@@ -373,7 +373,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         @Nullable
-        final Map.Entry<K, V> getLowerKey(@NotNull final K key) {
+        final Map.Entry<K, V> getLowerKey(@Nullable final K key) {
             if (isTooHigh(key)) {
                 return getHighestEntry();
             }
@@ -404,13 +404,13 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         protected abstract Map.Entry<K, V> onGetHighestEntry();
 
-        protected abstract Map.Entry<K, V> onGetCeilingEntry(@NotNull final K key);
+        protected abstract Map.Entry<K, V> onGetCeilingEntry(@Nullable final K key);
 
-        protected abstract Map.Entry<K, V> onGetHigherEntry(@NotNull final K key);
+        protected abstract Map.Entry<K, V> onGetHigherEntry(@Nullable final K key);
 
-        protected abstract Map.Entry<K, V> onGetFloorEntry(@NotNull final K key);
+        protected abstract Map.Entry<K, V> onGetFloorEntry(@Nullable final K key);
 
-        protected abstract Map.Entry<K, V> onGetLowerEntry(@NotNull final K key);
+        protected abstract Map.Entry<K, V> onGetLowerEntry(@Nullable final K key);
 
         AbstractSubMap(@NotNull final AbstractSortedTrie<K, V> trie,
                        final boolean fromStart, @Nullable final K fromKey,
@@ -672,22 +672,22 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         @Override
-        protected Map.Entry<K, V> onGetCeilingEntry(@NotNull final K key) {
+        protected Map.Entry<K, V> onGetCeilingEntry(@Nullable final K key) {
             return getCeilingEntry(key);
         }
 
         @Override
-        protected Map.Entry<K, V> onGetHigherEntry(@NotNull final K key) {
+        protected Map.Entry<K, V> onGetHigherEntry(@Nullable final K key) {
             return getHigherEntry(key);
         }
 
         @Override
-        protected Map.Entry<K, V> onGetFloorEntry(@NotNull final K key) {
+        protected Map.Entry<K, V> onGetFloorEntry(@Nullable final K key) {
             return getFloorEntry(key);
         }
 
         @Override
-        protected Map.Entry<K, V> onGetLowerEntry(@NotNull final K key) {
+        protected Map.Entry<K, V> onGetLowerEntry(@Nullable final K key) {
             return getLowerKey(key);
         }
 
@@ -787,22 +787,22 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         @Override
-        protected Map.Entry<K, V> onGetCeilingEntry(@NotNull final K key) {
+        protected Map.Entry<K, V> onGetCeilingEntry(@Nullable final K key) {
             return getFloorEntry(key);
         }
 
         @Override
-        protected Map.Entry<K, V> onGetHigherEntry(@NotNull final K key) {
+        protected Map.Entry<K, V> onGetHigherEntry(@Nullable final K key) {
             return getLowerKey(key);
         }
 
         @Override
-        protected Map.Entry<K, V> onGetFloorEntry(@NotNull final K key) {
+        protected Map.Entry<K, V> onGetFloorEntry(@Nullable final K key) {
             return getCeilingEntry(key);
         }
 
         @Override
-        protected Map.Entry<K, V> onGetLowerEntry(@NotNull final K key) {
+        protected Map.Entry<K, V> onGetLowerEntry(@Nullable final K key) {
             return getHigherEntry(key);
         }
 

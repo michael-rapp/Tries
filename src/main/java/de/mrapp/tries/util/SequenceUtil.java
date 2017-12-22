@@ -54,8 +54,12 @@ public class SequenceUtil {
 
         @SuppressWarnings("unchecked")
         @Override
-        public final int compare(final T o1, final T o2) {
-            if (comparator != null) {
+        public final int compare(@Nullable final T o1, @Nullable final T o2) {
+            if (o1 == null) {
+                return o2 != null ? -1 : 0;
+            } else if (o2 == null) {
+                return 1;
+            } else if (comparator != null) {
                 return comparator.compare(o1, o2);
             } else {
                 return ((Comparable<? super T>) o1).compareTo(o2);

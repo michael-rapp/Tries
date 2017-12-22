@@ -1185,6 +1185,57 @@ public class SortedListTrieTest {
     }
 
     @Test
+    public void testHeadMap1() {
+        testPutWithEmptyKey();
+        SortedMap<StringSequence, String> subMap = trie.headMap(new StringSequence("inn"));
+        assertEquals(4, subMap.size());
+        Iterator<Map.Entry<StringSequence, String>> iterator = subMap.entrySet().iterator();
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(null, "empty"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("A"), null),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("B"), "tea"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("in"), "in"),
+                iterator.next());
+        assertFalse(iterator.hasNext());
+        assertNull(subMap.firstKey());
+        assertEquals(new StringSequence("in"), subMap.lastKey());
+    }
+
+    @Test
+    public void testHeadMap2() {
+        testPutWithEmptyKey();
+        NavigableMap<StringSequence, String> subMap = trie.headMap(new StringSequence("inn"), true);
+        assertEquals(5, subMap.size());
+        Iterator<Map.Entry<StringSequence, String>> iterator = subMap.entrySet().iterator();
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(null, "empty"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("A"), null),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("B"), "tea"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("in"), "in"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("inn"), "inn"),
+                iterator.next());
+        assertFalse(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(null, "empty"), subMap.firstEntry());
+        assertNull(subMap.firstKey());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("inn"), "inn"),
+                subMap.lastEntry());
+        assertEquals(new StringSequence("inn"), subMap.lastKey());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("A"), null),
+                subMap.higherEntry(null));
+        assertEquals(new StringSequence("A"), subMap.higherKey(null));
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("in"), "in"),
+                subMap.lowerEntry(new StringSequence("inn")));
+        assertEquals(new StringSequence("in"), subMap.lowerKey(new StringSequence("inn")));
+        assertNull(subMap.higherEntry(new StringSequence("inn")));
+        assertNull(subMap.higherKey(new StringSequence("inn")));
+    }
+
+    @Test
     public void testDescendingMap() {
         testPut6();
         NavigableMap<StringSequence, String> map = trie.descendingMap();

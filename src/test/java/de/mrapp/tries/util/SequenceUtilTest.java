@@ -82,6 +82,24 @@ public class SequenceUtilTest {
     }
 
     @Test
+    public final void testCompareIfFirstKeyIsNullAndSecondKeyIsNotNull() {
+        Comparator<StringSequence> sequenceComparator = SequenceUtil.comparator(null);
+        assertEquals(-1, sequenceComparator.compare(null, new StringSequence("foo")));
+    }
+
+    @Test
+    public final void testCompareIfFirstKeyIsNullAndSecondKeyIsNull() {
+        Comparator<StringSequence> sequenceComparator = SequenceUtil.comparator(null);
+        assertEquals(0, sequenceComparator.compare(null, null));
+    }
+
+    @Test
+    public final void testCompareIfFirstKeyIsNotNullAndSecondKeyIsNull() {
+        Comparator<StringSequence> sequenceComparator = SequenceUtil.comparator(null);
+        assertEquals(1, sequenceComparator.compare(new StringSequence("foo"), null));
+    }
+
+    @Test
     public final void testCompareIfComparatorIsNotNull() {
         StringSequence sequence1 = new StringSequence("foo");
         StringSequence sequence2 = new StringSequence("bar");
