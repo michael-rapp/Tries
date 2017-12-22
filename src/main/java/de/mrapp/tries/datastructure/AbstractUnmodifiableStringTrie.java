@@ -48,7 +48,7 @@ public abstract class AbstractUnmodifiableStringTrie<ValueType, TrieType extends
     final TrieType trie;
 
     /**
-     * Creates a new unmodifiable string trie.
+     * Creates a new immutable string trie.
      *
      * @param trie The trie, which should be encapsulated, as an instance of the generic type {@link
      *             TrieType}. The trie may not be null

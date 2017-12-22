@@ -32,7 +32,7 @@ public class UnmodifiableStringTrie<ValueType> extends
     private static final long serialVersionUID = -8264815490947715555L;
 
     /**
-     * Creates a new unmodifiable string trie.
+     * Creates a new immutable {@link StringTrie}.
      *
      * @param trie The trie, which should be encapsulated, as an instance of the type {@link
      *             StringTrie}. The trie may not be null

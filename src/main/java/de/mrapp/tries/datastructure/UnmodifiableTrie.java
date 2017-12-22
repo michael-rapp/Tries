@@ -34,7 +34,7 @@ public class UnmodifiableTrie<SequenceType extends Sequence, ValueType> extends
     private static final long serialVersionUID = -2560009535838740381L;
 
     /**
-     * Creates a new unmodifiable trie.
+     * Creates a new immutable {@link Trie}.
      *
      * @param trie The trie, which should be encapsulated, as an instance of the type {@link Trie}.
      *             The trie may not be null

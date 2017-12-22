@@ -47,7 +47,7 @@ public class UnmodifiableNode<KeyType extends Sequence, ValueType> implements
     private final Node<KeyType, ValueType> node;
 
     /**
-     * Creates a new unmodifiable node.
+     * Creates a new immutable node.
      *
      * @param node The node, which should be encapsulated, as an instance of the type {@link Node}.
      *             The node may not be null

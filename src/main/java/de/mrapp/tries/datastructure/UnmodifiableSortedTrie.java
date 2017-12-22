@@ -37,7 +37,7 @@ public class UnmodifiableSortedTrie<SequenceType extends Sequence, ValueType> ex
     private static final long serialVersionUID = -8271396585626759384L;
 
     /**
-     * Creates a new unmodifiable {@link SortedTrie}.
+     * Creates a new immutable {@link SortedTrie}.
      *
      * @param trie The trie, which should be encapsulated, as an instance of the generic type {@link
      *             SortedTrie}. The trie may not be null

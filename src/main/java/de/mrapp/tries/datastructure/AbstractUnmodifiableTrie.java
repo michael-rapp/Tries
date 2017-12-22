@@ -50,7 +50,7 @@ public abstract class AbstractUnmodifiableTrie<SequenceType extends Sequence, Va
     final TrieType trie;
 
     /**
-     * Creates a new unmodifiable trie.
+     * Creates a new immutable trie.
      *
      * @param trie The trie, which should be encapsulated, as an instance of the generic type {@link
      *             TrieType}. The trie may not be null
