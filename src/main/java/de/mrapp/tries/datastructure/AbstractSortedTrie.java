@@ -260,7 +260,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
             @Override
             public final boolean hasNext() {
-                return next != null && next.getKey() != fenceKey;
+                return next != null && !fenceKey.equals(next.getKey());
             }
 
             @Override
@@ -598,7 +598,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                         ensureEqual(modificationCount, trie.modificationCount, null,
                                 ConcurrentModificationException.class);
                         ensureNotNull(next, null, NoSuchElementException.class);
-                        ensureFalse(next.getKey() == fenceKey, null, NoSuchElementException.class);
+                        ensureFalse(fenceKey.equals(next.getKey()), null,
+                                NoSuchElementException.class);
                         Map.Entry<K, V> entry = next;
                         next = trie.higherEntry(entry.getKey());
                         lastReturned = entry;
@@ -707,7 +708,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                         ensureEqual(modificationCount, trie.modificationCount, null,
                                 ConcurrentModificationException.class);
                         ensureNotNull(next, null, NoSuchElementException.class);
-                        ensureFalse(next.getKey() == fenceKey, null, NoSuchElementException.class);
+                        ensureFalse(fenceKey.equals(next.getKey()), null,
+                                NoSuchElementException.class);
                         Map.Entry<K, V> entry = next;
                         next = trie.lowerEntry(entry.getKey());
                         lastReturned = entry;
@@ -1011,68 +1013,32 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final SequenceType lowerKey(final SequenceType key) {
-        Entry<SequenceType, ValueType> entry = lowerEntry(key);
-
-        if (entry != null) {
-            return entry.getKey();
-        }
-
-        throw new NoSuchElementException();
+        return EntryUtil.getKey(lowerEntry(key));
     }
 
     @Override
     public final SequenceType higherKey(final SequenceType key) {
-        Entry<SequenceType, ValueType> entry = higherEntry(key);
-
-        if (entry != null) {
-            return entry.getKey();
-        }
-
-        throw new NoSuchElementException();
+        return EntryUtil.getKey(higherEntry(key));
     }
 
     @Override
     public final SequenceType floorKey(final SequenceType key) {
-        Entry<SequenceType, ValueType> entry = floorEntry(key);
-
-        if (entry != null) {
-            return entry.getKey();
-        }
-
-        throw new NoSuchElementException();
+        return EntryUtil.getKey(floorEntry(key));
     }
 
     @Override
     public final SequenceType ceilingKey(final SequenceType key) {
-        Entry<SequenceType, ValueType> entry = ceilingEntry(key);
-
-        if (entry != null) {
-            return entry.getKey();
-        }
-
-        throw new NoSuchElementException();
+        return EntryUtil.getKey(ceilingEntry(key));
     }
 
     @Override
     public final SequenceType firstKey() {
-        Entry<SequenceType, ValueType> entry = firstEntry();
-
-        if (entry != null) {
-            return entry.getKey();
-        }
-
-        throw new NoSuchElementException();
+        return EntryUtil.getKeyOrThrowException(firstEntry());
     }
 
     @Override
     public final SequenceType lastKey() {
-        Entry<SequenceType, ValueType> entry = lastEntry();
-
-        if (entry != null) {
-            return entry.getKey();
-        }
-
-        throw new NoSuchElementException();
+        return EntryUtil.getKeyOrThrowException(lastEntry());
     }
 
     @Override
@@ -1133,12 +1099,14 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final Entry<SequenceType, ValueType> floorEntry(final SequenceType key) {
-        return lowerEntry(key);
+        Node<SequenceType, ValueType> node = getNode(key);
+        return node != null ? new AbstractMap.SimpleImmutableEntry<>(key, node.getValue()) : null;
     }
 
     @Override
     public final Entry<SequenceType, ValueType> ceilingEntry(final SequenceType key) {
-        return higherEntry(key);
+        Node<SequenceType, ValueType> node = getNode(key);
+        return node != null ? new AbstractMap.SimpleImmutableEntry<>(key, node.getValue()) : null;
     }
 
     @Override
