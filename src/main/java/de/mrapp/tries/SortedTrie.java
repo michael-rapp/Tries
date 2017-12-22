@@ -36,10 +36,10 @@ public interface SortedTrie<SequenceType extends Sequence, ValueType>
         extends NavigableMap<SequenceType, ValueType>, Trie<SequenceType, ValueType> {
 
     /**
-     * see {@link Trie#subTree(Sequence)}
+     * see {@link Trie#subTrie(Sequence)}
      */
     @NotNull
     @Override
-    SortedTrie<SequenceType, ValueType> subTree(@NotNull SequenceType sequence);
+    SortedTrie<SequenceType, ValueType> subTrie(@NotNull SequenceType sequence);
 
 }

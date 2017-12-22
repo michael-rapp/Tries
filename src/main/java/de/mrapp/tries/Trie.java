@@ -53,9 +53,9 @@ public interface Trie<SequenceType extends Sequence, ValueType> extends
     Node<SequenceType, ValueType> getRootNode();
 
     /**
-     * Returns the subtree of the node, which corresponds to a specific sequence. If the given
-     * sequence is not contained by the trie, a {@link java.util.NoSuchElementException} will be
-     * thrown.
+     * Returns the subtree of the node, which corresponds to a specific sequence (not necessarily a
+     * key, which is contained by the trie, but a suffix). If the given sequence is not contained by
+     * the trie, a {@link java.util.NoSuchElementException} will be thrown.
      *
      * @param sequence The sequence as an instance of the generic type {@link SequenceType}. The
      *                 sequence may not be null
@@ -63,6 +63,6 @@ public interface Trie<SequenceType extends Sequence, ValueType> extends
      * the type {@link Trie}. The subtree may not be null
      */
     @NotNull
-    Trie<SequenceType, ValueType> subTree(@NotNull SequenceType sequence);
+    Trie<SequenceType, ValueType> subTrie(@NotNull SequenceType sequence);
 
 }

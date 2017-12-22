@@ -152,8 +152,8 @@ public class UnmodifiableStringTrieTest {
     public final void testSubTree() {
         String key = "foo";
         StringTrie<String> subTrie = mock(StringTrie.class);
-        when(trie.subTree(key)).thenReturn(subTrie);
-        StringTrie<String> result = unmodifiableTrie.subTree(key);
+        when(trie.subTrie(key)).thenReturn(subTrie);
+        StringTrie<String> result = unmodifiableTrie.subTrie(key);
         assertTrue(result instanceof UnmodifiableStringTrie);
         assertEquals(result, subTrie);
     }

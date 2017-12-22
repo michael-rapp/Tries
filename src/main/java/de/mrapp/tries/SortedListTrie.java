@@ -46,7 +46,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
 
     @NotNull
     @Override
-    public final SortedListTrie<SequenceType, ValueType> subTree(
+    public final SortedListTrie<SequenceType, ValueType> subTrie(
             @NotNull final SequenceType sequence) {
         Node<SequenceType, ValueType> node = getNode(sequence);
 

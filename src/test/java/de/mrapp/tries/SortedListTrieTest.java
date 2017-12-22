@@ -647,7 +647,7 @@ public class SortedListTrieTest {
     @Test
     public void testSubTree1() {
         testPut7();
-        SortedListTrie<StringSequence, String> subTrie = trie.subTree(new StringSequence("t"));
+        SortedListTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("t"));
         assertFalse(subTrie.isEmpty());
         assertEquals(4, subTrie.size());
         verifyRootNode(subTrie.getRootNode());
@@ -669,7 +669,7 @@ public class SortedListTrieTest {
     @Test
     public void testSubTree2() {
         testPut7();
-        SortedListTrie<StringSequence, String> subTrie = trie.subTree(new StringSequence("te"));
+        SortedListTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("te"));
         assertFalse(subTrie.isEmpty());
         assertEquals(3, subTrie.size());
         verifyRootNode(subTrie.getRootNode());

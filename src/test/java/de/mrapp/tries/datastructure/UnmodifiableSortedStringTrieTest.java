@@ -15,8 +15,6 @@ package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Node;
 import de.mrapp.tries.SortedStringTrie;
-import de.mrapp.tries.SortedTrie;
-import de.mrapp.tries.Trie;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
@@ -408,8 +406,8 @@ public class UnmodifiableSortedStringTrieTest {
     public final void testSubTree() {
         String key = "foo";
         SortedStringTrie<String> subTrie = mock(SortedStringTrie.class);
-        when(trie.subTree(key)).thenReturn(subTrie);
-        SortedStringTrie<String> result = unmodifiableTrie.subTree(key);
+        when(trie.subTrie(key)).thenReturn(subTrie);
+        SortedStringTrie<String> result = unmodifiableTrie.subTrie(key);
         assertTrue(result instanceof UnmodifiableSortedStringTrie);
         assertEquals(result, subTrie);
     }

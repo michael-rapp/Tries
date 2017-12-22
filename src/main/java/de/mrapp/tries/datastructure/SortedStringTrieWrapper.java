@@ -250,8 +250,8 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @NotNull
     @Override
-    public final SortedStringTrie<ValueType> subTree(@NotNull final String key) {
-        return new SortedStringTrieWrapper<>(trie.subTree(new StringSequence(key)));
+    public final SortedStringTrie<ValueType> subTrie(@NotNull final String sequence) {
+        return new SortedStringTrieWrapper<>(trie.subTrie(new StringSequence(sequence)));
     }
 
 }

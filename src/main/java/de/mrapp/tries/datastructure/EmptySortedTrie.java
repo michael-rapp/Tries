@@ -167,7 +167,7 @@ public class EmptySortedTrie<SequenceType extends Sequence, ValueType> extends
 
     @NotNull
     @Override
-    public final SortedTrie<SequenceType, ValueType> subTree(@NotNull final SequenceType sequence) {
+    public final SortedTrie<SequenceType, ValueType> subTrie(@NotNull final SequenceType sequence) {
         throw new NoSuchElementException();
     }
 

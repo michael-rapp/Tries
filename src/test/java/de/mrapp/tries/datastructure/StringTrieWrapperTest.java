@@ -203,8 +203,8 @@ public class StringTrieWrapperTest {
     public final void testSubTree() {
         String key = "key";
         Trie<StringSequence, String> subTrie = mock(Trie.class);
-        when(trie.subTree(new StringSequence(key))).thenReturn(subTrie);
-        StringTrie<String> subStringTrie = trieWrapper.subTree(key);
+        when(trie.subTrie(new StringSequence(key))).thenReturn(subTrie);
+        StringTrie<String> subStringTrie = trieWrapper.subTrie(key);
         assertTrue(subStringTrie instanceof StringTrieWrapper);
         assertEquals(subTrie, ((StringTrieWrapper) subStringTrie).trie);
     }

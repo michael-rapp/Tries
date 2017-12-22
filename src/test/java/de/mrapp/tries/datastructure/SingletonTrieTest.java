@@ -129,7 +129,7 @@ public class SingletonTrieTest {
 
     @Test
     public final void testSubTreeIfKeyIsContained() {
-        Trie<StringSequence, String> subTrie = trie.subTree(key);
+        Trie<StringSequence, String> subTrie = trie.subTrie(key);
         assertNotNull(subTrie);
         assertTrue(subTrie instanceof SingletonTrie);
         assertEquals(trie, subTrie);
@@ -137,7 +137,7 @@ public class SingletonTrieTest {
 
     @Test(expected = NoSuchElementException.class)
     public final void testSubTree() {
-        trie.subTree(new StringSequence("nop"));
+        trie.subTrie(new StringSequence("nop"));
     }
 
     @Test

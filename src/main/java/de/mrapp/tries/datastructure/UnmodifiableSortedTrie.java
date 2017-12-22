@@ -177,8 +177,8 @@ public class UnmodifiableSortedTrie<SequenceType extends Sequence, ValueType> ex
 
     @NotNull
     @Override
-    public final SortedTrie<SequenceType, ValueType> subTree(@NotNull final SequenceType sequence) {
-        return new UnmodifiableSortedTrie<>(trie.subTree(sequence));
+    public final SortedTrie<SequenceType, ValueType> subTrie(@NotNull final SequenceType sequence) {
+        return new UnmodifiableSortedTrie<>(trie.subTrie(sequence));
     }
 
 }

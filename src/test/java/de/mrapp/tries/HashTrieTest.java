@@ -638,7 +638,7 @@ public class HashTrieTest {
     @Test
     public void testSubTree1() {
         testPut7();
-        HashTrie<StringSequence, String> subTrie = trie.subTree(new StringSequence("t"));
+        HashTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("t"));
         assertFalse(subTrie.isEmpty());
         assertEquals(4, subTrie.size());
         verifyRootNode(subTrie.getRootNode());
@@ -660,7 +660,7 @@ public class HashTrieTest {
     @Test
     public void testSubTree2() {
         testPut7();
-        HashTrie<StringSequence, String> subTrie = trie.subTree(new StringSequence("te"));
+        HashTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("te"));
         assertFalse(subTrie.isEmpty());
         assertEquals(3, subTrie.size());
         verifyRootNode(subTrie.getRootNode());

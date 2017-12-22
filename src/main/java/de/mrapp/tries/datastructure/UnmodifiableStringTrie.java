@@ -43,8 +43,8 @@ public class UnmodifiableStringTrie<ValueType> extends
 
     @NotNull
     @Override
-    public final StringTrie<ValueType> subTree(@NotNull final String key) {
-        return new UnmodifiableStringTrie<>(trie.subTree(key));
+    public final StringTrie<ValueType> subTrie(@NotNull final String sequence) {
+        return new UnmodifiableStringTrie<>(trie.subTrie(sequence));
     }
 
 }

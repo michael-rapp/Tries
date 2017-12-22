@@ -47,8 +47,8 @@ public class StringTrieWrapper<ValueType> extends
 
     @NotNull
     @Override
-    public final StringTrieWrapper<ValueType> subTree(@NotNull final String key) {
-        return new StringTrieWrapper<>(trie.subTree(new StringSequence(key)));
+    public final StringTrieWrapper<ValueType> subTrie(@NotNull final String sequence) {
+        return new StringTrieWrapper<>(trie.subTrie(new StringSequence(sequence)));
     }
 
 }

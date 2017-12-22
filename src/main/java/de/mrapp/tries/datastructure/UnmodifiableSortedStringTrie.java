@@ -175,8 +175,8 @@ public class UnmodifiableSortedStringTrie<ValueType> extends
 
     @NotNull
     @Override
-    public final SortedStringTrie<ValueType> subTree(@NotNull final String key) {
-        return new UnmodifiableSortedStringTrie<>(trie.subTree(key));
+    public final SortedStringTrie<ValueType> subTrie(@NotNull final String sequence) {
+        return new UnmodifiableSortedStringTrie<>(trie.subTrie(sequence));
     }
 
 }

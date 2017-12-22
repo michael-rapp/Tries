@@ -50,7 +50,7 @@ public class SingletonTrie<SequenceType extends Sequence, ValueType> extends
 
     @NotNull
     @Override
-    public final Trie<SequenceType, ValueType> subTree(@NotNull final SequenceType sequence) {
+    public final Trie<SequenceType, ValueType> subTrie(@NotNull final SequenceType sequence) {
         if (containsKey(sequence)) {
             return this;
         }

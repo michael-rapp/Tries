@@ -420,8 +420,8 @@ public class UnmodifiableSortedTrieTest {
     public final void testSubTree() {
         StringSequence sequence = new StringSequence("foo");
         SortedTrie<StringSequence, String> subTrie = mock(SortedTrie.class);
-        when(trie.subTree(sequence)).thenReturn(subTrie);
-        Trie<StringSequence, String> result = unmodifiableTrie.subTree(sequence);
+        when(trie.subTrie(sequence)).thenReturn(subTrie);
+        Trie<StringSequence, String> result = unmodifiableTrie.subTrie(sequence);
         assertTrue(result instanceof UnmodifiableSortedTrie);
         assertEquals(result, subTrie);
     }

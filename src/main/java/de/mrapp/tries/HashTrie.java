@@ -37,7 +37,7 @@ public class HashTrie<SequenceType extends Sequence, ValueType> extends
 
     @NotNull
     @Override
-    public HashTrie<SequenceType, ValueType> subTree(@NotNull final SequenceType key) {
+    public HashTrie<SequenceType, ValueType> subTrie(@NotNull final SequenceType key) {
         Node<SequenceType, ValueType> node = getNode(key);
 
         if (node != null) {

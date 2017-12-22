@@ -45,8 +45,8 @@ public class UnmodifiableTrie<SequenceType extends Sequence, ValueType> extends
 
     @NotNull
     @Override
-    public final Trie<SequenceType, ValueType> subTree(@NotNull final SequenceType sequence) {
-        return new UnmodifiableTrie<>(trie.subTree(sequence));
+    public final Trie<SequenceType, ValueType> subTrie(@NotNull final SequenceType sequence) {
+        return new UnmodifiableTrie<>(trie.subTrie(sequence));
     }
 
 }

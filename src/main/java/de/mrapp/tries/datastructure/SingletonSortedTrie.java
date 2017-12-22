@@ -182,7 +182,7 @@ public class SingletonSortedTrie<SequenceType extends Sequence, ValueType> exten
 
     @NotNull
     @Override
-    public final SortedTrie<SequenceType, ValueType> subTree(@NotNull final SequenceType sequence) {
+    public final SortedTrie<SequenceType, ValueType> subTrie(@NotNull final SequenceType sequence) {
         if (containsKey(sequence)) {
             return this;
         }

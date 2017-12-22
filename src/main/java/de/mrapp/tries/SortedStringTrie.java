@@ -32,10 +32,10 @@ public interface SortedStringTrie<ValueType> extends NavigableMap<String, ValueT
         StringTrie<ValueType> {
 
     /**
-     * @see StringTrie#subTree(String)
+     * @see StringTrie#subTrie(String)
      */
     @NotNull
     @Override
-    SortedStringTrie<ValueType> subTree(@NotNull final String key);
+    SortedStringTrie<ValueType> subTrie(@NotNull final String sequence);
 
 }

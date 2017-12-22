@@ -243,7 +243,7 @@ public class EmptySortedTrieTest {
 
     @Test(expected = NoSuchElementException.class)
     public final void testSubTree() {
-        trie.subTree(new StringSequence("foo"));
+        trie.subTrie(new StringSequence("foo"));
     }
 
     @Test
