@@ -991,7 +991,7 @@ public class SortedListTrieTest {
 
     @Test
     public void testLowerEntryIfLowerKeySharesPrefix() {
-        testPut6();
+        testPutWithEmptyKey();
         Map.Entry<StringSequence, String> entry = trie.lowerEntry(new StringSequence("tea"));
         assertNotNull(entry);
         assertEquals(new StringSequence("inn"), entry.getKey());
@@ -1035,7 +1035,7 @@ public class SortedListTrieTest {
 
     @Test
     public void testLowerKeyIfLowerKeySharesPrefix() {
-        testPut6();
+        testPutWithEmptyKey();
         StringSequence lowerKey = trie.lowerKey(new StringSequence("tea"));
         assertEquals(new StringSequence("inn"), lowerKey);
     }
@@ -1116,12 +1116,16 @@ public class SortedListTrieTest {
                 .subMap(new StringSequence("inn"), new StringSequence("to"));
         assertEquals(4, subMap.size());
         Iterator<Map.Entry<StringSequence, String>> iterator = subMap.entrySet().iterator();
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("inn"), "inn"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ten"), "ten"),
                 iterator.next());
         assertFalse(iterator.hasNext());
@@ -1136,14 +1140,19 @@ public class SortedListTrieTest {
                 .subMap(new StringSequence("inn"), true, new StringSequence("to"), true);
         assertEquals(5, subMap.size());
         Iterator<Map.Entry<StringSequence, String>> iterator = subMap.entrySet().iterator();
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("inn"), "inn"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ten"), "ten"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
                 iterator.next());
         assertFalse(iterator.hasNext());
@@ -1170,11 +1179,14 @@ public class SortedListTrieTest {
                 .subMap(new StringSequence("tea"), true, new StringSequence("to"), true);
         assertEquals(3, subMap.size());
         Iterator<Map.Entry<StringSequence, String>> iterator = subMap.entrySet().iterator();
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
                 iterator.next());
         iterator.remove();
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
                 iterator.next());
         assertFalse(iterator.hasNext());
@@ -1190,12 +1202,16 @@ public class SortedListTrieTest {
         SortedMap<StringSequence, String> headMap = trie.headMap(new StringSequence("inn"));
         assertEquals(4, headMap.size());
         Iterator<Map.Entry<StringSequence, String>> iterator = headMap.entrySet().iterator();
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(null, "empty"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("A"), null),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("B"), "tea"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("in"), "in"),
                 iterator.next());
         assertFalse(iterator.hasNext());
@@ -1210,14 +1226,19 @@ public class SortedListTrieTest {
                 .headMap(new StringSequence("inn"), true);
         assertEquals(5, headMap.size());
         Iterator<Map.Entry<StringSequence, String>> iterator = headMap.entrySet().iterator();
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(null, "empty"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("A"), null),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("B"), "tea"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("in"), "in"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("inn"), "inn"),
                 iterator.next());
         assertFalse(iterator.hasNext());
@@ -1237,19 +1258,47 @@ public class SortedListTrieTest {
     }
 
     @Test
+    public void testHeadMapRemove() {
+        testPut3();
+        NavigableMap<StringSequence, String> subMap = trie.headMap(new StringSequence("to"), true);
+        assertEquals(3, subMap.size());
+        Iterator<Map.Entry<StringSequence, String>> iterator = subMap.entrySet().iterator();
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
+                iterator.next());
+        iterator.remove();
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
+                iterator.next());
+        assertFalse(iterator.hasNext());
+        assertEquals(2, trie.size());
+        assertTrue(trie.containsKey(new StringSequence("tea")));
+        assertFalse(trie.containsKey(new StringSequence("ted")));
+        assertTrue(trie.containsKey(new StringSequence("to")));
+    }
+
+    @Test
     public void testTailMap1() {
         testPutWithEmptyKey();
         SortedMap<StringSequence, String> tailMap = trie.tailMap(new StringSequence("inn"));
         assertEquals(5, tailMap.size());
         Iterator<Map.Entry<StringSequence, String>> iterator = tailMap.entrySet().iterator();
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("inn"), "inn"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ten"), "ten"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
                 iterator.next());
         assertFalse(iterator.hasNext());
@@ -1264,12 +1313,16 @@ public class SortedListTrieTest {
                 .tailMap(new StringSequence("inn"), false);
         assertEquals(4, tailMap.size());
         Iterator<Map.Entry<StringSequence, String>> iterator = tailMap.entrySet().iterator();
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ten"), "ten"),
                 iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
                 iterator.next());
         assertFalse(iterator.hasNext());
@@ -1290,16 +1343,150 @@ public class SortedListTrieTest {
     }
 
     @Test
+    public void testTailMapRemove() {
+        testPut3();
+        NavigableMap<StringSequence, String> subMap = trie.tailMap(new StringSequence("tea"), true);
+        assertEquals(3, subMap.size());
+        Iterator<Map.Entry<StringSequence, String>> iterator = subMap.entrySet().iterator();
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
+                iterator.next());
+        iterator.remove();
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
+                iterator.next());
+        assertFalse(iterator.hasNext());
+        assertEquals(2, trie.size());
+        assertTrue(trie.containsKey(new StringSequence("tea")));
+        assertFalse(trie.containsKey(new StringSequence("ted")));
+        assertTrue(trie.containsKey(new StringSequence("to")));
+    }
+
+    @Test
     public void testDescendingMap() {
-        testPut6();
+        testPutWithEmptyKey();
         NavigableMap<StringSequence, String> map = trie.descendingMap();
         assertEquals(trie.size(), map.size());
+        Iterator<Map.Entry<StringSequence, String>> iterator = map.entrySet().iterator();
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ten"), "ten"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("inn"), "inn"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("in"), "in"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("B"), "tea"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("A"), null),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(null, "empty"),
+                iterator.next());
+        assertFalse(iterator.hasNext());
         trie.forEach((key, value) -> assertEquals(value, map.get(key)));
         assertEquals(trie.firstKey(), map.lastKey());
         assertEquals(trie.higherKey(trie.firstKey()), map.lowerKey(map.lastKey()));
         assertEquals(trie.lastKey(), map.firstKey());
         assertEquals(trie.lowerKey(trie.lastKey()), map.higherKey(map.firstKey()));
     }
+
+    @Test
+    public void testNavigableKeySet() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.navigableKeySet();
+        assertEquals(9, keySet.size());
+        Iterator<StringSequence> iterator = keySet.iterator();
+        assertTrue(iterator.hasNext());
+        assertNull(iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("A"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("B"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("in"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("inn"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("tea"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("ted"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("ten"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("to"), iterator.next());
+        assertFalse(iterator.hasNext());
+        assertNull(keySet.first());
+        assertEquals(new StringSequence("to"), keySet.last());
+        assertEquals(new StringSequence("A"), keySet.higher(null));
+        assertEquals(new StringSequence("ten"), keySet.lower(new StringSequence("to")));
+    }
+
+    @Test
+    public void testNavigableKeySetDescendingIterator() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.navigableKeySet();
+        assertEquals(9, keySet.size());
+        Iterator<StringSequence> iterator = keySet.descendingIterator();
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("to"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("ten"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("ted"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("tea"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("inn"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("in"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("B"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("A"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertNull(iterator.next());
+        assertFalse(iterator.hasNext());
+    }
+
+    /*
+    @Test
+    public void testDescendingNavigableKeySet() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.descendingKeySet();
+        assertEquals(9, keySet.size());
+        Iterator<StringSequence> iterator = keySet.iterator();
+        assertEquals(new StringSequence("to"), iterator.next());
+        assertEquals(new StringSequence("ten"), iterator.next());
+        assertEquals(new StringSequence("ted"), iterator.next());
+        assertEquals(new StringSequence("tea"), iterator.next());
+        assertEquals(new StringSequence("inn"), iterator.next());
+        assertEquals(new StringSequence("in"), iterator.next());
+        assertEquals(new StringSequence("B"), iterator.next());
+        assertEquals(new StringSequence("A"), iterator.next());
+        assertEquals(null, iterator.next());
+        assertFalse(iterator.hasNext());
+        assertEquals(new StringSequence("to"), keySet.first());
+        assertNull(keySet.last());
+        assertEquals(new StringSequence("ten"), keySet.higher(new StringSequence("to")));
+        assertEquals(new StringSequence("A"), keySet.lower(null));
+    }
+    */
 
     @Test
     public void testToString() {
