@@ -1096,7 +1096,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         return null;
     }
 
-    @Nullable
+    @NotNull
     private Map.Entry<SequenceType, ValueType> getEntry(final SequenceType originalKey,
                                                         final Node<SequenceType, ValueType> node,
                                                         final SequenceType key) {
