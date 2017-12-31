@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static de.mrapp.util.Condition.*;
@@ -47,8 +48,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             if (map instanceof AbstractSortedTrie) {
                 return ((AbstractSortedTrie<K, ?>) map).keyIterator();
             } else {
-                // TODO
-                return null;
+                return ((AbstractSubMap<K, ?>) map).keyIterator();
             }
         }
 
@@ -59,8 +59,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             if (map instanceof AbstractSortedTrie) {
                 return ((AbstractSortedTrie<K, ?>) map).descendingKeyIterator();
             } else {
-                // TODO
-                return null;
+                return ((AbstractSubMap<K, ?>) map).descendingKeyIterator();
             }
         }
 
@@ -244,7 +243,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             }
 
             @Override
-            public boolean remove(Object o) {
+            public final boolean remove(Object o) {
                 Optional<K> optional = Optional.ofNullable(getKey(o));
                 optional.ifPresent(trie::remove);
                 return optional.isPresent();
@@ -252,12 +251,111 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         }
 
-        abstract class AbstractSubMapIterator implements Iterator<Entry<K, V>> {
+        final class AscendingSubMapKeyIterator extends AbstractSubMapKeyIterator {
+
+            AscendingSubMapKeyIterator(@Nullable final Map.Entry<K, V> first,
+                                       @Nullable final Map.Entry<K, V> fence) {
+                super(first, fence);
+            }
+
+            @Override
+            public final K next() {
+                return nextEntry().getKey();
+            }
+
+            @Override
+            public final int characteristics() {
+                return super.characteristics() | Spliterator.SORTED;
+            }
+
+        }
+
+        final class DescendingSubMapKeyIterator extends AbstractSubMapKeyIterator {
+
+            DescendingSubMapKeyIterator(@Nullable final Entry<K, V> first,
+                                        @Nullable final Entry<K, V> fence) {
+                super(first, fence);
+            }
+
+            @Override
+            public K next() {
+                return previousEntry().getKey();
+            }
+
+        }
+
+        abstract class AbstractSubMapKeyIterator extends AbstractSubMapIterator<K> implements
+                Spliterator<K> {
+
+            AbstractSubMapKeyIterator(@Nullable final Map.Entry<K, V> first,
+                                      @Nullable final Map.Entry<K, V> fence) {
+                super(first, fence);
+            }
+
+            @Override
+            public final void forEachRemaining(final Consumer<? super K> action) {
+                while (hasNext()) {
+                    action.accept(next());
+                }
+            }
+
+            @Override
+            public final boolean tryAdvance(final Consumer<? super K> action) {
+                if (hasNext()) {
+                    action.accept(next());
+                    return true;
+                }
+
+                return false;
+            }
+
+            @Override
+            public final long estimateSize() {
+                return Long.MAX_VALUE;
+            }
+
+            @Override
+            public final Spliterator<K> trySplit() {
+                return null;
+            }
+
+            @Override
+            public int characteristics() {
+                return Spliterator.DISTINCT | Spliterator.ORDERED;
+            }
+
+        }
+
+        abstract class AbstractSubMapIterator<T> implements Iterator<T> {
 
             final Object fenceKey;
             long modificationCount;
             Map.Entry<K, V> lastReturned;
             Map.Entry<K, V> next;
+
+            final Map.Entry<K, V> previousEntry() {
+                ensureEqual(this.modificationCount, trie.modificationCount, null,
+                        ConcurrentModificationException.class);
+                ensureNotNull(next, null, NoSuchElementException.class);
+                ensureFalse(fenceKey.equals(next.getKey()), null,
+                        NoSuchElementException.class);
+                Map.Entry<K, V> entry = next;
+                next = trie.lowerEntry(entry.getKey());
+                lastReturned = entry;
+                return entry;
+            }
+
+            final Map.Entry<K, V> nextEntry() {
+                ensureEqual(this.modificationCount, trie.modificationCount, null,
+                        ConcurrentModificationException.class);
+                ensureNotNull(next, null, NoSuchElementException.class);
+                ensureFalse(fenceKey.equals(next.getKey()), null,
+                        NoSuchElementException.class);
+                Map.Entry<K, V> entry = next;
+                next = trie.higherEntry(entry.getKey());
+                lastReturned = entry;
+                return entry;
+            }
 
             AbstractSubMapIterator(@Nullable final Map.Entry<K, V> first,
                                    @Nullable final Map.Entry<K, V> fence) {
@@ -422,6 +520,10 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         protected abstract Map.Entry<K, V> onGetFloorEntry(@Nullable final K key);
 
         protected abstract Map.Entry<K, V> onGetLowerEntry(@Nullable final K key);
+
+        protected abstract Iterator<K> keyIterator();
+
+        protected abstract Iterator<K> descendingKeyIterator();
 
         AbstractSubMap(@NotNull final AbstractSortedTrie<K, V> trie,
                        final boolean fromStart, @Nullable final K fromKey,
@@ -602,19 +704,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             @NotNull
             @Override
             public Iterator<Entry<K, V>> iterator() {
-                return new AbstractSubMapIterator(getLowestEntry(), getHighFence()) {
+                return new AbstractSubMapIterator<Map.Entry<K, V>>(getLowestEntry(),
+                        getHighFence()) {
 
                     @Override
                     public Map.Entry<K, V> next() {
-                        ensureEqual(this.modificationCount, trie.modificationCount, null,
-                                ConcurrentModificationException.class);
-                        ensureNotNull(next, null, NoSuchElementException.class);
-                        ensureFalse(fenceKey.equals(next.getKey()), null,
-                                NoSuchElementException.class);
-                        Map.Entry<K, V> entry = next;
-                        next = trie.higherEntry(entry.getKey());
-                        lastReturned = entry;
-                        return entry;
+                        return nextEntry();
                     }
 
                 };
@@ -702,6 +797,16 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return getLowerKey(key);
         }
 
+        @Override
+        protected Iterator<K> keyIterator() {
+            return new AscendingSubMapKeyIterator(getLowestEntry(), getHighFence());
+        }
+
+        @Override
+        protected Iterator<K> descendingKeyIterator() {
+            return new DescendingSubMapKeyIterator(getHighestEntry(), getLowFence());
+        }
+
     }
 
     private static final class DescendingSubMap<K extends Sequence, V> extends
@@ -712,19 +817,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             @NotNull
             @Override
             public Iterator<Map.Entry<K, V>> iterator() {
-                return new AbstractSubMapIterator(getHighestEntry(), getLowFence()) {
+                return new AbstractSubMapIterator<Map.Entry<K, V>>(getHighestEntry(),
+                        getLowFence()) {
 
                     @Override
                     public Entry<K, V> next() {
-                        ensureEqual(this.modificationCount, trie.modificationCount, null,
-                                ConcurrentModificationException.class);
-                        ensureNotNull(next, null, NoSuchElementException.class);
-                        ensureFalse(fenceKey.equals(next.getKey()), null,
-                                NoSuchElementException.class);
-                        Map.Entry<K, V> entry = next;
-                        next = trie.lowerEntry(entry.getKey());
-                        lastReturned = entry;
-                        return entry;
+                        return previousEntry();
                     }
 
                 };
@@ -815,6 +913,16 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @Override
         protected Map.Entry<K, V> onGetLowerEntry(@Nullable final K key) {
             return getHigherEntry(key);
+        }
+
+        @Override
+        protected Iterator<K> keyIterator() {
+            return new DescendingSubMapKeyIterator(getHighestEntry(), getLowFence());
+        }
+
+        @Override
+        protected Iterator<K> descendingKeyIterator() {
+            return new AscendingSubMapKeyIterator(getLowestEntry(), getHighFence());
         }
 
     }

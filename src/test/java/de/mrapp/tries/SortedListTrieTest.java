@@ -1464,21 +1464,29 @@ public class SortedListTrieTest {
         assertFalse(iterator.hasNext());
     }
 
-    /*
     @Test
     public void testDescendingNavigableKeySet() {
         testPutWithEmptyKey();
         NavigableSet<StringSequence> keySet = trie.descendingKeySet();
         assertEquals(9, keySet.size());
         Iterator<StringSequence> iterator = keySet.iterator();
+        assertTrue(iterator.hasNext());
         assertEquals(new StringSequence("to"), iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new StringSequence("ten"), iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new StringSequence("ted"), iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new StringSequence("tea"), iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new StringSequence("inn"), iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new StringSequence("in"), iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new StringSequence("B"), iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(new StringSequence("A"), iterator.next());
+        assertTrue(iterator.hasNext());
         assertEquals(null, iterator.next());
         assertFalse(iterator.hasNext());
         assertEquals(new StringSequence("to"), keySet.first());
@@ -1486,7 +1494,33 @@ public class SortedListTrieTest {
         assertEquals(new StringSequence("ten"), keySet.higher(new StringSequence("to")));
         assertEquals(new StringSequence("A"), keySet.lower(null));
     }
-    */
+
+    @Test
+    public void testDescendingNavigableKeySetDescendingIterator() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.descendingKeySet();
+        assertEquals(9, keySet.size());
+        Iterator<StringSequence> iterator = keySet.descendingIterator();
+        assertTrue(iterator.hasNext());
+        assertNull(iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("A"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("B"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("in"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("inn"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("tea"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("ted"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("ten"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new StringSequence("to"), iterator.next());
+        assertFalse(iterator.hasNext());
+    }
 
     @Test
     public void testToString() {
