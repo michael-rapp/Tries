@@ -63,6 +63,16 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             }
         }
 
+        @SuppressWarnings("unchecked")
+        @Override
+        public Spliterator<K> spliterator() {
+            if (map instanceof AbstractSortedTrie) {
+                return ((AbstractSortedTrie<K, ?>) map).keySpliterator();
+            } else {
+                return ((AbstractSubMap<K, ?>) map).keySpliterator();
+            }
+        }
+
         @Override
         public int size() {
             return map.size();
@@ -177,12 +187,6 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @Override
         public NavigableSet<K> descendingSet() {
             return new KeySet<>(map.descendingMap());
-        }
-
-        @Override
-        public Spliterator<K> spliterator() {
-            // TODO
-            return null;
         }
 
     }
@@ -525,6 +529,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         protected abstract Iterator<K> descendingKeyIterator();
 
+        protected abstract Spliterator<K> keySpliterator();
+
         AbstractSubMap(@NotNull final AbstractSortedTrie<K, V> trie,
                        final boolean fromStart, @Nullable final K fromKey,
                        final boolean fromInclusive, final boolean toEnd, @Nullable final K toKey,
@@ -807,6 +813,11 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return new DescendingSubMapKeyIterator(getHighestEntry(), getLowFence());
         }
 
+        @Override
+        protected Spliterator<K> keySpliterator() {
+            return new AscendingSubMapKeyIterator(getLowestEntry(), getHighFence());
+        }
+
     }
 
     private static final class DescendingSubMap<K extends Sequence, V> extends
@@ -925,31 +936,9 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return new AscendingSubMapKeyIterator(getLowestEntry(), getHighFence());
         }
 
-    }
-
-    private class EntryIterator extends
-            AbstractAscendingEntryIterator<Map.Entry<SequenceType, ValueType>> {
-
-        EntryIterator(@Nullable final Map.Entry<SequenceType, ValueType> first) {
-            super(first);
-        }
-
         @Override
-        public Map.Entry<SequenceType, ValueType> next() {
-            return nextEntry();
-        }
-
-    }
-
-    private class ValueIterator extends AbstractAscendingEntryIterator<ValueType> {
-
-        ValueIterator(@Nullable final Map.Entry<SequenceType, ValueType> first) {
-            super(first);
-        }
-
-        @Override
-        public ValueType next() {
-            return nextEntry().getValue();
+        protected Spliterator<K> keySpliterator() {
+            return new DescendingSubMapKeyIterator(getHighestEntry(), getLowFence());
         }
 
     }
@@ -1044,6 +1033,100 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             AbstractSortedTrie.this.remove(lastReturned.getKey());
             modificationCount = AbstractSortedTrie.this.modificationCount;
             lastReturned = null;
+        }
+
+    }
+
+    abstract static class AbstractSpliterator<K extends Sequence, V> {
+
+        final AbstractSortedTrie<K, V> trie;
+        Map.Entry<K, V> current; // traverser; initially first node in range
+        Map.Entry<K, V> fence;   // one past last, or null
+        int side;                   // 0: top, -1: is a left split, +1: right
+        int estimatedSize;                    // size estimate (exact only for top-level)
+        long modificationCount;       // for CME checks
+
+        final int estimateSizeIfNecessary() {
+            if (estimatedSize < 0) {
+                current = estimatedSize == -1 ? trie.firstEntry() : trie.lastEntry();
+                estimatedSize = trie.size();
+                modificationCount = trie.modificationCount;
+            }
+
+            return estimatedSize;
+        }
+
+        AbstractSpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                            @Nullable final Map.Entry<K, V> origin,
+                            @Nullable final Map.Entry<K, V> fence,
+                            final int side, final int estimatedSize, final long modificationCount) {
+            this.trie = trie;
+            this.current = origin;
+            this.fence = fence;
+            this.side = side;
+            this.estimatedSize = estimatedSize;
+            this.modificationCount = modificationCount;
+        }
+
+    }
+
+    static final class KeySpliterator<K extends Sequence, V> extends
+            AbstractSpliterator<K, V> implements Spliterator<K> {
+
+        KeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                       @Nullable final Map.Entry<K, V> origin,
+                       @Nullable final Map.Entry<K, V> fence, final int side, final int estimate,
+                       final long modificationCount) {
+            super(trie, origin, fence, side, estimate, modificationCount);
+        }
+
+        @Override
+        public KeySpliterator<K, V> trySplit() {
+            estimateSizeIfNecessary();
+            // TODO
+            return null;
+        }
+
+        @Override
+        public void forEachRemaining(final Consumer<? super K> action) {
+            boolean hasNext = true;
+
+            while (hasNext) {
+                hasNext = tryAdvance(action);
+            }
+        }
+
+        @Override
+        public boolean tryAdvance(final Consumer<? super K> action) {
+            ensureNotNull(action, null, NullPointerException.class);
+            estimateSizeIfNecessary();
+            ensureEqual(modificationCount, trie.modificationCount, null,
+                    ConcurrentModificationException.class);
+
+            if (current != null && !current.equals(fence)) {
+                Map.Entry<K, V> entry = current;
+                current = trie.higherEntry(entry.getKey());
+                action.accept(entry.getKey());
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public final long estimateSize() {
+            return estimateSizeIfNecessary();
+        }
+
+        @Override
+        public int characteristics() {
+            return (side == 0 ? Spliterator.SIZED : 0) |
+                    Spliterator.DISTINCT | Spliterator.SORTED | Spliterator.ORDERED;
+        }
+
+        @Override
+        public final Comparator<? super K> getComparator() {
+            return trie.comparator();
         }
 
     }
@@ -1244,6 +1327,10 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     final Iterator<SequenceType> descendingKeyIterator() {
         return new DescendingKeyIterator(lastEntry());
+    }
+
+    final Spliterator<SequenceType> keySpliterator() {
+        return new KeySpliterator<>(this, null, null, 0, -1, 0);
     }
 
     /**
