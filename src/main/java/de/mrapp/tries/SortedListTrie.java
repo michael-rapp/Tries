@@ -23,6 +23,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 
+/**
+ * A sorted trie, which stores the successors of nodes in sorted lists. The edges between nodes
+ * always correspond to exactly one element of a sequence. Therefore, even if a subsequence of
+ * length n is not shared between multiple keys, the trie contains n nodes to store that
+ * subsequence. Successors are looked up using binary search, resulting in logarithmic complexity.
+ * Although this is worse than the constant complexity provided by a {@link HashTrie}, this trie
+ * implementation should be preferred, if the order of keys is relevant.
+ *
+ * @param <SequenceType> The type of the sequences, which are used as the trie's keys
+ * @param <ValueType>    The type of the values, which are stored by trie
+ * @author Michael Rapp
+ * @since 1.0.0
+ */
 public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
         AbstractSortedTrie<SequenceType, ValueType> {
 
@@ -31,15 +44,35 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
      */
     private static final long serialVersionUID = -1139777657107659140L;
 
-    private SortedListTrie(@Nullable final Node<SequenceType, ValueType> node,
+    /**
+     * Creates a new sorted trie, which stores the successors of nodes in sorted lists.
+     *
+     * @param rootNode   The root node of the trie as an instance of the type {@link Node} or null,
+     *                   if the trie should be empty
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
+     */
+    private SortedListTrie(@Nullable final Node<SequenceType, ValueType> rootNode,
                            @Nullable final Comparator<? super SequenceType> comparator) {
-        super(node, comparator);
+        super(rootNode, comparator);
     }
 
+    /**
+     * Creates a new empty, sorted trie, which stores the successors of nodes in sorted lists. For
+     * comparing keys with each other, the natural ordering of the keys is used.
+     */
     public SortedListTrie() {
         this(null);
     }
 
+    /**
+     * Creates a new empty, sorted trie, which stores the successors of nodes in sorted lists.
+     *
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
+     */
     public SortedListTrie(@Nullable final Comparator<SequenceType> comparator) {
         super(comparator);
     }
