@@ -13,9 +13,17 @@
  */
 package de.mrapp.tries;
 
+import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
+import java.util.Comparator;
+
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests the functionality of the class {@link StringSortedListTrie}.
@@ -23,6 +31,22 @@ import static org.junit.Assert.assertEquals;
  * @author Michael Rapp
  */
 public class StringSortedListTrieTest {
+
+    @Test
+    public final void testDefaultConstructor() {
+        StringSortedListTrie<String> trie = new StringSortedListTrie<>();
+        assertNull(trie.comparator());
+    }
+
+    @Test
+    public final void testConstructorWithComparatorParameter() {
+        Comparator<? super String> comparator = mock(Comparator.class);
+        StringSortedListTrie<String> trie = new StringSortedListTrie<>(comparator);
+        Comparator<? super String> comparator2 = trie.comparator();
+        assertNotNull(comparator);
+        when(comparator.compare("a", "b")).thenReturn(-1);
+        assertEquals(-1, comparator.compare("a", "b"));
+    }
 
     @Test
     public final void testToString() {

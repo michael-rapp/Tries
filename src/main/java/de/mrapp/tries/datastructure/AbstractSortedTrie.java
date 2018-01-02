@@ -1377,7 +1377,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         this.comparator = comparator;
     }
 
-    public AbstractSortedTrie(@Nullable final Comparator<SequenceType> comparator) {
+    public AbstractSortedTrie(@Nullable final Comparator<? super SequenceType> comparator) {
         this(null, comparator);
     }
 

@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+import static de.mrapp.util.Condition.ensureNotNull;
+
 /**
  * A wrapper, which implements the interface {@link SortedStringTrie} by delegating all method calls
  * to an encapsulated {@link SortedTrie}.
@@ -31,6 +33,38 @@ import java.util.*;
 public class SortedStringTrieWrapper<ValueType> extends
         AbstractStringTrieWrapper<SortedTrie<StringSequence, ValueType>, ValueType> implements
         SortedStringTrie<ValueType> {
+
+    /**
+     * A comparator, which allows to compare instances of the class {@link StringSequence} by
+     * encapsulating a comparator, which compares {@link String}s.
+     */
+    protected static final class StringSequenceComparatorWrapper implements
+            Comparator<StringSequence> {
+
+        /**
+         * The encapsulated comparator.
+         */
+        private final Comparator<? super String> comparator;
+
+        /**
+         * Creates a new comparator, which allows to compare instances of the class
+         * {@link StringSequence} by encapsulating a comparator, which compares {@link String}s.
+         *
+         * @param comparator The comparator, which should be encapsulated, as an instance of the
+         *                   type {@link Comparator}. The comparator may not be null
+         */
+        public StringSequenceComparatorWrapper(
+                @NotNull final Comparator<? super String> comparator) {
+            ensureNotNull(comparator, "The comparator may not be null");
+            this.comparator = comparator;
+        }
+
+        @Override
+        public final int compare(final StringSequence o1, final StringSequence o2) {
+            return comparator.compare(o1.toString(), o2.toString());
+        }
+
+    }
 
     /**
      * The constant serial version UID.

@@ -73,7 +73,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
      *                   instance of the type {@link Comparator} or null, if the natural ordering of
      *                   the keys should be used
      */
-    public SortedListTrie(@Nullable final Comparator<SequenceType> comparator) {
+    public SortedListTrie(@Nullable final Comparator<? super SequenceType> comparator) {
         super(comparator);
     }
 

@@ -14,6 +14,9 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.SortedStringTrieWrapper;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Comparator;
 
 /**
  * A sorted trie, which stores the successors of nodes in sorted lists. It is the pendant of
@@ -33,11 +36,26 @@ public class StringSortedListTrie<ValueType> extends SortedStringTrieWrapper<Val
     private static final long serialVersionUID = -7644211622938905272L;
 
     /**
-     * Creates a new empty, unsorted trie for storing character sequences, which uses hash maps for
-     * storing the successors of nodes.
+     * Creates a new empty, unsorted trie for storing character sequences, which uses sorted lists
+     * for storing the successors of nodes. For comparing keys with each other, the natural ordering
+     * of the keys is used.
      */
     public StringSortedListTrie() {
         super(new SortedListTrie<>());
+    }
+
+
+    /**
+     * Creates a new empty, unsorted trie for storing character sequences, which uses sorted lists
+     * for storing the successors of nodes.
+     *
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
+     */
+    public StringSortedListTrie(@Nullable final Comparator<? super String> comparator) {
+        super(new SortedListTrie<>(
+                comparator != null ? new StringSequenceComparatorWrapper(comparator) : null));
     }
 
     @Override
