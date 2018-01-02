@@ -13,19 +13,19 @@
  */
 package de.mrapp.tries;
 
-import de.mrapp.tries.datastructure.StringTrieWrapper;
+import de.mrapp.tries.datastructure.SortedStringTrieWrapper;
 
 /**
- * An unsorted trie, which uses hash maps for storing the successors of nodes. It is the pendant of
- * the class {@link HashTrie} for using character sequences as keys. This trie implementation has
- * the same properties as a {@link HashTrie}. It should be preferred when using character sequences,
- * because it offers a less complex API.
+ * A sorted trie, which stores the successors of nodes in sorted lists. It is the pendant of
+ * the class {@link SortedListTrie} for using character sequences as keys. This trie implementation
+ * has the same properties as a {@link SortedListTrie}. It should be preferred when using character
+ * sequences, because it offers a less complex API.
  *
  * @param <ValueType> The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class StringHashTrie<ValueType> extends StringTrieWrapper<ValueType> {
+public class StringSortedListTrie<ValueType> extends SortedStringTrieWrapper<ValueType> {
 
     /**
      * The constant serial version UID.
@@ -36,13 +36,13 @@ public class StringHashTrie<ValueType> extends StringTrieWrapper<ValueType> {
      * Creates a new empty, unsorted trie for storing character sequences, which uses hash maps for
      * storing the successors of nodes.
      */
-    public StringHashTrie() {
-        super(new HashTrie<>());
+    public StringSortedListTrie() {
+        super(new SortedListTrie<>());
     }
 
     @Override
     public final String toString() {
-        return "StringHashTrie " + entrySet().toString();
+        return "StringSortedListTrie " + entrySet().toString();
     }
 
 }
