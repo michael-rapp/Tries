@@ -42,41 +42,54 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         implements Trie<SequenceType, ValueType> {
 
     /**
-     * The entry set of a trie as returned by the method {@link #entrySet()}. The entry set is
+     * The entry set of a trie as returned by the method {@link Trie#entrySet()}. The entry set is
      * backed by an {@link EntryIterator}, which traverses all nodes of the trie for which a value
      * is set.
+     *
+     * @param <K>        The type of the sequences, which are used as the trie's keys
+     * @param <V>        The type of the values, which are stored by trie
+     * @param <TrieType> The type of the trie
      */
     private static class EntrySet<K extends Sequence, V, TrieType extends AbstractTrie<K, V>>
             extends AbstractSet<Map.Entry<K, V>> {
 
-        private final TrieType trie;
+        /**
+         * The backing trie.
+         */
+        private final TrieType backingTrie;
 
-        EntrySet(@NotNull final TrieType trie) {
-            ensureNotNull(trie, "The trie may not be null");
-            this.trie = trie;
+        /**
+         * Creates a new entry set of a specific backing trie.
+         *
+         * @param backingTrie The backing trie as an instance of the generic type {@link TrieType}.
+         *                    The trie may not be null
+         */
+        EntrySet(@NotNull final TrieType backingTrie) {
+            ensureNotNull(backingTrie, "The backing trie may not be null");
+            this.backingTrie = backingTrie;
         }
 
         @NotNull
         @Override
         public Iterator<Entry<K, V>> iterator() {
-            return new EntryIterator<>(trie);
+            return new EntryIterator<>(backingTrie);
         }
 
         @Override
         public final int size() {
-            return trie.size();
+            return backingTrie.size();
         }
 
         @Override
         public final boolean isEmpty() {
-            return trie.isEmpty();
+            return backingTrie.isEmpty();
         }
 
         @Override
         public final boolean contains(final Object o) {
             if (o instanceof Map.Entry) {
                 Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
-                Node<K, V> node = trie.getNode(entry.getKey());
+                Node<K, V> node = backingTrie.getNode(entry.getKey());
                 return node != null && isValueEqual(node, entry);
             }
 
@@ -87,7 +100,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         public final boolean remove(final Object o) {
             if (o instanceof Map.Entry) {
                 Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
-                return trie.remove(entry.getKey(), entry.getValue());
+                return backingTrie.remove(entry.getKey(), entry.getValue());
             }
 
             return false;
@@ -96,8 +109,12 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     }
 
     /**
-     * The values of a trie as returned by the method {@link #values()}. The entry set is backed by
-     * a {@link ValueIterator}, which traverses all values of the trie.
+     * The values of a trie as returned by the method {@link Trie#values()}. The entry set is backed
+     * by a {@link ValueIterator}, which traverses all values of the trie.
+     *
+     * @param <K>        The type of the sequences, which are used as the trie's keys
+     * @param <V>        The type of the values, which are stored by trie
+     * @param <TrieType> The type of the trie
      */
     private static class Values<K extends Sequence, V, TrieType extends AbstractTrie<K, V>> extends
             AbstractCollection<V> {
@@ -105,34 +122,40 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         /**
          * The backing trie.
          */
-        private final TrieType trie;
+        private final TrieType backingTrie;
 
-        Values(@NotNull final TrieType trie) {
-            ensureNotNull(trie, "The trie may not be null");
-            this.trie = trie;
+        /**
+         * Creates the values of a specific backing trie.
+         *
+         * @param backingTrie The backing trie as an instance of the generic type {@link TrieType}.
+         *                    The trie may not be null
+         */
+        Values(@NotNull final TrieType backingTrie) {
+            ensureNotNull(backingTrie, "The backing trie may not be null");
+            this.backingTrie = backingTrie;
         }
 
         @NotNull
         @Override
         public Iterator<V> iterator() {
-            return new ValueIterator<>(trie);
+            return new ValueIterator<>(backingTrie);
         }
 
         @Override
         public final int size() {
-            return trie.size();
+            return backingTrie.size();
         }
 
         @Override
         public final boolean isEmpty() {
-            return trie.isEmpty();
+            return backingTrie.isEmpty();
         }
 
         @Override
         public final boolean remove(final Object o) {
-            for (Map.Entry<K, V> entry : trie.entrySet()) {
+            for (Map.Entry<K, V> entry : backingTrie.entrySet()) {
                 if (isEqual(entry.getValue(), o)) {
-                    trie.remove(entry.getKey());
+                    backingTrie.remove(entry.getKey());
                     return true;
                 }
             }
@@ -142,55 +165,69 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
         @Override
         public final void clear() {
-            trie.clear();
+            backingTrie.clear();
         }
 
     }
 
+    /**
+     * The key set of a trie as returned by the method {@link Trie#keySet()}. The entry set is
+     * backed by a {@link KeyIterator}, which traverses all keys of the trie.
+     *
+     * @param <K>        The type of the sequences, which are used as the trie's keys
+     * @param <V>        The type of the values, which are stored by trie
+     * @param <TrieType> The type of the trie
+     */
     private static class KeySet<K extends Sequence, V, TrieType extends AbstractTrie<K, V>> extends
             AbstractSet<K> {
 
         /**
          * The backing trie.
          */
-        private final TrieType trie;
+        private final TrieType backingTrie;
 
-        KeySet(@NotNull final TrieType trie) {
-            ensureNotNull(trie, "The trie may not be null");
-            this.trie = trie;
+        /**
+         * Creates a new key set of a specific backing trie.
+         *
+         * @param backingTrie The backing trie as an instance of the generic type {@link TrieType}.
+         *                    The trie may not be null
+         */
+        KeySet(@NotNull final TrieType backingTrie) {
+            ensureNotNull(backingTrie, "The backing trie may not be null");
+            this.backingTrie = backingTrie;
         }
 
         @NotNull
         @Override
         public Iterator<K> iterator() {
-            return new KeyIterator<>(trie);
+            return new KeyIterator<>(backingTrie);
         }
 
         @Override
         public final int size() {
-            return trie.size();
+            return backingTrie.size();
         }
 
         @Override
         public final boolean isEmpty() {
-            return trie.isEmpty();
+            return backingTrie.isEmpty();
         }
 
         @SuppressWarnings("SuspiciousMethodCalls")
         @Override
         public final boolean contains(Object o) {
-            return trie.containsKey(o);
+            return backingTrie.containsKey(o);
         }
 
         @Override
         public final void clear() {
-            trie.clear();
+            backingTrie.clear();
         }
 
         @Override
         public final boolean remove(final Object o) {
             int oldSize = size();
-            trie.remove(o);
+            backingTrie.remove(o);
             return size() != oldSize;
         }
 
@@ -335,7 +372,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         /**
          * The modification count when the iterator was instantiated.
          */
-        private long modificationCount;
+        private long expectedModificationCount;
 
         /**
          * The entry, which was returned the last time the {@link #nextEntry()} method was called.
@@ -423,7 +460,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         final Map.Entry<K, V> nextEntry() {
-            ensureEqual(modificationCount, trie.modificationCount, null,
+            ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
             ensureTrue(hasNext(), null, NoSuchElementException.class);
             Path result = nextPath;
@@ -443,7 +480,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         AbstractEntryIterator(@NotNull final AbstractTrie<K, V> trie) {
             ensureNotNull(trie, "The trie may not be null");
             this.trie = trie;
-            this.modificationCount = trie.modificationCount;
+            this.expectedModificationCount = trie.modificationCount;
             this.lastReturned = null;
             this.stack = new LinkedList<>();
 
@@ -461,11 +498,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         @Override
         public void remove() {
             ensureNotNull(lastReturned, null, IllegalStateException.class);
-            ensureEqual(modificationCount, trie.modificationCount, null,
+            ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
             trie.remove(lastReturned.getKey());
             lastReturned = null;
-            modificationCount = trie.modificationCount;
+            expectedModificationCount = trie.modificationCount;
         }
 
     }
@@ -482,7 +519,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
     /**
      * A counter, which is increased whenever the trie is modified. It is used to fast-fail
-     * iterators.
+     * iterators by throwing a {@link ConcurrentModificationException}.
      */
     long modificationCount;
 
@@ -618,10 +655,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      */
     static boolean isEqual(@Nullable final Object o1, @Nullable final Object o2) {
         if (o1 == null) {
-            return o2 == null;
-        }
-
-        return o1.equals(o2);
+            if (o2 != null)
+                return false;
+        } else if (!o1.equals(o2))
+            return false;
+        return true;
     }
 
     /**
