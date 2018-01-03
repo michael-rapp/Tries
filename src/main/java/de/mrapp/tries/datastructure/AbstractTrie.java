@@ -60,6 +60,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         @Override
+        public boolean isEmpty() {
+            return AbstractTrie.this.isEmpty();
+        }
+
+        @Override
         public boolean contains(final Object o) {
             if (o instanceof Map.Entry) {
                 Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
@@ -100,6 +105,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         @Override
+        public boolean isEmpty() {
+            return AbstractTrie.this.isEmpty();
+        }
+
+        @Override
         public boolean remove(final Object o) {
             for (Map.Entry<SequenceType, ValueType> entry : AbstractTrie.this.entrySet()) {
                 if (isEqual(entry.getValue(), o)) {
@@ -129,6 +139,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         @Override
         public int size() {
             return AbstractTrie.this.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return AbstractTrie.this.isEmpty();
         }
 
         @Override
