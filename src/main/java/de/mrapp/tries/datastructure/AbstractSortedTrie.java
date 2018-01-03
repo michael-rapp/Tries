@@ -726,7 +726,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     private static class AscendingSubMap<K extends Sequence, V> extends AbstractSubMap<K, V> {
 
-        private class AscendingSubSet extends AbstractSubSet {
+        private final class AscendingSubSet extends AbstractSubSet {
 
             @NotNull
             @Override
@@ -844,7 +844,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     private static final class DescendingSubMap<K extends Sequence, V> extends
             AbstractSubMap<K, V> {
 
-        private class DescendingSubSet extends AbstractSubSet {
+        private final class DescendingSubSet extends AbstractSubSet {
 
             @NotNull
             @Override
@@ -964,38 +964,72 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     }
 
-    private class AscendingKeyIterator extends AbstractEntryIterator<SequenceType> {
+    /**
+     * An iterator, which allows to iterate the keys of a trie in ascending order.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by trie
+     */
+    private static final class AscendingKeyIterator<K extends Sequence, V> extends
+            AbstractEntryIterator<K, V, K> {
 
-        AscendingKeyIterator(@Nullable final Map.Entry<SequenceType, ValueType> first) {
-            super(first);
+        /**
+         * Creates a new iterator, which allows to iterate the keys of the a trie in ascending
+         * order.
+         *
+         * @param trie  The trie, whose keys should be iterated, as an instance of the class {@link
+         *              AbstractSortedTrie}. The trie may not be null
+         * @param first The first entry to be iterated as an instance of the type {@link Map.Entry}
+         *              or null, if the trie is empty
+         */
+        AscendingKeyIterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                             @Nullable final Map.Entry<K, V> first) {
+            super(trie, first);
         }
 
         @Override
-        public SequenceType next() {
-            ensureEqual(modificationCount, AbstractSortedTrie.this.modificationCount, null,
+        public K next() {
+            ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
             ensureNotNull(next, null, NoSuchElementException.class);
-            Map.Entry<SequenceType, ValueType> entry = next;
-            next = higherEntry(entry.getKey());
+            Map.Entry<K, V> entry = next;
+            next = trie.higherEntry(entry.getKey());
             lastReturned = entry;
             return entry.getKey();
         }
 
     }
 
-    private class DescendingKeyIterator extends AbstractEntryIterator<SequenceType> {
+    /**
+     * An iterator, which allows to iterate the keys of a trie in descending order.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by trie
+     */
+    private static final class DescendingKeyIterator<K extends Sequence, V> extends
+            AbstractEntryIterator<K, V, K> {
 
-        DescendingKeyIterator(@Nullable final Map.Entry<SequenceType, ValueType> first) {
-            super(first);
+        /**
+         * Creates a new iterator, which allows to iterate the keys of the a trie in descending
+         * order.
+         *
+         * @param trie  The trie, whose keys should be iterated, as an instance of the class {@link
+         *              AbstractSortedTrie}. The trie may not be null
+         * @param first The first entry to be iterated as an instance of the type {@link Map.Entry}
+         *              or null, if the trie is empty
+         */
+        DescendingKeyIterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                              @Nullable final Map.Entry<K, V> first) {
+            super(trie, first);
         }
 
         @Override
-        public SequenceType next() {
+        public K next() {
             ensureNotNull(next, null, NoSuchElementException.class);
-            ensureEqual(modificationCount, AbstractSortedTrie.this.modificationCount, null,
+            ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
-            Map.Entry<SequenceType, ValueType> entry = next;
-            next = lowerEntry(entry.getKey());
+            Map.Entry<K, V> entry = next;
+            next = trie.lowerEntry(entry.getKey());
             lastReturned = entry;
             return entry.getKey();
         }
@@ -1005,40 +1039,52 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     /**
      * An abstract base class for all iterators, which allow to iterate the entries of a {@link
      * SortedTrie}.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by trie
+     * @param <T> The type of the iterated items
      */
-    private abstract class AbstractEntryIterator<T> implements Iterator<T> {
-
-        long modificationCount;
-
-        Map.Entry<SequenceType, ValueType> next;
-
-        Map.Entry<SequenceType, ValueType> lastReturned;
-
+    private static abstract class AbstractEntryIterator<K extends Sequence, V, T> extends
+            AbstractIterator<K, V, T, AbstractSortedTrie<K, V>> {
 
         /**
-         * Creates a new iterator, which allows to iterate the entries of a {@link SortedTrie}.
-         *
-         * @param first The first entry of the trie as an instance of the type {@link Map.Entry} or
-         *              null, if the trie is empty
+         * The next item to be returned.
          */
-        AbstractEntryIterator(@Nullable final Map.Entry<SequenceType, ValueType> first) {
-            this.modificationCount = AbstractSortedTrie.this.modificationCount;
+        Map.Entry<K, V> next;
+
+        /**
+         * The item, which was returned the last time when the method {@link #next()} was called.
+         */
+        Map.Entry<K, V> lastReturned;
+
+        /**
+         * Creates a new iterator, which allows to iterate the entries of a {@link SortedTrie}
+         * starting at a specific entry.
+         *
+         * @param trie  The trie, whose entries should be iterated, as an instance of the class
+         *              {@link AbstractSortedTrie}. The trie may not be null
+         * @param first The first entry to be iterated as an instance of the type {@link Map.Entry}
+         *              or null, if the trie is empty
+         */
+        AbstractEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                              @Nullable final Map.Entry<K, V> first) {
+            super(trie);
             this.lastReturned = null;
             this.next = first;
         }
 
         @Override
-        public boolean hasNext() {
+        public final boolean hasNext() {
             return next != null;
         }
 
         @Override
-        public void remove() {
+        public final void remove() {
             ensureNotNull(lastReturned, null, IllegalStateException.class);
-            ensureEqual(modificationCount, AbstractSortedTrie.this.modificationCount, null,
+            ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
-            AbstractSortedTrie.this.remove(lastReturned.getKey());
-            modificationCount = AbstractSortedTrie.this.modificationCount;
+            trie.remove(lastReturned.getKey());
+            expectedModificationCount = trie.modificationCount;
             lastReturned = null;
         }
 
@@ -1379,7 +1425,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      */
     @NotNull
     final Iterator<SequenceType> keyIterator() {
-        return new AscendingKeyIterator(firstEntry());
+        return new AscendingKeyIterator<>(this, firstEntry());
     }
 
     /**
@@ -1390,7 +1436,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      */
     @NotNull
     final Iterator<SequenceType> descendingKeyIterator() {
-        return new DescendingKeyIterator(lastEntry());
+        return new DescendingKeyIterator<>(this, lastEntry());
     }
 
     /**

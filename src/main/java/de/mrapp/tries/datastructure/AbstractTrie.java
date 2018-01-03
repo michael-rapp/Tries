@@ -254,8 +254,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
     /**
      * An iterator, which allows to iterate all nodes of a trie for which a value is set.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by trie
      */
-    private static class EntryIterator<K extends Sequence, V> extends
+    private static final class EntryIterator<K extends Sequence, V> extends
             AbstractEntryIterator<K, V, Map.Entry<K, V>> {
 
         /**
@@ -278,8 +281,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
     /**
      * An iterator, which allows to iterate all values, which are stored by a trie.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by trie
      */
-    private static class ValueIterator<K extends Sequence, V> extends
+    private static final class ValueIterator<K extends Sequence, V> extends
             AbstractEntryIterator<K, V, V> {
 
         /**
@@ -301,8 +307,12 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
     /**
      * An iterator, which allows to iterate all keys, which are stored by a trie.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by trie
      */
-    private static class KeyIterator<K extends Sequence, V> extends AbstractEntryIterator<K, V, K> {
+    private static final class KeyIterator<K extends Sequence, V> extends
+            AbstractEntryIterator<K, V, K> {
 
         /**
          * Creates a new iterator, which allows to iterate all keys, which are stored by a trie.
@@ -326,10 +336,12 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * identify those that contain values. Only nodes for which a value (null or non-null) is set,
      * are returned by the iterator's {@link #nextEntry()} method.
      *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by trie
      * @param <T> The type of the iterated items
      */
-    private abstract static class AbstractEntryIterator<K extends Sequence, V, T> implements
-            Iterator<T> {
+    private abstract static class AbstractEntryIterator<K extends Sequence, V, T> extends
+            AbstractIterator<K, V, T, AbstractTrie<K, V>> {
 
         /**
          * Represents a path from the root to a specific node.
@@ -382,16 +394,6 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             }
 
         }
-
-        /**
-         * The trie, which is traversed by the iterator.
-         */
-        private final AbstractTrie<K, V> trie;
-
-        /**
-         * The modification count when the iterator was instantiated.
-         */
-        private long expectedModificationCount;
 
         /**
          * The entry, which was returned the last time the {@link #nextEntry()} method was called.
@@ -497,9 +499,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
          *             class {@link AbstractTrie}. The trie may not be null
          */
         AbstractEntryIterator(@NotNull final AbstractTrie<K, V> trie) {
-            ensureNotNull(trie, "The trie may not be null");
-            this.trie = trie;
-            this.expectedModificationCount = trie.modificationCount;
+            super(trie);
             this.lastReturned = null;
             this.stack = new LinkedList<>();
 
@@ -522,6 +522,35 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             trie.remove(lastReturned.getKey());
             lastReturned = null;
             expectedModificationCount = trie.modificationCount;
+        }
+
+    }
+
+    /**
+     * An abstract base class for all iterators, which operate on tries.
+     *
+     * @param <K>        The type of the sequences, which are used as the trie's keys
+     * @param <V>        The type of the values, which are stored by trie
+     * @param <T>        The type of the iterated items
+     * @param <TrieType> The type of the trie
+     */
+    static abstract class AbstractIterator<K extends Sequence, V, T, TrieType extends AbstractTrie<K, V>>
+            implements Iterator<T> {
+
+        /**
+         * The trie, which is traversed by the iterator.
+         */
+        final TrieType trie;
+
+        /**
+         * The modification count of the {@link #trie} when the iterator was instantiated.
+         */
+        long expectedModificationCount;
+
+        AbstractIterator(@NotNull final TrieType trie) {
+            ensureNotNull(trie, "The trie may not be null");
+            this.trie = trie;
+            this.expectedModificationCount = trie.modificationCount;
         }
 
     }
