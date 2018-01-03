@@ -34,7 +34,7 @@ import static de.mrapp.util.Condition.*;
  * #removeSuccessor(Node, Sequence)} depending on the trie's structure.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
- * @param <ValueType>    The type of the values, which are stored by trie
+ * @param <ValueType>    The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */
@@ -47,7 +47,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * is set.
      *
      * @param <K>        The type of the sequences, which are used as the trie's keys
-     * @param <V>        The type of the values, which are stored by trie
+     * @param <V>        The type of the values, which are stored by the trie
      * @param <TrieType> The type of the trie
      */
     private static final class EntrySet<K extends Sequence, V, TrieType extends AbstractTrie<K, V>>
@@ -113,7 +113,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * by a {@link ValueIterator}, which traverses all values of the trie.
      *
      * @param <K>        The type of the sequences, which are used as the trie's keys
-     * @param <V>        The type of the values, which are stored by trie
+     * @param <V>        The type of the values, which are stored by the trie
      * @param <TrieType> The type of the trie
      */
     private static final class Values<K extends Sequence, V, TrieType extends AbstractTrie<K, V>>
@@ -256,7 +256,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * An iterator, which allows to iterate all nodes of a trie for which a value is set.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      */
     private static final class EntryIterator<K extends Sequence, V> extends
             AbstractEntryIterator<K, V, Map.Entry<K, V>> {
@@ -283,7 +283,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * An iterator, which allows to iterate all values, which are stored by a trie.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      */
     private static final class ValueIterator<K extends Sequence, V> extends
             AbstractEntryIterator<K, V, V> {
@@ -309,7 +309,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * An iterator, which allows to iterate all keys, which are stored by a trie.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      */
     private static final class KeyIterator<K extends Sequence, V> extends
             AbstractEntryIterator<K, V, K> {
@@ -337,7 +337,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * are returned by the iterator's {@link #nextEntry()} method.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      * @param <T> The type of the iterated items
      */
     private abstract static class AbstractEntryIterator<K extends Sequence, V, T> extends
@@ -530,7 +530,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * An abstract base class for all iterators, which operate on tries.
      *
      * @param <K>        The type of the sequences, which are used as the trie's keys
-     * @param <V>        The type of the values, which are stored by trie
+     * @param <V>        The type of the values, which are stored by the trie
      * @param <T>        The type of the iterated items
      * @param <TrieType> The type of the trie
      */

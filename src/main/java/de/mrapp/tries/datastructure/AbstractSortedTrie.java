@@ -35,7 +35,7 @@ import static de.mrapp.util.Condition.*;
  * Sequence)}}, depending on the trie's structure.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
- * @param <ValueType>    The type of the values, which are stored by trie
+ * @param <ValueType>    The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */
@@ -196,7 +196,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * AbstractSubSet}.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      */
     private abstract static class AbstractSubMap<K extends Sequence, V> extends
             AbstractMap<K, V> implements NavigableMap<K, V>, Serializable {
@@ -321,7 +321,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          * ascending order.
          *
          * @param <K> The type of the sequences, which are used as the trie's keys
-         * @param <V> The type of the values, which are stored by trie
+         * @param <V> The type of the values, which are stored by the trie
          */
         static final class AscendingSubMapEntryIterator<K extends Sequence, V> extends
                 AbstractSubMapEntryIterator<K, V> {
@@ -364,7 +364,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          * descending order.
          *
          * @param <K> The type of the sequences, which are used as the trie's keys
-         * @param <V> The type of the values, which are stored by trie
+         * @param <V> The type of the values, which are stored by the trie
          */
         static final class DescendingSubMapEntryIterator<K extends Sequence, V> extends
                 AbstractSubMapEntryIterator<K, V> {
@@ -407,7 +407,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          * {@link AbstractSubMap}.
          *
          * @param <K> The type of the sequences, which are used as the trie's keys
-         * @param <V> The type of the values, which are stored by trie
+         * @param <V> The type of the values, which are stored by the trie
          */
         abstract static class AbstractSubMapEntryIterator<K extends Sequence, V> extends
                 AbstractEntryIterator<K, V, Map.Entry<K, V>> {
@@ -998,7 +998,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * An iterator, which allows to iterate the keys of a trie in ascending order.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      */
     private static final class AscendingKeyIterator<K extends Sequence, V> extends
             AbstractEntryIterator<K, V, K> {
@@ -1034,7 +1034,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * An iterator, which allows to iterate the keys of a trie in descending order.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      */
     private static final class DescendingKeyIterator<K extends Sequence, V> extends
             AbstractEntryIterator<K, V, K> {
@@ -1071,7 +1071,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * SortedTrie}.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      * @param <T> The type of the iterated items
      */
     private static abstract class AbstractEntryIterator<K extends Sequence, V, T> extends
@@ -1120,14 +1120,34 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     }
 
+    /**
+     * A wrapper, which encapsulates an iterator in order to implement the abstract class {@link
+     * AbstractKeySpliterator}.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by the trie
+     */
     private static final class SpliteratorWrapper<K extends Sequence, V> extends
-            AbstractSpliterator<K, V> {
+            AbstractKeySpliterator<K, V> {
 
+        /**
+         * The encapsulated iterator.
+         */
         private final Iterator<K> iterator;
 
+        /**
+         * Creates a new wrapper, which encapsulates an iterator in order to implement the abstract
+         * class {@link AbstractKeySpliterator}.
+         *
+         * @param trie     The trie, the spliterator should operate on, as an instance of the class
+         *                 {@link AbstractSortedTrie}. The trie may not be null
+         * @param iterator The iterator, which should be encapsulated, as an instance of the type
+         *                 {@link Iterator}. The iterator may not be null
+         */
         SpliteratorWrapper(@NotNull final AbstractSortedTrie<K, V> trie,
                            @NotNull final Iterator<K> iterator) {
             super(trie);
+            ensureNotNull(iterator, "The iterator may not be null");
             this.iterator = iterator;
         }
 
@@ -1144,12 +1164,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     }
 
     /**
-     * An abstract base class for all spliterators, which operate on tries.
+     * An abstract base class for all spliterators, which operate on the keys tries.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      */
-    private abstract static class AbstractSpliterator<K extends Sequence, V> implements
+    private abstract static class AbstractKeySpliterator<K extends Sequence, V> implements
             Spliterator<K> {
 
         /**
@@ -1163,12 +1183,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         long expectedModificationCount;
 
         /**
-         * Creates a new spliterator, which operates on a trie.
+         * Creates a new spliterator, which operates on the keys of a trie.
          *
          * @param trie The trie, the spliterator should operate on, as an instance of the class
          *             {@link AbstractSortedTrie}. The trie may not be null
          */
-        AbstractSpliterator(@NotNull final AbstractSortedTrie<K, V> trie) {
+        AbstractKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie) {
             ensureNotNull(trie, "The trie may not be null");
             this.trie = trie;
             this.expectedModificationCount = trie.modificationCount;
@@ -1185,7 +1205,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public long estimateSize() {
-            return Long.MAX_VALUE;
+            return trie.size();
         }
 
         @Override
@@ -1200,96 +1220,46 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public int characteristics() {
-            return Spliterator.DISTINCT | Spliterator.ORDERED;
+            return Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.SIZED;
         }
 
     }
 
-    private abstract static class AbstractKeySpliterator<K extends Sequence, V> implements
-            Spliterator<K> {
-
-        final AbstractSortedTrie<K, V> trie;
-        Map.Entry<K, V> current; // traverser; initially first node in range
-        Map.Entry<K, V> fence;   // one past last, or null
-        int side;                   // 0: top, -1: is a left split, +1: right
-        int estimatedSize;                    // size estimate (exact only for top-level)
-        long modificationCount;
-
-        final int estimateSizeIfNecessary() {
-            if (estimatedSize < 0) {
-                current = estimatedSize == -1 ? trie.firstEntry() : trie.lastEntry();
-                estimatedSize = trie.size();
-                modificationCount = trie.modificationCount;
-            }
-
-            return estimatedSize;
-        }
-
-        AbstractKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                               @Nullable final Map.Entry<K, V> origin,
-                               @Nullable final Map.Entry<K, V> fence,
-                               final int side, final int estimatedSize,
-                               final long modificationCount) {
-            this.trie = trie;
-            this.current = origin;
-            this.fence = fence;
-            this.side = side;
-            this.estimatedSize = estimatedSize;
-            this.modificationCount = modificationCount;
-        }
-
-        @Override
-        public final long estimateSize() {
-            return estimateSizeIfNecessary();
-        }
-
-        @Override
-        public void forEachRemaining(final Consumer<? super K> action) {
-            boolean hasNext = true;
-
-            while (hasNext) {
-                hasNext = tryAdvance(action);
-            }
-        }
-
-        @Override
-        public final Spliterator<K> trySplit() {
-            return null;
-        }
-
-        @Override
-        public final Comparator<? super K> getComparator() {
-            return trie.comparator();
-        }
-
-        @Override
-        public int characteristics() {
-            return (side == 0 ? Spliterator.SIZED : 0) | Spliterator.DISTINCT | Spliterator.ORDERED;
-        }
-
-    }
-
+    /**
+     * A spliterator, which traverses the keys of a trie in ascending order.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by the trie
+     */
     private static final class AscendingKeySpliterator<K extends Sequence, V> extends
             AbstractKeySpliterator<K, V> implements Spliterator<K> {
 
-        AscendingKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                                @Nullable final Map.Entry<K, V> origin,
-                                @Nullable final Map.Entry<K, V> fence, final int side,
-                                final int estimate,
-                                final long modificationCount) {
-            super(trie, origin, fence, side, estimate, modificationCount);
+        /**
+         * The next entry to be returned.
+         */
+        private Map.Entry<K, V> next;
+
+        /**
+         * Creates a new spliterator, which traverses the keys of a trie in ascending order.
+         *
+         * @param trie The trie, whose keys should be traversed, as an instance of the class {@link
+         *             AbstractSortedTrie}. The trie may not be null
+         */
+        AscendingKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie) {
+            super(trie);
+            this.next = trie.firstEntry();
+
         }
 
         @Override
         public boolean tryAdvance(final Consumer<? super K> action) {
             ensureNotNull(action, null, NullPointerException.class);
-            estimateSizeIfNecessary();
-            ensureEqual(modificationCount, trie.modificationCount, null,
+            ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
 
-            if (current != null && !current.equals(fence)) {
-                Map.Entry<K, V> entry = current;
-                current = trie.higherEntry(entry.getKey());
+            if (next != null) {
+                Map.Entry<K, V> entry = next;
+                next = trie.higherEntry(entry.getKey());
                 action.accept(entry.getKey());
                 return true;
             }
@@ -1304,26 +1274,40 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     }
 
+    /**
+     * A spliterator, which traverses the keys of a trie in descending order.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by the trie
+     */
     private static final class DescendingKeySpliterator<K extends Sequence, V> extends
             AbstractKeySpliterator<K, V> implements Spliterator<K> {
 
-        DescendingKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                                 @Nullable final Map.Entry<K, V> origin,
-                                 @Nullable final Map.Entry<K, V> fence, final int side,
-                                 final int estimate, final long modificationCount) {
-            super(trie, origin, fence, side, estimate, modificationCount);
+        /**
+         * The next entry to be returned.
+         */
+        private Map.Entry<K, V> next;
+
+        /**
+         * Creates a new spliterator, which traverses the keys of a trie in descending order.
+         *
+         * @param trie The trie, whose keys should be traversed, as an instance of the class {@link
+         *             AbstractSortedTrie}. The trie may not be null
+         */
+        DescendingKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie) {
+            super(trie);
+            this.next = trie.lastEntry();
         }
 
         @Override
         public boolean tryAdvance(final Consumer<? super K> action) {
             ensureNotNull(action, null, NullPointerException.class);
-            estimateSizeIfNecessary();
-            ensureEqual(modificationCount, trie.modificationCount, null,
+            ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
 
-            if (current != null && !current.equals(fence)) {
-                Map.Entry<K, V> entry = current;
-                current = trie.lowerEntry(entry.getKey());
+            if (next != null) {
+                Map.Entry<K, V> entry = next;
+                next = trie.lowerEntry(entry.getKey());
                 action.accept(entry.getKey());
                 return true;
             }
@@ -1563,7 +1547,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      */
     @NotNull
     final Spliterator<SequenceType> keySpliterator() {
-        return new AscendingKeySpliterator<>(this, null, null, 0, -1, 0);
+        return new AscendingKeySpliterator<>(this);
     }
 
     /**
@@ -1574,7 +1558,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      */
     @NotNull
     final Spliterator<SequenceType> descendingKeySpliterator() {
-        return new DescendingKeySpliterator<>(this, null, null, 0, -2, 0);
+        return new DescendingKeySpliterator<>(this);
     }
 
     /**
