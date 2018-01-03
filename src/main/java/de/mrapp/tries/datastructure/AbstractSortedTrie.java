@@ -28,6 +28,17 @@ import java.util.function.Function;
 
 import static de.mrapp.util.Condition.*;
 
+/**
+ * An abstract base class for all sorted tries, whose nodes are ordered by their keys. It implements
+ * the methods of the interface {@link NavigableMap}. In addition to the abstract methods of the
+ * parent class {@link AbstractTrie}, subclasses must implement the method {@link #indexOf(Node,
+ * Sequence)}}, depending on the trie's structure.
+ *
+ * @param <SequenceType> The type of the sequences, which are used as the trie's keys
+ * @param <ValueType>    The type of the values, which are stored by trie
+ * @author Michael Rapp
+ * @since 1.0.0
+ */
 public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueType> extends
         AbstractTrie<SequenceType, ValueType> implements SortedTrie<SequenceType, ValueType> {
 
@@ -1366,17 +1377,44 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         throw new NoSuchElementException();
     }
 
+    /**
+     * The method, which is invoked on subclasses in order to identify the index of a node's
+     * successor, which corresponds to a specific sequence.
+     *
+     * @param node     The node, whose successors should be checked, as an instance of the type
+     *                 {@link Node}. The node may not be null
+     * @param sequence The sequence, the successor, whose index should be returned, corresponds to,
+     *                 as an {@link Integer} value
+     * @return The index of the successor, which corresponds to the given sequence, as an {@link
+     * Integer} value or -1, if no such successor is available for the given node
+     */
     @Nullable
     protected abstract Pair<Integer, SequenceType> indexOf(
             @NotNull final Node<SequenceType, ValueType> node,
             @NotNull final SequenceType sequence);
 
-    protected AbstractSortedTrie(@Nullable final Node<SequenceType, ValueType> node,
+    /**
+     * Creates a new sorted trie.
+     *
+     * @param rootNode   The root node of the trie as an instance of the type {@link Node} or null,
+     *                   if the trie should be empty
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
+     */
+    protected AbstractSortedTrie(@Nullable final Node<SequenceType, ValueType> rootNode,
                                  @Nullable final Comparator<? super SequenceType> comparator) {
-        super(node);
+        super(rootNode);
         this.comparator = comparator;
     }
 
+    /**
+     * Creates a new empty, sorted trie.
+     *
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
+     */
     public AbstractSortedTrie(@Nullable final Comparator<? super SequenceType> comparator) {
         this(null, comparator);
     }
