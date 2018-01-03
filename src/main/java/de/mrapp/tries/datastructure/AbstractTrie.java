@@ -50,7 +50,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * @param <V>        The type of the values, which are stored by trie
      * @param <TrieType> The type of the trie
      */
-    private static class EntrySet<K extends Sequence, V, TrieType extends AbstractTrie<K, V>>
+    private static final class EntrySet<K extends Sequence, V, TrieType extends AbstractTrie<K, V>>
             extends AbstractSet<Map.Entry<K, V>> {
 
         /**
@@ -76,17 +76,17 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         @Override
-        public final int size() {
+        public int size() {
             return backingTrie.size();
         }
 
         @Override
-        public final boolean isEmpty() {
+        public boolean isEmpty() {
             return backingTrie.isEmpty();
         }
 
         @Override
-        public final boolean contains(final Object o) {
+        public boolean contains(final Object o) {
             if (o instanceof Map.Entry) {
                 Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
                 Node<K, V> node = backingTrie.getNode(entry.getKey());
@@ -97,7 +97,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         @Override
-        public final boolean remove(final Object o) {
+        public boolean remove(final Object o) {
             if (o instanceof Map.Entry) {
                 Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
                 return backingTrie.remove(entry.getKey(), entry.getValue());
@@ -116,8 +116,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * @param <V>        The type of the values, which are stored by trie
      * @param <TrieType> The type of the trie
      */
-    private static class Values<K extends Sequence, V, TrieType extends AbstractTrie<K, V>> extends
-            AbstractCollection<V> {
+    private static final class Values<K extends Sequence, V, TrieType extends AbstractTrie<K, V>>
+            extends AbstractCollection<V> {
 
         /**
          * The backing trie.
@@ -142,17 +142,17 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         @Override
-        public final int size() {
+        public int size() {
             return backingTrie.size();
         }
 
         @Override
-        public final boolean isEmpty() {
+        public boolean isEmpty() {
             return backingTrie.isEmpty();
         }
 
         @Override
-        public final boolean remove(final Object o) {
+        public boolean remove(final Object o) {
             for (Map.Entry<K, V> entry : backingTrie.entrySet()) {
                 if (isEqual(entry.getValue(), o)) {
                     backingTrie.remove(entry.getKey());
@@ -164,7 +164,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         @Override
-        public final void clear() {
+        public void clear() {
             backingTrie.clear();
         }
 
@@ -178,8 +178,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * @param <V>        The type of the values, which are stored by trie
      * @param <TrieType> The type of the trie
      */
-    private static class KeySet<K extends Sequence, V, TrieType extends AbstractTrie<K, V>> extends
-            AbstractSet<K> {
+    protected static final class KeySet<K extends Sequence, V, TrieType extends AbstractTrie<K, V>>
+            extends AbstractSet<K> {
 
         /**
          * The backing trie.
@@ -204,12 +204,12 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         @Override
-        public final int size() {
+        public int size() {
             return backingTrie.size();
         }
 
         @Override
-        public final boolean isEmpty() {
+        public boolean isEmpty() {
             return backingTrie.isEmpty();
         }
 
@@ -220,12 +220,12 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         @Override
-        public final void clear() {
+        public void clear() {
             backingTrie.clear();
         }
 
         @Override
-        public final boolean remove(final Object o) {
+        public boolean remove(final Object o) {
             int oldSize = size();
             backingTrie.remove(o);
             return size() != oldSize;
