@@ -190,20 +190,47 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     }
 
+    /**
+     * An abstract base class for all navigable maps, which only contain a subset of a trie's
+     * entries. The navigable map is backed by an implementation of the class {@link
+     * AbstractSubSet}.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by trie
+     */
     private abstract static class AbstractSubMap<K extends Sequence, V> extends
             AbstractMap<K, V> implements NavigableMap<K, V>, Serializable {
 
-        protected abstract class AbstractEntrySet extends AbstractSet<Map.Entry<K, V>> {
+        /**
+         * An abstract base class for all sets, which only contain a subset of a trie's entries.
+         */
+        protected abstract class AbstractSubSet extends AbstractSet<Map.Entry<K, V>> {
 
+            /**
+             * The size of the set or -1, if the size has not been obtained yet.
+             */
             private transient int size = -1;
 
+            /**
+             * The modification count of the backing trie, when the size has been obtained for the
+             * last time.
+             */
             private transient long sizeModificationCount;
 
+            /**
+             * Returns the key, a specific value corresponds to.
+             *
+             * @param value The value, whose key should be returned, as an instance of the class
+             *              {@link Object} or null
+             * @return The key of the given value as an instance of the generic type {@link K} or
+             * null, if no such key exists
+             */
             @SuppressWarnings("unchecked")
-            private K getKey(final Object o) {
-                if (!(o instanceof Map.Entry))
+            @Nullable
+            private K getKey(@Nullable final Object value) {
+                if (!(value instanceof Map.Entry))
                     return null;
-                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
+                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) value;
                 K key = (K) entry.getKey();
                 if (!isInRange(key))
                     return null;
@@ -699,7 +726,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     private static class AscendingSubMap<K extends Sequence, V> extends AbstractSubMap<K, V> {
 
-        private class AscendingEntrySet extends AbstractEntrySet {
+        private class AscendingSubSet extends AbstractSubSet {
 
             @NotNull
             @Override
@@ -764,7 +791,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public Set<Map.Entry<K, V>> entrySet() {
-            return new AscendingEntrySet();
+            return new AscendingSubSet();
         }
 
         @Override
@@ -817,7 +844,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     private static final class DescendingSubMap<K extends Sequence, V> extends
             AbstractSubMap<K, V> {
 
-        private class DescendingEntrySet extends AbstractEntrySet {
+        private class DescendingSubSet extends AbstractSubSet {
 
             @NotNull
             @Override
@@ -887,7 +914,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public Set<Map.Entry<K, V>> entrySet() {
-            return new DescendingEntrySet();
+            return new DescendingSubSet();
         }
 
         @Override
@@ -1155,8 +1182,14 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      */
     protected final Comparator<? super SequenceType> comparator;
 
+    /**
+     * The navigable key set of the trie (see {@link #navigableKeySet()}).
+     */
     private transient NavigableSet<SequenceType> navigableKeySet;
 
+    /**
+     * The descending map of the trie (see {@link #descendingMap()}).
+     */
     private transient NavigableMap<SequenceType, ValueType> descendingMap;
 
     /**
@@ -1317,7 +1350,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Nullable
     private Map.Entry<SequenceType, ValueType> getLowerOrHigherEntry(final SequenceType originalKey,
-                                                                     final Pair<Integer, SequenceType> indexPair,
+                                                                     @Nullable final Pair<Integer, SequenceType> indexPair,
                                                                      final Node<SequenceType, ValueType> node,
                                                                      final SequenceType key,
                                                                      @NotNull final Function<Integer, Integer> indexFunction,
@@ -1338,18 +1371,46 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         return null;
     }
 
+    /**
+     * Returns an iterator, which allows to iterate the keys of the trie.
+     *
+     * @return An iterator, which allows to iterate the keys of the trie, as an instance of the type
+     * {@link Iterator}. The iterator may not be null
+     */
+    @NotNull
     final Iterator<SequenceType> keyIterator() {
         return new AscendingKeyIterator(firstEntry());
     }
 
+    /**
+     * Returns an iterator, which allows to iterate the keys of the trie in descending order.
+     *
+     * @return An iterator, which allows to iterate the keys of the trie in descending order, as an
+     * instance of the type {@link Iterator}. The iterator may not be null
+     */
+    @NotNull
     final Iterator<SequenceType> descendingKeyIterator() {
         return new DescendingKeyIterator(lastEntry());
     }
 
+    /**
+     * Returns a spliterator, which allows to iterate the keys of the trie.
+     *
+     * @return A spliterator, which allows to iterate the keys of the trie, as an instance of the
+     * type {@link Spliterator}. The spliterator may not be null
+     */
+    @NotNull
     final Spliterator<SequenceType> keySpliterator() {
         return new AscendingKeySpliterator<>(this, null, null, 0, -1, 0);
     }
 
+    /**
+     * Returns a spliterator, which allows to iterate the keys of the trie in descending order.
+     *
+     * @return A spliterator, which allows to iterate the keys of the trie in descending order, as
+     * an instance of the type {@link Spliterator}. The spliterator may not be null
+     */
+    @NotNull
     final Spliterator<SequenceType> descendingKeySpliterator() {
         return new DescendingKeySpliterator<>(this, null, null, 0, -2, 0);
     }

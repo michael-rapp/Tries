@@ -543,17 +543,17 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     long modificationCount;
 
     /**
-     * The values of the trie.
+     * The values of the trie (see {@link #values()}).
      */
     private Collection<ValueType> values;
 
     /**
-     * The key set of the trie.
+     * The key set of the trie (see {@link #keySet()}).
      */
     private Set<SequenceType> keySet;
 
     /**
-     * The entry set of the trie.
+     * The entry set of the trie (see {@link #entrySet()}).
      */
     private Set<Map.Entry<SequenceType, ValueType>> entrySet;
 
