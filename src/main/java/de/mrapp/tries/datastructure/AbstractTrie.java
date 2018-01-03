@@ -46,29 +46,37 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * backed by an {@link EntryIterator}, which traverses all nodes of the trie for which a value
      * is set.
      */
-    private class EntrySet extends AbstractSet<Map.Entry<SequenceType, ValueType>> {
+    private static class EntrySet<K extends Sequence, V, TrieType extends AbstractTrie<K, V>>
+            extends AbstractSet<Map.Entry<K, V>> {
+
+        private final TrieType trie;
+
+        EntrySet(@NotNull final TrieType trie) {
+            ensureNotNull(trie, "The trie may not be null");
+            this.trie = trie;
+        }
 
         @NotNull
         @Override
-        public Iterator<Entry<SequenceType, ValueType>> iterator() {
-            return new EntryIterator();
+        public Iterator<Entry<K, V>> iterator() {
+            return new EntryIterator<>(trie);
         }
 
         @Override
-        public int size() {
-            return AbstractTrie.this.size();
+        public final int size() {
+            return trie.size();
         }
 
         @Override
-        public boolean isEmpty() {
-            return AbstractTrie.this.isEmpty();
+        public final boolean isEmpty() {
+            return trie.isEmpty();
         }
 
         @Override
-        public boolean contains(final Object o) {
+        public final boolean contains(final Object o) {
             if (o instanceof Map.Entry) {
                 Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
-                Node<SequenceType, ValueType> node = AbstractTrie.this.getNode(entry.getKey());
+                Node<K, V> node = trie.getNode(entry.getKey());
                 return node != null && isValueEqual(node, entry);
             }
 
@@ -76,10 +84,10 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         @Override
-        public boolean remove(final Object o) {
+        public final boolean remove(final Object o) {
             if (o instanceof Map.Entry) {
                 Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
-                return AbstractTrie.this.remove(entry.getKey(), entry.getValue());
+                return trie.remove(entry.getKey(), entry.getValue());
             }
 
             return false;
@@ -91,29 +99,40 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * The values of a trie as returned by the method {@link #values()}. The entry set is backed by
      * a {@link ValueIterator}, which traverses all values of the trie.
      */
-    private class Values extends AbstractCollection<ValueType> {
+    private static class Values<K extends Sequence, V, TrieType extends AbstractTrie<K, V>> extends
+            AbstractCollection<V> {
+
+        /**
+         * The backing trie.
+         */
+        private final TrieType trie;
+
+        Values(@NotNull final TrieType trie) {
+            ensureNotNull(trie, "The trie may not be null");
+            this.trie = trie;
+        }
 
         @NotNull
         @Override
-        public Iterator<ValueType> iterator() {
-            return new ValueIterator();
+        public Iterator<V> iterator() {
+            return new ValueIterator<>(trie);
         }
 
         @Override
-        public int size() {
-            return AbstractTrie.this.size();
+        public final int size() {
+            return trie.size();
         }
 
         @Override
-        public boolean isEmpty() {
-            return AbstractTrie.this.isEmpty();
+        public final boolean isEmpty() {
+            return trie.isEmpty();
         }
 
         @Override
-        public boolean remove(final Object o) {
-            for (Map.Entry<SequenceType, ValueType> entry : AbstractTrie.this.entrySet()) {
+        public final boolean remove(final Object o) {
+            for (Map.Entry<K, V> entry : trie.entrySet()) {
                 if (isEqual(entry.getValue(), o)) {
-                    AbstractTrie.this.remove(entry.getKey());
+                    trie.remove(entry.getKey());
                     return true;
                 }
             }
@@ -122,80 +141,125 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         @Override
-        public void clear() {
-            AbstractTrie.this.clear();
+        public final void clear() {
+            trie.clear();
         }
 
     }
 
-    private class KeySet extends AbstractSet<SequenceType> {
+    private static class KeySet<K extends Sequence, V, TrieType extends AbstractTrie<K, V>> extends
+            AbstractSet<K> {
+
+        /**
+         * The backing trie.
+         */
+        private final TrieType trie;
+
+        KeySet(@NotNull final TrieType trie) {
+            ensureNotNull(trie, "The trie may not be null");
+            this.trie = trie;
+        }
 
         @NotNull
         @Override
-        public Iterator<SequenceType> iterator() {
-            return new KeyIterator();
+        public Iterator<K> iterator() {
+            return new KeyIterator<>(trie);
         }
 
         @Override
-        public int size() {
-            return AbstractTrie.this.size();
+        public final int size() {
+            return trie.size();
         }
 
         @Override
-        public boolean isEmpty() {
-            return AbstractTrie.this.isEmpty();
+        public final boolean isEmpty() {
+            return trie.isEmpty();
+        }
+
+        @SuppressWarnings("SuspiciousMethodCalls")
+        @Override
+        public final boolean contains(Object o) {
+            return trie.containsKey(o);
         }
 
         @Override
-        public boolean contains(Object o) {
-            return AbstractTrie.this.containsKey(o);
+        public final void clear() {
+            trie.clear();
         }
 
         @Override
-        public void clear() {
-            AbstractTrie.this.clear();
-        }
-
-        @Override
-        public boolean remove(final Object o) {
+        public final boolean remove(final Object o) {
             int oldSize = size();
-            AbstractTrie.this.remove(o);
+            trie.remove(o);
             return size() != oldSize;
         }
 
     }
 
     /**
-     * An iterator, which allows to iterate all nodes of the trie for which a value is set.
+     * An iterator, which allows to iterate all nodes of a trie for which a value is set.
      */
-    private class EntryIterator extends AbstractEntryIterator<Map.Entry<SequenceType, ValueType>> {
+    private static class EntryIterator<K extends Sequence, V> extends
+            AbstractEntryIterator<K, V, Map.Entry<K, V>> {
+
+        /**
+         * Creates a new iterator, which allows to iterate all nodes of a trie for which a value is
+         * set.
+         *
+         * @param trie The trie, which should be traversed by the iterator, as an instance of the
+         *             class {@link AbstractTrie}. The trie may not be null
+         */
+        EntryIterator(@NotNull final AbstractTrie<K, V> trie) {
+            super(trie);
+        }
 
         @Override
-        public Entry<SequenceType, ValueType> next() {
+        public Map.Entry<K, V> next() {
             return nextEntry();
         }
 
     }
 
     /**
-     * An iterator, which allows to iterate all values, which are stored by the trie.
+     * An iterator, which allows to iterate all values, which are stored by a trie.
      */
-    private class ValueIterator extends AbstractEntryIterator<ValueType> {
+    private static class ValueIterator<K extends Sequence, V> extends
+            AbstractEntryIterator<K, V, V> {
+
+        /**
+         * Creates a new iterator, which allows to iterate all values, which are stored by a trie.
+         *
+         * @param trie The trie, which should be traversed by the iterator, as an instance of the
+         *             class {@link AbstractTrie}. The trie may not be null
+         */
+        ValueIterator(@NotNull final AbstractTrie<K, V> trie) {
+            super(trie);
+        }
 
         @Override
-        public ValueType next() {
+        public V next() {
             return nextEntry().getValue();
         }
 
     }
 
     /**
-     * An iterator, which allows to iterate all keys, which are stored by the trie.
+     * An iterator, which allows to iterate all keys, which are stored by a trie.
      */
-    private class KeyIterator extends AbstractEntryIterator<SequenceType> {
+    private static class KeyIterator<K extends Sequence, V> extends AbstractEntryIterator<K, V, K> {
+
+        /**
+         * Creates a new iterator, which allows to iterate all keys, which are stored by a trie.
+         *
+         * @param trie The trie, which should be traversed by the iterator, as an instance of the
+         *             class {@link AbstractTrie}. The trie may not be null
+         */
+        KeyIterator(@NotNull final AbstractTrie<K, V> trie) {
+            super(trie);
+        }
 
         @Override
-        public SequenceType next() {
+        public K next() {
             return nextEntry().getKey();
         }
 
@@ -208,7 +272,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      *
      * @param <T> The type of the iterated items
      */
-    private abstract class AbstractEntryIterator<T> implements Iterator<T> {
+    private abstract static class AbstractEntryIterator<K extends Sequence, V, T> implements
+            Iterator<T> {
 
         /**
          * Represents a path from the root to a specific node.
@@ -218,17 +283,17 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             /**
              * The node the path leads to.
              */
-            private final Node<SequenceType, ValueType> node;
+            private final Node<K, V> node;
 
             /**
              * The sequence, which corresponds to the node.
              */
-            private final SequenceType sequence;
+            private final K sequence;
 
             /**
              * The iterator, which allows to iterate the successors of the node.
              */
-            private Iterator<SequenceType> iterator;
+            private Iterator<K> iterator;
 
             /**
              * Creates a new empty path.
@@ -236,7 +301,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
              * @param rootNode The root node of the trie, as an instance of the type {@link Node} or
              *                 null, if the trie is empty
              */
-            Path(@Nullable final Node<SequenceType, ValueType> rootNode) {
+            Path(@Nullable final Node<K, V> rootNode) {
                 this.node = rootNode;
                 this.sequence = null;
                 this.iterator = null;
@@ -248,11 +313,10 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
              * @param node     The node, the path should lead to, as an instance of the type {@link
              *                 Node}. The node may not be null
              * @param sequence The sequence, which corresponds to the given node, as an instance of
-             *                 the generic type {@link SequenceType}. The sequence may neither be
-             *                 null, nor empty
+             *                 the generic type {@link K}. The sequence may neither be null, nor
+             *                 empty
              */
-            Path(@NotNull final Node<SequenceType, ValueType> node,
-                 @NotNull final SequenceType sequence) {
+            Path(@NotNull final Node<K, V> node, @NotNull final K sequence) {
                 ensureNotNull(node, "The node may not be null");
                 ensureNotNull(sequence, "The sequence may not be null");
                 ensureFalse(sequence.isEmpty(), "The sequence may not be empty");
@@ -264,6 +328,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         /**
+         * The trie, which is traversed by the iterator.
+         */
+        private final AbstractTrie<K, V> trie;
+
+        /**
          * The modification count when the iterator was instantiated.
          */
         private long modificationCount;
@@ -271,7 +340,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         /**
          * The entry, which was returned the last time the {@link #nextEntry()} method was called.
          */
-        private Map.Entry<SequenceType, ValueType> lastReturned;
+        private Map.Entry<K, V> lastReturned;
 
         /**
          * A stack, which contains the nodes, which remain to be traversed.
@@ -334,17 +403,17 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             }
 
             if (path.iterator != null && path.iterator.hasNext()) {
-                SequenceType key = path.iterator.next();
+                K key = path.iterator.next();
 
                 if (path.iterator.hasNext()) {
                     stack.push(path);
                 }
 
                 if (key != null) {
-                    Node<SequenceType, ValueType> successor = path.node.getSuccessor(key);
+                    Node<K, V> successor = path.node.getSuccessor(key);
 
                     if (successor != null) {
-                        SequenceType sequence = SequenceUtil.concat(path.sequence, key);
+                        K sequence = SequenceUtil.concat(path.sequence, key);
                         return new Path(successor, sequence);
                     }
                 }
@@ -353,8 +422,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             return null;
         }
 
-        final Map.Entry<SequenceType, ValueType> nextEntry() {
-            ensureEqual(modificationCount, AbstractTrie.this.modificationCount, null,
+        final Map.Entry<K, V> nextEntry() {
+            ensureEqual(modificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
             ensureTrue(hasNext(), null, NoSuchElementException.class);
             Path result = nextPath;
@@ -367,14 +436,19 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         /**
          * Creates a new iterator, which allows to iterate all nodes of the trie, which contain a
          * value.
+         *
+         * @param trie The trie, which should be traversed by the iterator, as an instance of the
+         *             class {@link AbstractTrie}. The trie may not be null
          */
-        AbstractEntryIterator() {
-            this.modificationCount = AbstractTrie.this.modificationCount;
+        AbstractEntryIterator(@NotNull final AbstractTrie<K, V> trie) {
+            ensureNotNull(trie, "The trie may not be null");
+            this.trie = trie;
+            this.modificationCount = trie.modificationCount;
             this.lastReturned = null;
             this.stack = new LinkedList<>();
 
-            if (AbstractTrie.this.rootNode != null) {
-                this.stack.add(new Path(rootNode));
+            if (trie.rootNode != null) {
+                this.stack.add(new Path(trie.rootNode));
                 this.nextPath = fetchNext();
             }
         }
@@ -387,11 +461,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         @Override
         public void remove() {
             ensureNotNull(lastReturned, null, IllegalStateException.class);
-            ensureEqual(modificationCount, AbstractTrie.this.modificationCount, null,
+            ensureEqual(modificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
-            AbstractTrie.this.remove(lastReturned.getKey());
+            trie.remove(lastReturned.getKey());
             lastReturned = null;
-            modificationCount = AbstractTrie.this.modificationCount;
+            modificationCount = trie.modificationCount;
         }
 
     }
@@ -608,7 +682,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     @Override
     public final Set<SequenceType> keySet() {
         if (this.keySet == null) {
-            this.keySet = new KeySet();
+            this.keySet = new KeySet<>(this);
         }
 
         return this.keySet;
@@ -618,7 +692,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     @Override
     public final Collection<ValueType> values() {
         if (this.values == null) {
-            this.values = new Values();
+            this.values = new Values<>(this);
         }
 
         return this.values;
@@ -628,7 +702,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     @Override
     public final Set<Entry<SequenceType, ValueType>> entrySet() {
         if (this.entrySet == null) {
-            this.entrySet = new EntrySet();
+            this.entrySet = new EntrySet<>(this);
         }
 
         return this.entrySet;
