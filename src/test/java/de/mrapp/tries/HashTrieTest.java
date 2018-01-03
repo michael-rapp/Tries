@@ -375,6 +375,20 @@ public class HashTrieTest {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
+    public final void testValuesIteratorRemove() {
+        testPut3();
+        Iterator<String> iterator = trie.values().iterator();
+        assertEquals("tea", iterator.next());
+        assertEquals("ted", iterator.next());
+        iterator.remove();
+        assertEquals("to", iterator.next());
+        assertEquals(2, trie.size());
+        assertTrue(trie.containsKey(new StringSequence("tea")));
+        assertFalse(trie.containsKey(new StringSequence("ted")));
+        assertTrue(trie.containsKey(new StringSequence("to")));
+    }
+
     @Test(expected = UnsupportedOperationException.class)
     public final void testValuesImmutable() {
         testPut6();
@@ -455,6 +469,20 @@ public class HashTrieTest {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
+    public final void testKeySetIteratorRemove() {
+        testPut3();
+        Iterator<StringSequence> iterator = trie.keySet().iterator();
+        assertEquals(new StringSequence("tea"), iterator.next());
+        assertEquals(new StringSequence("ted"), iterator.next());
+        iterator.remove();
+        assertEquals(new StringSequence("to"), iterator.next());
+        assertEquals(2, trie.size());
+        assertTrue(trie.containsKey(new StringSequence("tea")));
+        assertFalse(trie.containsKey(new StringSequence("ted")));
+        assertTrue(trie.containsKey(new StringSequence("to")));
+    }
+
     @Test(expected = ConcurrentModificationException.class)
     public final void testKeySetIteratorThrowsConcurrentModificationException() {
         testPut6();
@@ -530,6 +558,23 @@ public class HashTrieTest {
         }
 
         assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public final void testEntrySetIteratorRemove() {
+        testPut3();
+        Iterator<Map.Entry<StringSequence, String>> iterator = trie.entrySet().iterator();
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
+                iterator.next());
+        iterator.remove();
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
+                iterator.next());
+        assertEquals(2, trie.size());
+        assertTrue(trie.containsKey(new StringSequence("tea")));
+        assertFalse(trie.containsKey(new StringSequence("ted")));
+        assertTrue(trie.containsKey(new StringSequence("to")));
     }
 
     @Test(expected = UnsupportedOperationException.class)

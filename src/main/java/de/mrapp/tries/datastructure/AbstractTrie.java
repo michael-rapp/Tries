@@ -266,7 +266,12 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         /**
          * The modification count when the iterator was instantiated.
          */
-        private final long modificationCount;
+        private long modificationCount;
+
+        /**
+         * The entry, which was returned the last time the {@link #nextEntry()} method was called.
+         */
+        private Map.Entry<SequenceType, ValueType> lastReturned;
 
         /**
          * A stack, which contains the nodes, which remain to be traversed.
@@ -354,8 +359,9 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             ensureTrue(hasNext(), null, NoSuchElementException.class);
             Path result = nextPath;
             nextPath = fetchNext();
-            return new AbstractMap.SimpleImmutableEntry<>(result.sequence,
+            lastReturned = new AbstractMap.SimpleImmutableEntry<>(result.sequence,
                     result.node.getValue());
+            return lastReturned;
         }
 
         /**
@@ -364,6 +370,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
          */
         AbstractEntryIterator() {
             this.modificationCount = AbstractTrie.this.modificationCount;
+            this.lastReturned = null;
             this.stack = new LinkedList<>();
 
             if (AbstractTrie.this.rootNode != null) {
@@ -375,6 +382,16 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         @Override
         public boolean hasNext() {
             return nextPath != null;
+        }
+
+        @Override
+        public void remove() {
+            ensureNotNull(lastReturned, null, IllegalStateException.class);
+            ensureEqual(modificationCount, AbstractTrie.this.modificationCount, null,
+                    ConcurrentModificationException.class);
+            AbstractTrie.this.remove(lastReturned.getKey());
+            lastReturned = null;
+            modificationCount = AbstractTrie.this.modificationCount;
         }
 
     }
