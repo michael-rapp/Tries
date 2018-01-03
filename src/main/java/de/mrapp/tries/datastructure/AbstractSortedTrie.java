@@ -1143,13 +1143,31 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     }
 
+    /**
+     * An abstract base class for all spliterators, which operate on tries.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by trie
+     */
     private abstract static class AbstractSpliterator<K extends Sequence, V> implements
             Spliterator<K> {
 
+        /**
+         * The trie, which is traversed by the spliterator.
+         */
         final AbstractSortedTrie<K, V> trie;
 
+        /**
+         * The modification count of the {@link #trie} when the spliterator was instantiated.
+         */
         long expectedModificationCount;
 
+        /**
+         * Creates a new spliterator, which operates on a trie.
+         *
+         * @param trie The trie, the spliterator should operate on, as an instance of the class
+         *             {@link AbstractSortedTrie}. The trie may not be null
+         */
         AbstractSpliterator(@NotNull final AbstractSortedTrie<K, V> trie) {
             ensureNotNull(trie, "The trie may not be null");
             this.trie = trie;

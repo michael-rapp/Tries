@@ -547,6 +547,12 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
          */
         long expectedModificationCount;
 
+        /**
+         * Creates a new iterator, which operates on a trie.
+         *
+         * @param trie The trie, the iterator should operate on, as an instance of the generic type
+         *             {@link TrieType}. The trie may not be null
+         */
         AbstractIterator(@NotNull final TrieType trie) {
             ensureNotNull(trie, "The trie may not be null");
             this.trie = trie;
