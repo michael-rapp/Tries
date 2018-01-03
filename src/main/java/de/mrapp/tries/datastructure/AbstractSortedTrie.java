@@ -276,102 +276,77 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         }
 
-        protected class AscendingSubMapKeyIterator extends AbstractSubMapKeyIterator {
+        /**
+         * A wrapper, which encapsulates an iterator, which allows to iterate items of the type
+         * {@link Map.Entry}, in order to implement an iterator, which iterates the keys of the
+         * entries.
+         *
+         * @param <K> The type of the keys of the iterated entries
+         * @param <V> The type of the values of the iterated entries
+         */
+        static final class KeyIteratorWrapper<K extends Sequence, V> implements Iterator<K> {
 
-            AscendingSubMapKeyIterator(@Nullable final Map.Entry<K, V> first,
-                                       @Nullable final Map.Entry<K, V> fence) {
-                super(first, fence);
+            /**
+             * The encapsulated iterator.
+             */
+            private final Iterator<Map.Entry<K, V>> iterator;
+
+            /**
+             * Creates a new wrapper, which encapsulates an iterator, which allows to iterate items
+             * of the type {@link Map.Entry}, in order to implement an iterator, which iterates the
+             * keys of the entries.
+             *
+             * @param iterator The iterator, which should be encapsulated, as an instance of the
+             *                 type {@link Iterator}. The iterator may not be null
+             */
+            KeyIteratorWrapper(@NotNull final Iterator<Map.Entry<K, V>> iterator) {
+                ensureNotNull(iterator, "The iterator may not be null");
+                this.iterator = iterator;
             }
 
             @Override
-            public final K next() {
-                return nextEntry().getKey();
-            }
-
-            @Override
-            public final int characteristics() {
-                return super.characteristics() | Spliterator.SORTED;
-            }
-
-        }
-
-        protected class DescendingSubMapKeyIterator extends AbstractSubMapKeyIterator {
-
-            DescendingSubMapKeyIterator(@Nullable final Entry<K, V> first,
-                                        @Nullable final Entry<K, V> fence) {
-                super(first, fence);
+            public boolean hasNext() {
+                return iterator.hasNext();
             }
 
             @Override
             public K next() {
-                return previousEntry().getKey();
+                return iterator.next().getKey();
             }
 
         }
 
-        private abstract class AbstractSubMapKeyIterator extends
-                AbstractSubMapIterator<K> implements Spliterator<K> {
+        /**
+         * An iterator, which allows to iterate the entries of a trie's {@link AbstractSubMap} in
+         * ascending order.
+         *
+         * @param <K> The type of the sequences, which are used as the trie's keys
+         * @param <V> The type of the values, which are stored by trie
+         */
+        static final class AscendingSubMapEntryIterator<K extends Sequence, V> extends
+                AbstractSubMapEntryIterator<K, V> {
 
-            AbstractSubMapKeyIterator(@Nullable final Map.Entry<K, V> first,
-                                      @Nullable final Map.Entry<K, V> fence) {
-                super(first, fence);
+            /**
+             * Creates a new iterator, which allows to iterate the entries of a trie's {@link
+             * AbstractSubMap} in ascending order.
+             *
+             * @param trie  The trie, whose entries should be iterated, as an instance of the class
+             *              {@link AbstractSortedTrie}. The trie may not be null
+             * @param first The first entry to be iterated as an instance of the type {@link
+             *              Map.Entry} or null, if the trie is empty
+             * @param fence The entry, which marks the end of the sub map (exclusive), as an
+             *              instance of the type {@link Map.Entry} or null, if the map should not be
+             *              restricted
+             */
+            AscendingSubMapEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                                         @Nullable final Map.Entry<K, V> first,
+                                         @Nullable final Map.Entry<K, V> fence) {
+                super(trie, first, fence);
             }
 
             @Override
-            public final void forEachRemaining(final Consumer<? super K> action) {
-                while (hasNext()) {
-                    action.accept(next());
-                }
-            }
-
-            @Override
-            public final boolean tryAdvance(final Consumer<? super K> action) {
-                if (hasNext()) {
-                    action.accept(next());
-                    return true;
-                }
-
-                return false;
-            }
-
-            @Override
-            public final long estimateSize() {
-                return Long.MAX_VALUE;
-            }
-
-            @Override
-            public final Spliterator<K> trySplit() {
-                return null;
-            }
-
-            @Override
-            public int characteristics() {
-                return Spliterator.DISTINCT | Spliterator.ORDERED;
-            }
-
-        }
-
-        protected abstract class AbstractSubMapIterator<T> implements Iterator<T> {
-
-            final Object fenceKey;
-            long modificationCount;
-            Map.Entry<K, V> lastReturned;
-            Map.Entry<K, V> next;
-
-            final Map.Entry<K, V> previousEntry() {
-                ensureEqual(this.modificationCount, trie.modificationCount, null,
-                        ConcurrentModificationException.class);
-                ensureNotNull(next, null, NoSuchElementException.class);
-                ensureFalse(fenceKey.equals(next.getKey()), null,
-                        NoSuchElementException.class);
-                Map.Entry<K, V> entry = next;
-                next = trie.lowerEntry(entry.getKey());
-                lastReturned = entry;
-                return entry;
-            }
-
-            final Map.Entry<K, V> nextEntry() {
-                ensureEqual(this.modificationCount, trie.modificationCount, null,
+            public Entry<K, V> next() {
+                ensureEqual(expectedModificationCount, trie.modificationCount, null,
                         ConcurrentModificationException.class);
                 ensureNotNull(next, null, NoSuchElementException.class);
                 ensureFalse(fenceKey.equals(next.getKey()), null,
@@ -382,27 +357,94 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                 return entry;
             }
 
-            AbstractSubMapIterator(@Nullable final Map.Entry<K, V> first,
-                                   @Nullable final Map.Entry<K, V> fence) {
-                this.fenceKey = fence != null ? fence.getKey() : UNBOUND_KEY;
-                this.modificationCount = trie.modificationCount;
-                this.next = first;
-                this.lastReturned = null;
+        }
+
+        /**
+         * An iterator, which allows to iterate the entries of a trie's {@link AbstractSubMap} in
+         * descending order.
+         *
+         * @param <K> The type of the sequences, which are used as the trie's keys
+         * @param <V> The type of the values, which are stored by trie
+         */
+        static final class DescendingSubMapEntryIterator<K extends Sequence, V> extends
+                AbstractSubMapEntryIterator<K, V> {
+
+            /**
+             * Creates a new iterator, which allows to iterate the entries of a trie's {@link
+             * AbstractSubMap} in descending order.
+             *
+             * @param trie  The trie, whose entries should be iterated, as an instance of the class
+             *              {@link AbstractSortedTrie}. The trie may not be null
+             * @param first The first entry to be iterated as an instance of the type {@link
+             *              Map.Entry} or null, if the trie is empty
+             * @param fence The entry, which marks the end of the sub map (exclusive), as an
+             *              instance of the type {@link Map.Entry} or null, if the map should not be
+             *              restricted
+             */
+            DescendingSubMapEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                                          @Nullable final Map.Entry<K, V> first,
+                                          @Nullable final Map.Entry<K, V> fence) {
+                super(trie, first, fence);
+            }
+
+            @Override
+            public Entry<K, V> next() {
+                ensureEqual(expectedModificationCount, trie.modificationCount, null,
+                        ConcurrentModificationException.class);
+                ensureNotNull(next, null, NoSuchElementException.class);
+                ensureFalse(fenceKey.equals(next.getKey()), null,
+                        NoSuchElementException.class);
+                Map.Entry<K, V> entry = next;
+                next = trie.lowerEntry(entry.getKey());
+                lastReturned = entry;
+                return entry;
+            }
+
+        }
+
+        /**
+         * An abstract base class for all iterators, which allow to iterate the entries of a trie's
+         * {@link AbstractSubMap}.
+         *
+         * @param <K> The type of the sequences, which are used as the trie's keys
+         * @param <V> The type of the values, which are stored by trie
+         */
+        abstract static class AbstractSubMapEntryIterator<K extends Sequence, V> extends
+                AbstractEntryIterator<K, V, Map.Entry<K, V>> {
+
+            /**
+             * The key, which is used to indicate that a map is unrestricted.
+             */
+            private static final Object UNRESTRICTED_KEY = new Object();
+
+            /**
+             * The key of the entry, which marks the end of the sub map (exclusive) or {@link
+             * #UNRESTRICTED_KEY} if the map is not restricted.
+             */
+            final Object fenceKey;
+
+            /**
+             * Creates a new iterator, which allows to iterate the entries of a trie's {@link
+             * AbstractSubMap}.
+             *
+             * @param trie  The trie, whose entries should be iterated, as an instance of the class
+             *              {@link AbstractSortedTrie}. The trie may not be null
+             * @param first The first entry to be iterated as an instance of the type {@link
+             *              Map.Entry} or null, if the trie is empty
+             * @param fence The entry, which marks the end of the sub map (exclusive), as an
+             *              instance of the type {@link Map.Entry} or null, if the map should not be
+             *              restricted
+             */
+            AbstractSubMapEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                                        @Nullable final Map.Entry<K, V> first,
+                                        @Nullable final Map.Entry<K, V> fence) {
+                super(trie, first);
+                this.fenceKey = fence != null ? fence.getKey() : UNRESTRICTED_KEY;
             }
 
             @Override
             public final boolean hasNext() {
-                return next != null && !fenceKey.equals(next.getKey());
-            }
-
-            @Override
-            public final void remove() {
-                ensureNotNull(lastReturned, null, IllegalStateException.class);
-                ensureEqual(modificationCount, trie.modificationCount, null,
-                        ConcurrentModificationException.class);
-                trie.remove(lastReturned.getKey());
-                lastReturned = null;
-                modificationCount = trie.modificationCount;
+                return super.hasNext() && !fenceKey.equals(next.getKey());
             }
 
         }
@@ -411,8 +453,6 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          * The constant serial version UID.
          */
         private static final long serialVersionUID = 2179020779953916850L;
-
-        private static final Object UNBOUND_KEY = new Object();
 
         private final Comparator<K> comparator;
 
@@ -731,15 +771,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             @NotNull
             @Override
             public Iterator<Entry<K, V>> iterator() {
-                return new AbstractSubMapIterator<Map.Entry<K, V>>(getLowestEntry(),
-                        getHighFence()) {
-
-                    @Override
-                    public Map.Entry<K, V> next() {
-                        return nextEntry();
-                    }
-
-                };
+                return new AscendingSubMapEntryIterator<>(trie, getLowestEntry(), getHighFence());
             }
 
         }
@@ -826,17 +858,20 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         protected Iterator<K> keyIterator() {
-            return new AscendingSubMapKeyIterator(getLowestEntry(), getHighFence());
+            return new KeyIteratorWrapper<>(
+                    new AscendingSubMapEntryIterator<>(trie, getLowestEntry(), getHighFence()));
         }
 
         @Override
         protected Iterator<K> descendingKeyIterator() {
-            return new DescendingSubMapKeyIterator(getHighestEntry(), getLowFence());
+            return new KeyIteratorWrapper<>(
+                    new DescendingSubMapEntryIterator<>(trie, getHighestEntry(), getLowFence()));
         }
 
         @Override
         protected Spliterator<K> keySpliterator() {
-            return new AscendingSubMapKeyIterator(getLowestEntry(), getHighFence());
+            return new SpliteratorWrapper<>(trie, new KeyIteratorWrapper<>(
+                    new AscendingSubMapEntryIterator<>(trie, getLowestEntry(), getHighFence())));
         }
 
     }
@@ -849,15 +884,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             @NotNull
             @Override
             public Iterator<Map.Entry<K, V>> iterator() {
-                return new AbstractSubMapIterator<Map.Entry<K, V>>(getHighestEntry(),
-                        getLowFence()) {
-
-                    @Override
-                    public Entry<K, V> next() {
-                        return previousEntry();
-                    }
-
-                };
+                return new DescendingSubMapEntryIterator<>(trie, getHighestEntry(), getLowFence());
             }
 
         }
@@ -949,17 +976,20 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         protected Iterator<K> keyIterator() {
-            return new DescendingSubMapKeyIterator(getHighestEntry(), getLowFence());
+            return new KeyIteratorWrapper<>(
+                    new DescendingSubMapEntryIterator<>(trie, getHighestEntry(), getLowFence()));
         }
 
         @Override
         protected Iterator<K> descendingKeyIterator() {
-            return new AscendingSubMapKeyIterator(getLowestEntry(), getHighFence());
+            return new KeyIteratorWrapper<>(
+                    new AscendingSubMapEntryIterator<>(trie, getLowestEntry(), getHighFence()));
         }
 
         @Override
         protected Spliterator<K> keySpliterator() {
-            return new DescendingSubMapKeyIterator(getHighestEntry(), getLowFence());
+            return new SpliteratorWrapper<>(trie, new KeyIteratorWrapper<>(
+                    new DescendingSubMapEntryIterator<>(trie, getHighestEntry(), getLowFence())));
         }
 
     }
@@ -1069,12 +1099,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         AbstractEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
                               @Nullable final Map.Entry<K, V> first) {
             super(trie);
-            this.lastReturned = null;
             this.next = first;
+            this.lastReturned = null;
         }
 
         @Override
-        public final boolean hasNext() {
+        public boolean hasNext() {
             return next != null;
         }
 
@@ -1090,7 +1120,74 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     }
 
+    private static final class SpliteratorWrapper<K extends Sequence, V> extends
+            AbstractSpliterator<K, V> {
+
+        private final Iterator<K> iterator;
+
+        SpliteratorWrapper(@NotNull final AbstractSortedTrie<K, V> trie,
+                           @NotNull final Iterator<K> iterator) {
+            super(trie);
+            this.iterator = iterator;
+        }
+
+        @Override
+        public boolean tryAdvance(final Consumer<? super K> action) {
+            if (iterator.hasNext()) {
+                action.accept(iterator.next());
+                return true;
+            }
+
+            return false;
+        }
+
+    }
+
     private abstract static class AbstractSpliterator<K extends Sequence, V> implements
+            Spliterator<K> {
+
+        final AbstractSortedTrie<K, V> trie;
+
+        long expectedModificationCount;
+
+        AbstractSpliterator(@NotNull final AbstractSortedTrie<K, V> trie) {
+            ensureNotNull(trie, "The trie may not be null");
+            this.trie = trie;
+            this.expectedModificationCount = trie.modificationCount;
+        }
+
+        @Override
+        public final void forEachRemaining(final Consumer<? super K> action) {
+            boolean hasNext = true;
+
+            while (hasNext) {
+                hasNext = tryAdvance(action);
+            }
+        }
+
+        @Override
+        public long estimateSize() {
+            return Long.MAX_VALUE;
+        }
+
+        @Override
+        public Spliterator<K> trySplit() {
+            return null;
+        }
+
+        @Override
+        public final Comparator<? super K> getComparator() {
+            return trie.comparator();
+        }
+
+        @Override
+        public int characteristics() {
+            return Spliterator.DISTINCT | Spliterator.ORDERED;
+        }
+
+    }
+
+    private abstract static class AbstractKeySpliterator<K extends Sequence, V> implements
             Spliterator<K> {
 
         final AbstractSortedTrie<K, V> trie;
@@ -1110,10 +1207,11 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return estimatedSize;
         }
 
-        AbstractSpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                            @Nullable final Map.Entry<K, V> origin,
-                            @Nullable final Map.Entry<K, V> fence,
-                            final int side, final int estimatedSize, final long modificationCount) {
+        AbstractKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                               @Nullable final Map.Entry<K, V> origin,
+                               @Nullable final Map.Entry<K, V> fence,
+                               final int side, final int estimatedSize,
+                               final long modificationCount) {
             this.trie = trie;
             this.current = origin;
             this.fence = fence;
@@ -1154,7 +1252,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     }
 
     private static final class AscendingKeySpliterator<K extends Sequence, V> extends
-            AbstractSpliterator<K, V> implements Spliterator<K> {
+            AbstractKeySpliterator<K, V> implements Spliterator<K> {
 
         AscendingKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
                                 @Nullable final Map.Entry<K, V> origin,
@@ -1189,7 +1287,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     }
 
     private static final class DescendingKeySpliterator<K extends Sequence, V> extends
-            AbstractSpliterator<K, V> implements Spliterator<K> {
+            AbstractKeySpliterator<K, V> implements Spliterator<K> {
 
         DescendingKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
                                  @Nullable final Map.Entry<K, V> origin,
