@@ -47,7 +47,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
      */
-    private static class NavigableKeySet<K extends Sequence> extends
+    private static final class NavigableKeySet<K extends Sequence> extends
             AbstractKeySet<K, NavigableMap<K, ?>> implements NavigableSet<K> {
 
         /**
@@ -232,7 +232,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                     return null;
                 Map.Entry<?, ?> entry = (Map.Entry<?, ?>) value;
                 K key = (K) entry.getKey();
-                if (!isInRange(key))
+                if (!isInOpenRange(key))
                     return null;
                 Node<K, V> node = trie.getNode(key);
                 if (node == null)
@@ -454,12 +454,15 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          */
         private static final long serialVersionUID = 2179020779953916850L;
 
-        private final Comparator<K> comparator;
-
         /**
          * The backing trie.
          */
         final AbstractSortedTrie<K, V> trie;
+
+        /**
+         * The comparator, which is used to compare keys with each other.
+         */
+        private final Comparator<K> comparator;
 
         final K fromKey, toKey;
 
@@ -467,6 +470,13 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         final boolean fromInclusive, toInclusive;
 
+        /**
+         * Returns, whether a key is too low to be included in the sub map.
+         *
+         * @param key The key, which should be checked, as an instance of the generic type {@link K}
+         *            or null
+         * @return True, if the given key is too low, false otherwise
+         */
         private boolean isTooLow(@Nullable final K key) {
             if (!fromStart) {
                 int c = comparator.compare(key, fromKey);
@@ -476,6 +486,13 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return false;
         }
 
+        /**
+         * Returns, whether a key is too high to be included in the sub map.
+         *
+         * @param key The key, which should be checked, as an instance of the generic type {@link K}
+         *            or null
+         * @return True, if the given key is too high, false otherwise
+         */
         private boolean isTooHigh(@Nullable final K key) {
             if (!toEnd) {
                 int c = comparator.compare(key, toKey);
@@ -485,19 +502,50 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return false;
         }
 
-        private boolean isInRange(@Nullable final K key) {
+        /**
+         * Returns, whether a key is included in the sub map, or not. This method does return true,
+         * if the given key is the first or last included key.
+         *
+         * @param key The key, which should be checked, as an instance of the generic type {@link K}
+         *            or null
+         * @return True, if the given key is included in the sub map, false otherwise
+         */
+        private boolean isInOpenRange(@Nullable final K key) {
             return !isTooLow(key) && !isTooHigh(key);
         }
 
+        /**
+         * Returns, whether a key is included in the sub map, or not. This method does return false,
+         * if the given key is the first or last included key.
+         *
+         * @param key The key, which should be checked, as an instance of the generic type {@link K}
+         *            or null
+         * @return True, if the given key is included in the sub map, false otherwise
+         */
         private boolean isInClosedRange(@Nullable final K key) {
             return (fromStart || comparator.compare(key, fromKey) >= 0) &&
                     (toEnd || comparator.compare(toKey, key) >= 0);
         }
 
+        /**
+         * Returns, whether a key is included in the sub map, or not.
+         *
+         * @param key       The key, which should be checked, as an instance of the generic type
+         *                  {@link K} or null
+         * @param inclusive True, if the key should be considered as included, if it is the first or
+         *                  last key, false otherwise
+         * @return True, if the given key is included in the sub map, false otherwise
+         */
         final boolean isInRange(@Nullable final K key, final boolean inclusive) {
-            return inclusive ? isInRange(key) : isInClosedRange(key);
+            return inclusive ? isInOpenRange(key) : isInClosedRange(key);
         }
 
+        /**
+         * Returns the lowest entry of the sub map.
+         *
+         * @return The lowest entry of the sub map as an instance of the type {@link Map.Entry} or
+         * null, if the sub map is empty
+         */
         @Nullable
         final Map.Entry<K, V> getLowestEntry() {
             Map.Entry<K, V> entry =
@@ -507,6 +555,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return (entry == null || isTooHigh(entry.getKey())) ? null : entry;
         }
 
+        /**
+         * Returns the highest entry of the sub map.
+         *
+         * @return The highest entry of the sub map as an instance of the type {@link Map.Entry} or
+         * null, if the sub map is empty
+         */
         @Nullable
         final Map.Entry<K, V> getHighestEntry() {
             Map.Entry<K, V> entry =
@@ -516,6 +570,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return (entry == null || isTooLow(entry.getKey())) ? null : entry;
         }
 
+        /**
+         * Returns the entry, whose key is greater or equal than a specific key.
+         *
+         * @return The entry, whose key is greater or equal than the given key, as an instance of
+         * the type {@link Map.Entry} or null, if no such entry is available
+         */
         @Nullable
         final Map.Entry<K, V> getCeilingEntry(@Nullable final K key) {
             if (isTooLow(key)) {
@@ -526,6 +586,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return (entry == null || isTooHigh(entry.getKey())) ? null : entry;
         }
 
+        /**
+         * Returns the entry, whose key is greater than a specific key.
+         *
+         * @return The entry, whose key is greater than the given key, as an instance of the type
+         * {@link Map.Entry} or null, if no such entry is available
+         */
         @Nullable
         final Map.Entry<K, V> getHigherEntry(@Nullable final K key) {
             if (isTooLow(key)) {
@@ -536,6 +602,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return (entry == null || isTooHigh(entry.getKey())) ? null : entry;
         }
 
+        /**
+         * Returns the entry, whose key is less or equal than a specific key.
+         *
+         * @return The entry, whose key is less or equal than the given key, as an instance of the
+         * type {@link Map.Entry} or null, if no such entry is available
+         */
         @Nullable
         final Map.Entry<K, V> getFloorEntry(@Nullable final K key) {
             if (isTooHigh(key)) {
@@ -546,8 +618,14 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return (entry == null || isTooLow(entry.getKey())) ? null : entry;
         }
 
+        /**
+         * Returns the entry, whose key is less than a specific key.
+         *
+         * @return The entry, whose key is less than the given key, as an instance of the type
+         * {@link Map.Entry} or null, if no such entry is available
+         */
         @Nullable
-        final Map.Entry<K, V> getLowerKey(@Nullable final K key) {
+        final Map.Entry<K, V> getLowerEntry(@Nullable final K key) {
             if (isTooHigh(key)) {
                 return getHighestEntry();
             }
@@ -557,7 +635,10 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         /**
-         * Returns the absolute high fence for ascending traversal
+         * Returns the entry, which marks the upper limit for traversal in ascending order.
+         *
+         * @return The entry, which marks the upper limit  for traversal in ascending order, as an
+         * instance of the type {@link Map.Entry} or null, if the map is unrestricted
          */
         @Nullable
         final Map.Entry<K, V> getHighFence() {
@@ -566,7 +647,10 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         /**
-         * Return the absolute low protected fence for descending traversal
+         * Returns the entry, which marks the lower limit for traversal in descending order.
+         *
+         * @return The entry, which marks the lower limit  for traversal in descending order, as an
+         * instance of the type {@link Map.Entry} or null, if the map is unrestricted
          */
         @Nullable
         final Map.Entry<K, V> getLowFence() {
@@ -574,28 +658,115 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                     fromKey)));
         }
 
+        /**
+         * The method, which is invoked on subclasses in order to invoke the correct method for
+         * retrieving the lowest entry, depending on the traversal order
+         *
+         * @see #getLowestEntry()
+         */
+        @Nullable
         protected abstract Map.Entry<K, V> onGetLowestEntry();
 
+        /**
+         * The method, which is invoked on subclasses in order to invoke the correct method for
+         * retrieving the highest entry, depending on the traversal order
+         *
+         * @see #getHighestEntry()
+         */
+        @Nullable
         protected abstract Map.Entry<K, V> onGetHighestEntry();
 
+        /**
+         * The method, which is invoked on subclasses in order to invoke the correct method for
+         * retrieving the ceiling entry, depending on the traversal order
+         *
+         * @see #getCeilingEntry(Sequence)
+         */
+        @Nullable
         protected abstract Map.Entry<K, V> onGetCeilingEntry(@Nullable final K key);
 
+        /**
+         * The method, which is invoked on subclasses in order to invoke the correct method for
+         * retrieving the higher entry, depending on the traversal order
+         *
+         * @see #getHigherEntry(Sequence)
+         */
+        @Nullable
         protected abstract Map.Entry<K, V> onGetHigherEntry(@Nullable final K key);
 
+        /**
+         * The method, which is invoked on subclasses in order to invoke the correct method for
+         * retrieving the floor entry, depending on the traversal order
+         *
+         * @see #getFloorEntry(Sequence)
+         */
+        @Nullable
         protected abstract Map.Entry<K, V> onGetFloorEntry(@Nullable final K key);
 
+        /**
+         * The method, which is invoked on subclasses in order to invoke the correct method for
+         * retrieving the lower entry, depending on the traversal order
+         *
+         * @see #getLowerEntry(Sequence)
+         */
+        @Nullable
         protected abstract Map.Entry<K, V> onGetLowerEntry(@Nullable final K key);
 
+        /**
+         * The method, which is invoked on subclasses in order to retrieve an iterator, which allows
+         * to iterate the sub map's keys in ascending order.
+         *
+         * @return An iterator, which allows to iterate the sub map's keys in ascending order, as an
+         * instance of the type {@link Iterator}. The iterator may not be null
+         */
+        @NotNull
         protected abstract Iterator<K> keyIterator();
 
+        /**
+         * The method, which is invoked on subclasses in order to retrieve an iterator, which allows
+         * to iterate the sub map's keys in descending order.
+         *
+         * @return An iterator, which allows to iterate the sub map's keys in descending order, as
+         * an instance of the type {@link Iterator}. The iterator may not be null
+         */
+        @NotNull
         protected abstract Iterator<K> descendingKeyIterator();
 
+        /**
+         * The method, which is invoked on subclasses in order to retrieve a spliterator, which
+         * allows to traverse the sub map's keys in ascending order.
+         *
+         * @return A spliterator, which allows to traverse the sub map's keys in ascending order, as
+         * an instance of the type {@link Spliterator}. The spliterator may not be null
+         */
+        @NotNull
         protected abstract Spliterator<K> keySpliterator();
 
+        /**
+         * Creates a new navigable maps, which only contain a subset of a trie's entries.
+         *
+         * @param trie          The backing trie, which should be used, as an instance of the class
+         *                      {@link AbstractSortedTrie}. The trie may not be null
+         * @param fromStart     True, if the sub map should start at the first entry of the backing
+         *                      trie, false otherwise
+         * @param fromKey       The key of the entry, the sub map should start at, as an instance of
+         *                      the generic type {@link K} or null if the start of the sub map
+         *                      should be unrestricted
+         * @param fromInclusive True, if the {@code fromKey} should be included in the sub map,
+         *                      false otherwise
+         * @param toEnd         True, if the sub map should reach until the last entry of the
+         *                      backing trie, false otherwise
+         * @param toKey         The key of the entry, the sub map should reach to, as an instance of
+         *                      the generic type {@link K} or null if the end of the sub map should
+         *                      be unrestricted
+         * @param toInclusive   True, if the {@code toKey} should be included in the sub map, false
+         *                      otherwise
+         */
         AbstractSubMap(@NotNull final AbstractSortedTrie<K, V> trie,
                        final boolean fromStart, @Nullable final K fromKey,
                        final boolean fromInclusive, final boolean toEnd, @Nullable final K toKey,
                        final boolean toInclusive) {
+            ensureNotNull(trie, "The trie may not be null");
             this.trie = trie;
             this.comparator = SequenceUtil.comparator(trie.comparator);
 
@@ -612,101 +783,101 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         @Override
-        public boolean isEmpty() {
+        public final boolean isEmpty() {
             return (fromStart && toEnd) ? trie.isEmpty() : entrySet().isEmpty();
         }
 
         @Override
-        public int size() {
+        public final int size() {
             return (fromStart && toEnd) ? trie.size() : entrySet().size();
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean containsKey(final Object key) {
-            return isInRange((K) key) && trie.containsKey(key);
+        public final boolean containsKey(final Object key) {
+            return isInOpenRange((K) key) && trie.containsKey(key);
         }
 
         @Override
-        public V put(final K key, final V value) {
-            ensureTrue(isInRange(key), "Key out of range");
+        public final V put(final K key, final V value) {
+            ensureTrue(isInOpenRange(key), "Key out of range");
             return trie.put(key, value);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public V get(final Object key) {
-            return !isInRange((K) key) ? null : trie.get(key);
+        public final V get(final Object key) {
+            return !isInOpenRange((K) key) ? null : trie.get(key);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public V remove(final Object key) {
-            return !isInRange((K) key) ? null : trie.remove(key);
+        public final V remove(final Object key) {
+            return !isInOpenRange((K) key) ? null : trie.remove(key);
         }
 
         @Override
-        public Map.Entry<K, V> ceilingEntry(final K key) {
+        public final Map.Entry<K, V> ceilingEntry(final K key) {
             return onGetCeilingEntry(key);
         }
 
         @Override
-        public K ceilingKey(final K key) {
+        public final K ceilingKey(final K key) {
             return getKey(onGetCeilingEntry(key));
         }
 
         @Override
-        public Map.Entry<K, V> higherEntry(final K key) {
+        public final Map.Entry<K, V> higherEntry(final K key) {
             return onGetHigherEntry(key);
         }
 
         @Override
-        public K higherKey(final K key) {
+        public final K higherKey(final K key) {
             return getKey(onGetHigherEntry(key));
         }
 
         @Override
-        public Map.Entry<K, V> floorEntry(final K key) {
+        public final Map.Entry<K, V> floorEntry(final K key) {
             return onGetFloorEntry(key);
         }
 
         @Override
-        public K floorKey(final K key) {
+        public final K floorKey(final K key) {
             return getKey(onGetFloorEntry(key));
         }
 
         @Override
-        public Map.Entry<K, V> lowerEntry(final K key) {
+        public final Map.Entry<K, V> lowerEntry(final K key) {
             return onGetLowerEntry(key);
         }
 
         @Override
-        public K lowerKey(final K key) {
+        public final K lowerKey(final K key) {
             return getKey(onGetLowerEntry(key));
         }
 
         @Override
-        public K firstKey() {
+        public final K firstKey() {
             return getKeyOrThrowException(onGetLowestEntry());
         }
 
         @Override
-        public K lastKey() {
+        public final K lastKey() {
             return getKeyOrThrowException(onGetHighestEntry());
         }
 
         @Override
-        public Map.Entry<K, V> firstEntry() {
+        public final Map.Entry<K, V> firstEntry() {
             return onGetLowestEntry();
         }
 
         @Override
-        public Map.Entry<K, V> lastEntry() {
+        public final Map.Entry<K, V> lastEntry() {
             return onGetHighestEntry();
         }
 
         @Override
-        public Map.Entry<K, V> pollFirstEntry() {
+        public final Map.Entry<K, V> pollFirstEntry() {
             Map.Entry<K, V> entry = onGetLowestEntry();
 
             if (entry != null) {
@@ -717,7 +888,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         @Override
-        public Map.Entry<K, V> pollLastEntry() {
+        public final Map.Entry<K, V> pollLastEntry() {
             Map.Entry<K, V> entry = onGetHighestEntry();
 
             if (entry != null) {
@@ -729,43 +900,53 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @NotNull
         @Override
-        public Set<K> keySet() {
+        public final Set<K> keySet() {
             return navigableKeySet();
         }
 
         @Override
-        public NavigableSet<K> descendingKeySet() {
+        public final NavigableSet<K> descendingKeySet() {
             return descendingMap().navigableKeySet();
         }
 
         @NotNull
         @Override
-        public SortedMap<K, V> subMap(final K fromKey, final K toKey) {
+        public final SortedMap<K, V> subMap(final K fromKey, final K toKey) {
             return subMap(fromKey, true, toKey, false);
         }
 
         @NotNull
         @Override
-        public SortedMap<K, V> headMap(final K toKey) {
+        public final SortedMap<K, V> headMap(final K toKey) {
             return headMap(toKey, false);
         }
 
         @NotNull
         @Override
-        public SortedMap<K, V> tailMap(final K fromKey) {
+        public final SortedMap<K, V> tailMap(final K fromKey) {
             return tailMap(fromKey, true);
         }
 
         @NotNull
         @Override
-        public NavigableSet<K> navigableKeySet() {
+        public final NavigableSet<K> navigableKeySet() {
             return new NavigableKeySet<>(this);
         }
 
     }
 
-    private static class AscendingSubMap<K extends Sequence, V> extends AbstractSubMap<K, V> {
+    /**
+     * A navigable map, which only contains a subset of a trie's entries. The entries in the sub map
+     * are given in the original order.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by the trie
+     */
+    private static final class AscendingSubMap<K extends Sequence, V> extends AbstractSubMap<K, V> {
 
+        /**
+         * The sub set, which backs the sub map.
+         */
         private final class AscendingSubSet extends AbstractSubSet {
 
             @NotNull
@@ -781,6 +962,26 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          */
         private static final long serialVersionUID = 5937476665504869649L;
 
+        /**
+         * Creates a new navigable map, which only contains a subset of a trie's entries.
+         *
+         * @param trie          The backing trie, which should be used, as an instance of the class
+         *                      {@link AbstractSortedTrie}. The trie may not be null
+         * @param fromStart     True, if the sub map should start at the first entry of the backing
+         *                      trie, false otherwise
+         * @param fromKey       The key of the entry, the sub map should start at, as an instance of
+         *                      the generic type {@link K} or null if the start of the sub map
+         *                      should be unrestricted
+         * @param fromInclusive True, if the {@code fromKey} should be included in the sub map,
+         *                      false otherwise
+         * @param toEnd         True, if the sub map should reach until the last entry of the
+         *                      backing trie, false otherwise
+         * @param toKey         The key of the entry, the sub map should reach to, as an instance of
+         *                      the generic type {@link K} or null if the end of the sub map should
+         *                      be unrestricted
+         * @param toInclusive   True, if the {@code toKey} should be included in the sub map, false
+         *                      otherwise
+         */
         AscendingSubMap(@NotNull final AbstractSortedTrie<K, V> trie, final boolean fromStart,
                         @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
                         @Nullable final K toKey, final boolean toInclusive) {
@@ -853,21 +1054,24 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         protected Map.Entry<K, V> onGetLowerEntry(@Nullable final K key) {
-            return getLowerKey(key);
+            return getLowerEntry(key);
         }
 
+        @NotNull
         @Override
         protected Iterator<K> keyIterator() {
             return new KeyIteratorWrapper<>(
                     new AscendingSubMapEntryIterator<>(trie, getLowestEntry(), getHighFence()));
         }
 
+        @NotNull
         @Override
         protected Iterator<K> descendingKeyIterator() {
             return new KeyIteratorWrapper<>(
                     new DescendingSubMapEntryIterator<>(trie, getHighestEntry(), getLowFence()));
         }
 
+        @NotNull
         @Override
         protected Spliterator<K> keySpliterator() {
             return new SpliteratorWrapper<>(trie, new KeyIteratorWrapper<>(
@@ -876,9 +1080,19 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     }
 
+    /**
+     * A navigable map, which only contain a subset of a trie's entries. The entries in the sub map
+     * are given in reverse order.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     * @param <V> The type of the values, which are stored by the trie
+     */
     private static final class DescendingSubMap<K extends Sequence, V> extends
             AbstractSubMap<K, V> {
 
+        /**
+         * The sub set, which backs the sub map.
+         */
         private final class DescendingSubSet extends AbstractSubSet {
 
             @NotNull
@@ -894,8 +1108,32 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          */
         private static final long serialVersionUID = 912986545866120460L;
 
+        /**
+         * The comparator, which is used to order the entries in reverse order.
+         */
         private final Comparator<? super K> reverseComparator;
 
+        /**
+         * Creates a new navigable map, which only contains a subset of a trie's entries in reverse
+         * order.
+         *
+         * @param trie          The backing trie, which should be used, as an instance of the class
+         *                      {@link AbstractSortedTrie}. The trie may not be null
+         * @param fromStart     True, if the sub map should start at the first entry of the backing
+         *                      trie, false otherwise
+         * @param fromKey       The key of the entry, the sub map should start at, as an instance of
+         *                      the generic type {@link K} or null if the start of the sub map
+         *                      should be unrestricted
+         * @param fromInclusive True, if the {@code fromKey} should be included in the sub map,
+         *                      false otherwise
+         * @param toEnd         True, if the sub map should reach until the last entry of the
+         *                      backing trie, false otherwise
+         * @param toKey         The key of the entry, the sub map should reach to, as an instance of
+         *                      the generic type {@link K} or null if the end of the sub map should
+         *                      be unrestricted
+         * @param toInclusive   True, if the {@code toKey} should be included in the sub map, false
+         *                      otherwise
+         */
         DescendingSubMap(@NotNull final AbstractSortedTrie<K, V> trie,
                          final boolean fromStart, @Nullable final K fromKey,
                          final boolean fromInclusive, final boolean toEnd, @Nullable final K toKey,
@@ -961,7 +1199,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         protected Map.Entry<K, V> onGetHigherEntry(@Nullable final K key) {
-            return getLowerKey(key);
+            return getLowerEntry(key);
         }
 
         @Override
@@ -974,18 +1212,21 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             return getHigherEntry(key);
         }
 
+        @NotNull
         @Override
         protected Iterator<K> keyIterator() {
             return new KeyIteratorWrapper<>(
                     new DescendingSubMapEntryIterator<>(trie, getHighestEntry(), getLowFence()));
         }
 
+        @NotNull
         @Override
         protected Iterator<K> descendingKeyIterator() {
             return new KeyIteratorWrapper<>(
                     new AscendingSubMapEntryIterator<>(trie, getLowestEntry(), getHighFence()));
         }
 
+        @NotNull
         @Override
         protected Spliterator<K> keySpliterator() {
             return new SpliteratorWrapper<>(trie, new KeyIteratorWrapper<>(
