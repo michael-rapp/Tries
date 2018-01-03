@@ -79,9 +79,16 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         public Spliterator<K> spliterator() {
             if (map instanceof AbstractSortedTrie) {
                 return ((AbstractSortedTrie<K, ?>) map).keySpliterator();
-            } else {
-                return ((AbstractSubMap<K, ?>) map).keySpliterator();
+            } else if (map instanceof DescendingSubMap) {
+                DescendingSubMap<K, ?> subMap = (DescendingSubMap<K, ?>) map;
+                AbstractSortedTrie<K, ?> backingTrie = subMap.trie;
+
+                if (subMap == backingTrie.descendingMap) {
+                    return backingTrie.descendingKeySpliterator();
+                }
             }
+
+            return ((AbstractSubMap<K, ?>) map).keySpliterator();
         }
 
         @Override
@@ -266,7 +273,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         }
 
-        final class AscendingSubMapKeyIterator extends AbstractSubMapKeyIterator {
+        protected class AscendingSubMapKeyIterator extends AbstractSubMapKeyIterator {
 
             AscendingSubMapKeyIterator(@Nullable final Map.Entry<K, V> first,
                                        @Nullable final Map.Entry<K, V> fence) {
@@ -285,7 +292,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         }
 
-        final class DescendingSubMapKeyIterator extends AbstractSubMapKeyIterator {
+        protected class DescendingSubMapKeyIterator extends AbstractSubMapKeyIterator {
 
             DescendingSubMapKeyIterator(@Nullable final Entry<K, V> first,
                                         @Nullable final Entry<K, V> fence) {
@@ -299,8 +306,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         }
 
-        abstract class AbstractSubMapKeyIterator extends AbstractSubMapIterator<K> implements
-                Spliterator<K> {
+        private abstract class AbstractSubMapKeyIterator extends
+                AbstractSubMapIterator<K> implements Spliterator<K> {
 
             AbstractSubMapKeyIterator(@Nullable final Map.Entry<K, V> first,
                                       @Nullable final Map.Entry<K, V> fence) {
@@ -341,7 +348,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         }
 
-        abstract class AbstractSubMapIterator<T> implements Iterator<T> {
+        protected abstract class AbstractSubMapIterator<T> implements Iterator<T> {
 
             final Object fenceKey;
             long modificationCount;
@@ -716,7 +723,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     private static class AscendingSubMap<K extends Sequence, V> extends AbstractSubMap<K, V> {
 
-        private class EntrySet extends AbstractEntrySet {
+        private class AscendingEntrySet extends AbstractEntrySet {
 
             @NotNull
             @Override
@@ -781,7 +788,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public Set<Map.Entry<K, V>> entrySet() {
-            return new EntrySet();
+            return new AscendingEntrySet();
         }
 
         @Override
@@ -834,7 +841,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     private static final class DescendingSubMap<K extends Sequence, V> extends
             AbstractSubMap<K, V> {
 
-        private class EntrySet extends AbstractEntrySet {
+        private class DescendingEntrySet extends AbstractEntrySet {
 
             @NotNull
             @Override
@@ -904,7 +911,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public Set<Map.Entry<K, V>> entrySet() {
-            return new EntrySet();
+            return new DescendingEntrySet();
         }
 
         @Override
@@ -954,15 +961,21 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     }
 
-    private class KeyIterator extends AbstractAscendingEntryIterator<SequenceType> {
+    private class AscendingKeyIterator extends AbstractEntryIterator<SequenceType> {
 
-        KeyIterator(@Nullable final Map.Entry<SequenceType, ValueType> first) {
+        AscendingKeyIterator(@Nullable final Map.Entry<SequenceType, ValueType> first) {
             super(first);
         }
 
         @Override
         public SequenceType next() {
-            return nextEntry().getKey();
+            ensureEqual(modificationCount, AbstractSortedTrie.this.modificationCount, null,
+                    ConcurrentModificationException.class);
+            ensureNotNull(next, null, NoSuchElementException.class);
+            Map.Entry<SequenceType, ValueType> entry = next;
+            next = higherEntry(entry.getKey());
+            lastReturned = entry;
+            return entry.getKey();
         }
 
     }
@@ -986,31 +999,11 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     }
 
-    abstract class AbstractAscendingEntryIterator<T> extends
-            AbstractEntryIterator<T> {
-
-        AbstractAscendingEntryIterator(@Nullable final Entry<SequenceType, ValueType> first) {
-            super(first);
-        }
-
-        @NotNull
-        final Map.Entry<SequenceType, ValueType> nextEntry() {
-            ensureEqual(modificationCount, AbstractSortedTrie.this.modificationCount, null,
-                    ConcurrentModificationException.class);
-            ensureNotNull(next, null, NoSuchElementException.class);
-            Map.Entry<SequenceType, ValueType> entry = next;
-            next = higherEntry(entry.getKey());
-            lastReturned = entry;
-            return entry;
-        }
-
-    }
-
     /**
      * An abstract base class for all iterators, which allow to iterate the entries of a {@link
      * SortedTrie}.
      */
-    abstract class AbstractEntryIterator<T> implements Iterator<T> {
+    private abstract class AbstractEntryIterator<T> implements Iterator<T> {
 
         long modificationCount;
 
@@ -1048,14 +1041,15 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     }
 
-    abstract static class AbstractSpliterator<K extends Sequence, V> {
+    private abstract static class AbstractSpliterator<K extends Sequence, V> implements
+            Spliterator<K> {
 
         final AbstractSortedTrie<K, V> trie;
         Map.Entry<K, V> current; // traverser; initially first node in range
         Map.Entry<K, V> fence;   // one past last, or null
         int side;                   // 0: top, -1: is a left split, +1: right
         int estimatedSize;                    // size estimate (exact only for top-level)
-        long modificationCount;       // for CME checks
+        long modificationCount;
 
         final int estimateSizeIfNecessary() {
             if (estimatedSize < 0) {
@@ -1079,23 +1073,9 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             this.modificationCount = modificationCount;
         }
 
-    }
-
-    static final class KeySpliterator<K extends Sequence, V> extends
-            AbstractSpliterator<K, V> implements Spliterator<K> {
-
-        KeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                       @Nullable final Map.Entry<K, V> origin,
-                       @Nullable final Map.Entry<K, V> fence, final int side, final int estimate,
-                       final long modificationCount) {
-            super(trie, origin, fence, side, estimate, modificationCount);
-        }
-
         @Override
-        public KeySpliterator<K, V> trySplit() {
-            estimateSizeIfNecessary();
-            // TODO
-            return null;
+        public final long estimateSize() {
+            return estimateSizeIfNecessary();
         }
 
         @Override
@@ -1105,6 +1085,34 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             while (hasNext) {
                 hasNext = tryAdvance(action);
             }
+        }
+
+        @Override
+        public final Spliterator<K> trySplit() {
+            return null;
+        }
+
+        @Override
+        public final Comparator<? super K> getComparator() {
+            return trie.comparator();
+        }
+
+        @Override
+        public int characteristics() {
+            return (side == 0 ? Spliterator.SIZED : 0) | Spliterator.DISTINCT | Spliterator.ORDERED;
+        }
+
+    }
+
+    private static final class AscendingKeySpliterator<K extends Sequence, V> extends
+            AbstractSpliterator<K, V> implements Spliterator<K> {
+
+        AscendingKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                                @Nullable final Map.Entry<K, V> origin,
+                                @Nullable final Map.Entry<K, V> fence, final int side,
+                                final int estimate,
+                                final long modificationCount) {
+            super(trie, origin, fence, side, estimate, modificationCount);
         }
 
         @Override
@@ -1125,19 +1133,37 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         }
 
         @Override
-        public final long estimateSize() {
-            return estimateSizeIfNecessary();
-        }
-
-        @Override
         public int characteristics() {
-            return (side == 0 ? Spliterator.SIZED : 0) |
-                    Spliterator.DISTINCT | Spliterator.SORTED | Spliterator.ORDERED;
+            return super.characteristics() | Spliterator.SORTED;
+        }
+
+    }
+
+    private static final class DescendingKeySpliterator<K extends Sequence, V> extends
+            AbstractSpliterator<K, V> implements Spliterator<K> {
+
+        DescendingKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie,
+                                 @Nullable final Map.Entry<K, V> origin,
+                                 @Nullable final Map.Entry<K, V> fence, final int side,
+                                 final int estimate, final long modificationCount) {
+            super(trie, origin, fence, side, estimate, modificationCount);
         }
 
         @Override
-        public final Comparator<? super K> getComparator() {
-            return trie.comparator();
+        public boolean tryAdvance(final Consumer<? super K> action) {
+            ensureNotNull(action, null, NullPointerException.class);
+            estimateSizeIfNecessary();
+            ensureEqual(modificationCount, trie.modificationCount, null,
+                    ConcurrentModificationException.class);
+
+            if (current != null && !current.equals(fence)) {
+                Map.Entry<K, V> entry = current;
+                current = trie.lowerEntry(entry.getKey());
+                action.accept(entry.getKey());
+                return true;
+            }
+
+            return false;
         }
 
     }
@@ -1152,6 +1178,10 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * order of the sequences is used.
      */
     protected final Comparator<? super SequenceType> comparator;
+
+    private transient NavigableSet<SequenceType> navigableKeySet;
+
+    private transient NavigableMap<SequenceType, ValueType> descendingMap;
 
     /**
      * Returns the entry, which corresponds to the first or last entry of the trie.
@@ -1333,7 +1363,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     }
 
     final Iterator<SequenceType> keyIterator() {
-        return new KeyIterator(firstEntry());
+        return new AscendingKeyIterator(firstEntry());
     }
 
     final Iterator<SequenceType> descendingKeyIterator() {
@@ -1341,7 +1371,11 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     }
 
     final Spliterator<SequenceType> keySpliterator() {
-        return new KeySpliterator<>(this, null, null, 0, -1, 0);
+        return new AscendingKeySpliterator<>(this, null, null, 0, -1, 0);
+    }
+
+    final Spliterator<SequenceType> descendingKeySpliterator() {
+        return new DescendingKeySpliterator<>(this, null, null, 0, -2, 0);
     }
 
     /**
@@ -1601,12 +1635,20 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @NotNull
     @Override
     public final NavigableMap<SequenceType, ValueType> descendingMap() {
-        return new DescendingSubMap<>(this, true, null, true, true, null, true);
+        if (this.descendingMap == null) {
+            this.descendingMap = new DescendingSubMap<>(this, true, null, true, true, null, true);
+        }
+
+        return this.descendingMap;
     }
 
     @Override
     public final NavigableSet<SequenceType> navigableKeySet() {
-        return new KeySet<>(this);
+        if (this.navigableKeySet == null) {
+            this.navigableKeySet = new KeySet<>(this);
+        }
+
+        return navigableKeySet;
     }
 
     @Override

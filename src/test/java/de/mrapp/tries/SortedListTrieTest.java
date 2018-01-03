@@ -1543,6 +1543,27 @@ public class SortedListTrieTest {
     }
 
     @Test
+    public void testNavigableKeySetOfTailMapSpliterator() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.tailMap(null, true).navigableKeySet();
+        assertEquals(9, keySet.size());
+        Spliterator<StringSequence> spliterator = keySet.spliterator();
+        Collection<StringSequence> keys = new LinkedList<>();
+        spliterator.forEachRemaining(keys::add);
+        Iterator<StringSequence> iterator = keys.iterator();
+        assertNull(iterator.next());
+        assertEquals(new StringSequence("A"), iterator.next());
+        assertEquals(new StringSequence("B"), iterator.next());
+        assertEquals(new StringSequence("in"), iterator.next());
+        assertEquals(new StringSequence("inn"), iterator.next());
+        assertEquals(new StringSequence("tea"), iterator.next());
+        assertEquals(new StringSequence("ted"), iterator.next());
+        assertEquals(new StringSequence("ten"), iterator.next());
+        assertEquals(new StringSequence("to"), iterator.next());
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
     public void testDescendingNavigableKeySetSpliterator() {
         testPutWithEmptyKey();
         NavigableSet<StringSequence> keySet = trie.descendingKeySet();
