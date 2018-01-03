@@ -1626,6 +1626,14 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         return null;
     }
 
+    /**
+     * Polls the first or last entry of the trie.
+     *
+     * @param first True, if the first entry should be polled, false, if the last entry should be
+     *              polled
+     * @return The entry, which has been polled, as an instance of the type {@link Entry} or null,
+     * if the trie is empty
+     */
     @Nullable
     private Entry<SequenceType, ValueType> pollFirstOrLastEntry(final boolean first) {
         Entry<SequenceType, ValueType> result = null;
@@ -1724,32 +1732,71 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         return null;
     }
 
+    /**
+     * Creates and returns an entry, given a specific node, the sequence one of its successors
+     * corresponds to and the key, which is used by the predecessor to reference the node.
+     *
+     * @param predecessorSequence The sequence, which corresponds to one of the given node's
+     *                            successors as an instance of the generic type {@link
+     *                            SequenceType}. The sequence may not be null
+     * @param node                The node, the entry should be created from, as an instance of the
+     *                            type {@link Node}. The node may not be null
+     * @param key                 The key, which is used by the predecessor to reference the given
+     *                            node, as an instance of the generic type {@link SequenceType}. The
+     *                            key may not be null
+     * @return The entry, which has been created, as an instance of the type {@link Entry}. The
+     * entry may not be null
+     */
     @NotNull
-    private Map.Entry<SequenceType, ValueType> getEntry(final SequenceType originalKey,
-                                                        final Node<SequenceType, ValueType> node,
-                                                        final SequenceType key) {
-        SequenceType lowerKey = originalKey != null ? SequenceUtil
-                .subsequence(originalKey, 0, originalKey.length() - key.length()) : null;
+    private Map.Entry<SequenceType, ValueType> createLowerEntry(
+            @Nullable final SequenceType predecessorSequence,
+            @NotNull final Node<SequenceType, ValueType> node,
+            @NotNull final SequenceType key) {
+        SequenceType lowerKey = predecessorSequence != null ? SequenceUtil
+                .subsequence(predecessorSequence, 0, predecessorSequence.length() - key.length()) :
+                null;
         return new AbstractMap.SimpleImmutableEntry<>(
-                SequenceUtil.isEmpty(lowerKey) ? null : lowerKey,
-                node.getValue());
+                SequenceUtil.isEmpty(lowerKey) ? null : lowerKey, node.getValue());
     }
 
+    /**
+     * Returns the lower or higher entry, starting at a specific node.
+     *
+     * @param predecessorSequence The sequence, which corresponds to a predecessor of the given
+     *                            node, as an instance of the generic type {@link SequenceType}.
+     *                            The
+     * @param indexPair           A pair, which contains the index, the given node is stored at in
+     *                            its predecessor, as an instance of the class {@link Pair}. See
+     *                            {@link #indexOf(Node, Sequence)}
+     * @param node                The node to start at, as an instance of the type {@link Node}. The
+     *                            node may not be null
+     * @param key                 The key, which is used by the predecessor to reference the given
+     *                            node, as an instance of the generic type {@link SequenceType}. The
+     *                            key may not be null
+     * @param indexFunction       A function, which returns the index of the node, which should be
+     *                            used to search for the lower or higher entry, depending on the
+     *                            index contained by {@code indexPair}
+     * @param higher              True, if the higher entry should be created, false, if the lower
+     *                            entry should be created
+     * @return The entry, which has been created, as an instance of the type {@link Map.Entry} or
+     * null, if no such entry is available
+     */
     @Nullable
-    private Map.Entry<SequenceType, ValueType> getLowerOrHigherEntry(final SequenceType originalKey,
-                                                                     @Nullable final Pair<Integer, SequenceType> indexPair,
-                                                                     final Node<SequenceType, ValueType> node,
-                                                                     final SequenceType key,
-                                                                     @NotNull final Function<Integer, Integer> indexFunction,
-                                                                     final boolean higher) {
+    private Map.Entry<SequenceType, ValueType> createLowerOrHigherEntry(
+            @NotNull final SequenceType predecessorSequence,
+            @Nullable final Pair<Integer, SequenceType> indexPair,
+            @NotNull final Node<SequenceType, ValueType> node,
+            @NotNull final SequenceType key,
+            @NotNull final Function<Integer, Integer> indexFunction,
+            final boolean higher) {
         if (indexPair != null) {
             int index = indexFunction.apply(indexPair.first);
 
             if (index >= 0 && index < node.getSuccessorCount()) {
                 Node<SequenceType, ValueType> successor = node.getSuccessor(index);
                 SequenceType successorKey = node.getSuccessorKey(index);
-                SequenceType prefix = SequenceUtil
-                        .subsequence(originalKey, 0, originalKey.length() - key.length());
+                SequenceType prefix = SequenceUtil.subsequence(predecessorSequence, 0,
+                        predecessorSequence.length() - key.length());
                 prefix = SequenceUtil.concat(prefix, successorKey);
                 return firstOrLastEntry(successor, prefix, higher);
             }
@@ -1925,12 +1972,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
                 if (pair.first.isValueSet()) {
                     if (pair.first != rootNode || pair.first.getSuccessorCount() <= 1) {
-                        return getEntry(key, pair.first, pair.second);
+                        return createLowerEntry(key, pair.first, pair.second);
                     } else {
                         indexPair = indexOf(pair.first, pair.second);
 
                         if (indexPair != null && indexPair.first == 0) {
-                            return getEntry(key, pair.first, pair.second);
+                            return createLowerEntry(key, pair.first, pair.second);
                         }
                     }
                 }
@@ -1939,7 +1986,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                     indexPair = indexOf(pair.first, pair.second);
                 }
 
-                Map.Entry<SequenceType, ValueType> entry = getLowerOrHigherEntry(key,
+                Map.Entry<SequenceType, ValueType> entry = createLowerOrHigherEntry(key,
                         indexPair, pair.first, pair.second, index -> index - 1, false);
 
                 if (entry != null) {
@@ -1968,7 +2015,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
                     if (pair.first.getSuccessorCount() > 1) {
                         Pair<Integer, SequenceType> indexPair = indexOf(pair.first, pair.second);
-                        Entry<SequenceType, ValueType> entry = getLowerOrHigherEntry(key,
+                        Entry<SequenceType, ValueType> entry = createLowerOrHigherEntry(key,
                                 indexPair, pair.first, pair.second, index -> index + 1, true);
 
                         if (entry != null) {
