@@ -42,24 +42,32 @@ import static de.mrapp.util.Condition.*;
 public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueType> extends
         AbstractTrie<SequenceType, ValueType> implements SortedTrie<SequenceType, ValueType> {
 
-    private static class NavigableKeySet<K extends Sequence> extends AbstractSet<K> implements
-            NavigableSet<K> {
+    /**
+     * A key set of a sorted trie as returned by the method {@link SortedTrie#navigableKeySet()}.
+     *
+     * @param <K> The type of the sequences, which are used as the trie's keys
+     */
+    private static class NavigableKeySet<K extends Sequence> extends
+            AbstractKeySet<K, NavigableMap<K, ?>> implements NavigableSet<K> {
 
-        private final NavigableMap<K, ?> map;
-
-        NavigableKeySet(@NotNull final NavigableMap<K, ?> map) {
-            ensureNotNull(map, "The map may not be null");
-            this.map = map;
+        /**
+         * Creates a new key set of a sorted trie.
+         *
+         * @param backingMap The backing map, which should be used, as an instance of the type
+         *                   {@link NavigableMap}. The backing map may not be null
+         */
+        NavigableKeySet(@NotNull final NavigableMap<K, ?> backingMap) {
+            super(backingMap);
         }
 
         @SuppressWarnings("unchecked")
         @NotNull
         @Override
         public Iterator<K> iterator() {
-            if (map instanceof AbstractSortedTrie) {
-                return ((AbstractSortedTrie<K, ?>) map).keyIterator();
+            if (backingMap instanceof AbstractSortedTrie) {
+                return ((AbstractSortedTrie<K, ?>) backingMap).keyIterator();
             } else {
-                return ((AbstractSubMap<K, ?>) map).keyIterator();
+                return ((AbstractSubMap<K, ?>) backingMap).keyIterator();
             }
         }
 
@@ -67,20 +75,20 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public Iterator<K> descendingIterator() {
-            if (map instanceof AbstractSortedTrie) {
-                return ((AbstractSortedTrie<K, ?>) map).descendingKeyIterator();
+            if (backingMap instanceof AbstractSortedTrie) {
+                return ((AbstractSortedTrie<K, ?>) backingMap).descendingKeyIterator();
             } else {
-                return ((AbstractSubMap<K, ?>) map).descendingKeyIterator();
+                return ((AbstractSubMap<K, ?>) backingMap).descendingKeyIterator();
             }
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public Spliterator<K> spliterator() {
-            if (map instanceof AbstractSortedTrie) {
-                return ((AbstractSortedTrie<K, ?>) map).keySpliterator();
-            } else if (map instanceof DescendingSubMap) {
-                DescendingSubMap<K, ?> subMap = (DescendingSubMap<K, ?>) map;
+            if (backingMap instanceof AbstractSortedTrie) {
+                return ((AbstractSortedTrie<K, ?>) backingMap).keySpliterator();
+            } else if (backingMap instanceof DescendingSubMap) {
+                DescendingSubMap<K, ?> subMap = (DescendingSubMap<K, ?>) backingMap;
                 AbstractSortedTrie<K, ?> backingTrie = subMap.trie;
 
                 if (subMap == backingTrie.descendingMap) {
@@ -88,80 +96,52 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                 }
             }
 
-            return ((AbstractSubMap<K, ?>) map).keySpliterator();
-        }
-
-        @Override
-        public int size() {
-            return map.size();
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return map.isEmpty();
-        }
-
-        @SuppressWarnings("SuspiciousMethodCalls")
-        @Override
-        public boolean contains(final Object o) {
-            return map.containsKey(o);
-        }
-
-        @Override
-        public void clear() {
-            map.clear();
+            return ((AbstractSubMap<K, ?>) backingMap).keySpliterator();
         }
 
         @Override
         public K lower(final K e) {
-            return map.lowerKey(e);
+            return backingMap.lowerKey(e);
         }
 
         @Override
         public K floor(final K e) {
-            return map.floorKey(e);
+            return backingMap.floorKey(e);
         }
 
         @Override
         public K ceiling(final K e) {
-            return map.ceilingKey(e);
+            return backingMap.ceilingKey(e);
         }
 
         @Override
         public K higher(final K e) {
-            return map.higherKey(e);
+            return backingMap.higherKey(e);
         }
 
         @Override
         public K first() {
-            return map.firstKey();
+            return backingMap.firstKey();
         }
 
         @Override
         public K last() {
-            return map.lastKey();
+            return backingMap.lastKey();
         }
 
         @Override
         public Comparator<? super K> comparator() {
-            return map.comparator();
+            return backingMap.comparator();
         }
 
         @Override
         public K pollFirst() {
-            return getKey(map.pollFirstEntry());
+            return getKey(backingMap.pollFirstEntry());
         }
 
         @Override
         public K pollLast() {
-            return getKey(map.pollLastEntry());
-        }
-
-        @Override
-        public boolean remove(final Object o) {
-            int oldSize = size();
-            map.remove(o);
-            return size() != oldSize;
+            return getKey(backingMap.pollLastEntry());
         }
 
         @NotNull
@@ -169,19 +149,19 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         public NavigableSet<K> subSet(final K fromElement, final boolean fromInclusive,
                                       final K toElement, final boolean toInclusive) {
             return new NavigableKeySet<>(
-                    map.subMap(fromElement, fromInclusive, toElement, toInclusive));
+                    backingMap.subMap(fromElement, fromInclusive, toElement, toInclusive));
         }
 
         @NotNull
         @Override
         public NavigableSet<K> headSet(final K toElement, final boolean inclusive) {
-            return new NavigableKeySet<>(map.headMap(toElement, inclusive));
+            return new NavigableKeySet<>(backingMap.headMap(toElement, inclusive));
         }
 
         @NotNull
         @Override
         public NavigableSet<K> tailSet(final K fromElement, final boolean inclusive) {
-            return new NavigableKeySet<>(map.tailMap(fromElement, inclusive));
+            return new NavigableKeySet<>(backingMap.tailMap(fromElement, inclusive));
         }
 
         @NotNull
@@ -205,7 +185,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public NavigableSet<K> descendingSet() {
-            return new NavigableKeySet<>(map.descendingMap());
+            return new NavigableKeySet<>(backingMap.descendingMap());
         }
 
     }

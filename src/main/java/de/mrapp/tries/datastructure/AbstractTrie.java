@@ -174,60 +174,79 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * The key set of a trie as returned by the method {@link Trie#keySet()}. The entry set is
      * backed by a {@link KeyIterator}, which traverses all keys of the trie.
      *
-     * @param <K>        The type of the sequences, which are used as the trie's keys
-     * @param <V>        The type of the values, which are stored by trie
-     * @param <TrieType> The type of the trie
+     * @param <K> The type of the sequences, which are used as the trie's keys
      */
-    protected static final class KeySet<K extends Sequence, V, TrieType extends AbstractTrie<K, V>>
-            extends AbstractSet<K> {
-
-        /**
-         * The backing trie.
-         */
-        private final TrieType backingTrie;
+    protected static final class KeySet<K extends Sequence> extends
+            AbstractKeySet<K, AbstractTrie<K, ?>> {
 
         /**
          * Creates a new key set of a specific backing trie.
          *
-         * @param backingTrie The backing trie as an instance of the generic type {@link TrieType}.
-         *                    The trie may not be null
+         * @param backingTrie The backing trie as an instance of the generic type {@link
+         *                    AbstractTrie}. The trie may not be null
          */
-        KeySet(@NotNull final TrieType backingTrie) {
-            ensureNotNull(backingTrie, "The backing trie may not be null");
-            this.backingTrie = backingTrie;
+        KeySet(@NotNull final AbstractTrie<K, ?> backingTrie) {
+            super(backingTrie);
         }
 
         @NotNull
         @Override
         public Iterator<K> iterator() {
-            return new KeyIterator<>(backingTrie);
+            return new KeyIterator<>(backingMap);
+        }
+
+    }
+
+    /**
+     * An abstract base class for all key sets as returned by the {@link Map#keySet()} method.
+     *
+     * @param <K>       The type of the keys, which are contained by the key set
+     * @param <MapType> The type of the map
+     */
+    protected static abstract class AbstractKeySet<K extends Sequence, MapType extends Map<K, ?>>
+            extends AbstractSet<K> {
+
+        /**
+         * The backing map.
+         */
+        final MapType backingMap;
+
+        /**
+         * Creates a new key set.
+         *
+         * @param backingMap The backing map, which should be used, as an instance of the generic
+         *                   type {@link MapType}. The backing map may not be null
+         */
+        AbstractKeySet(@NotNull final MapType backingMap) {
+            ensureNotNull(backingMap, "The backing map may not be null");
+            this.backingMap = backingMap;
         }
 
         @Override
-        public int size() {
-            return backingTrie.size();
+        public final int size() {
+            return backingMap.size();
         }
 
         @Override
-        public boolean isEmpty() {
-            return backingTrie.isEmpty();
+        public final boolean isEmpty() {
+            return backingMap.isEmpty();
         }
 
         @SuppressWarnings("SuspiciousMethodCalls")
         @Override
         public final boolean contains(Object o) {
-            return backingTrie.containsKey(o);
+            return backingMap.containsKey(o);
         }
 
         @Override
-        public void clear() {
-            backingTrie.clear();
+        public final void clear() {
+            backingMap.clear();
         }
 
         @Override
-        public boolean remove(final Object o) {
+        public final boolean remove(final Object o) {
             int oldSize = size();
-            backingTrie.remove(o);
+            backingMap.remove(o);
             return size() != oldSize;
         }
 
