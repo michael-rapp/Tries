@@ -38,19 +38,23 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
 
     /**
      * The entry set of a {@link StringTrie}. It encapsulates the entry set of a {@link Trie}.
+     *
+     * @param <V> The type of the values, which are stored by the trie
      */
-    private class EntrySetWrapper extends AbstractSet<Entry<String, ValueType>> {
+    private static final class EntrySetWrapper<V> extends AbstractSet<Entry<String, V>> {
 
         /**
          * The iterator, which allows to iterate the entries of a {@link StringTrie}'s entry set. It
          * encapsulates the iterator of a {@link Trie}'s entry set.
+         *
+         * @param <V> The type of the values, which are stored by the trie
          */
-        private class IteratorWrapper implements Iterator<Entry<String, ValueType>> {
+        private static class IteratorWrapper<V> implements Iterator<Entry<String, V>> {
 
             /**
              * The encapsulated iterator.
              */
-            private final Iterator<Entry<StringSequence, ValueType>> iterator;
+            private final Iterator<Entry<StringSequence, V>> iterator;
 
             /**
              * Creates a new iterator, which allows to iterate the entries of a {@link StringTrie}'s
@@ -59,7 +63,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
              * @param iterator The iterator, which should be encapsulated, as an instance of the
              *                 type {@link Iterator}. The iterator may not be null
              */
-            IteratorWrapper(@NotNull final Iterator<Entry<StringSequence, ValueType>> iterator) {
+            IteratorWrapper(@NotNull final Iterator<Entry<StringSequence, V>> iterator) {
                 ensureNotNull(iterator, "The iterator may not be null");
                 this.iterator = iterator;
             }
@@ -70,8 +74,8 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
             }
 
             @Override
-            public Entry<String, ValueType> next() {
-                Entry<StringSequence, ValueType> next = iterator.next();
+            public Entry<String, V> next() {
+                Entry<StringSequence, V> next = iterator.next();
 
                 if (next != null) {
                     String key = next.getKey() != null ? next.getKey().toString() : null;
@@ -86,7 +90,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
         /**
          * The encapsulated entry set.
          */
-        private final Set<Entry<StringSequence, ValueType>> entrySet;
+        private final Set<Entry<StringSequence, V>> entrySet;
 
         /**
          * Creates a new entry set of a {@link StringTrie}.
@@ -94,15 +98,15 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
          * @param entrySet The entry set, which should be encapsulated, as an instance of the type
          *                 {@link Set}. The entry set may not be null
          */
-        EntrySetWrapper(@NotNull final Set<Entry<StringSequence, ValueType>> entrySet) {
+        EntrySetWrapper(@NotNull final Set<Entry<StringSequence, V>> entrySet) {
             ensureNotNull(entrySet, "The entry set may not be null");
             this.entrySet = entrySet;
         }
 
         @NotNull
         @Override
-        public Iterator<Entry<String, ValueType>> iterator() {
-            return new IteratorWrapper(entrySet.iterator());
+        public Iterator<Entry<String, V>> iterator() {
+            return new IteratorWrapper<>(entrySet.iterator());
         }
 
         @Override
@@ -115,7 +119,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
     /**
      * The key set of a {@link StringTrie}. It encapsulates the key set of a {@link Trie}.
      */
-    private static class KeySetWrapper extends AbstractSet<String> {
+    private static final class KeySetWrapper extends AbstractSet<String> {
 
         /**
          * The iterator, which allows to iterate the entries of a {@link StringTrie}'s key set. It
@@ -198,7 +202,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
      * @param trie The trie, which should be encapsulated, as an instance of the generic type {@link
      *             TrieType}. The trie may not be null
      */
-    public AbstractStringTrieWrapper(@NotNull final TrieType trie) {
+    AbstractStringTrieWrapper(@NotNull final TrieType trie) {
         ensureNotNull(trie, "The trie may not be null");
         this.trie = trie;
     }
@@ -264,7 +268,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
     @NotNull
     @Override
     public final Set<Entry<String, ValueType>> entrySet() {
-        return new EntrySetWrapper(trie.entrySet());
+        return new EntrySetWrapper<>(trie.entrySet());
     }
 
     @Nullable
