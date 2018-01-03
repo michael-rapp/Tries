@@ -354,6 +354,33 @@ public class SortedListTrieTest {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
+    public final void testValuesIterator() {
+        testPutWithEmptyKey();
+        Collection<String> values = trie.values();
+        assertEquals(9, values.size());
+        Collection<String> actualValues = new ArrayList<>();
+        actualValues.add("tea");
+        actualValues.add("tea");
+        actualValues.add("to");
+        actualValues.add("ted");
+        actualValues.add("ten");
+        actualValues.add("inn");
+        actualValues.add("in");
+        actualValues.add("empty");
+        actualValues.add(null);
+        Iterator<String> iterator = values.iterator();
+
+        for (int i = 0; i < 9; i++) {
+            assertTrue(iterator.hasNext());
+            String value = iterator.next();
+            assertTrue(actualValues.contains(value));
+            actualValues.remove(value);
+        }
+
+        assertFalse(iterator.hasNext());
+    }
+
     @Test(expected = UnsupportedOperationException.class)
     public final void testValuesImmutable() {
         testPut6();
@@ -362,11 +389,12 @@ public class SortedListTrieTest {
     }
 
     @Test(expected = ConcurrentModificationException.class)
-    public final void testValuesThrowsConcurrentModificationException() {
+    public final void testValuesIteratorThrowsConcurrentModificationException() {
         testPut6();
         Collection<String> values = trie.values();
+        Iterator<String> iterator = values.iterator();
         trie.put(new StringSequence("foo"), "foo");
-        values.iterator().next();
+        iterator.next();
     }
 
     @Test
@@ -408,12 +436,40 @@ public class SortedListTrieTest {
         keys.add(new StringSequence("foo"));
     }
 
+    @Test
+    public final void testKeySetIterator() {
+        testPutWithEmptyKey();
+        Collection<StringSequence> keys = trie.keySet();
+        assertEquals(9, keys.size());
+        Iterator<StringSequence> iterator = keys.iterator();
+        Collection<StringSequence> actualKeys = new ArrayList<>();
+        actualKeys.add(new StringSequence("tea"));
+        actualKeys.add(new StringSequence("to"));
+        actualKeys.add(new StringSequence("ted"));
+        actualKeys.add(new StringSequence("ten"));
+        actualKeys.add(new StringSequence("inn"));
+        actualKeys.add(new StringSequence("in"));
+        actualKeys.add(new StringSequence("A"));
+        actualKeys.add(new StringSequence("B"));
+        actualKeys.add(null);
+
+        for (int i = 0; i < 9; i++) {
+            assertTrue(iterator.hasNext());
+            StringSequence key = iterator.next();
+            assertTrue(actualKeys.contains(key));
+            actualKeys.remove(key);
+        }
+
+        assertFalse(iterator.hasNext());
+    }
+
     @Test(expected = ConcurrentModificationException.class)
-    public final void testKeySetThrowsConcurrentModificationException() {
+    public final void testKeySetIteratorThrowsConcurrentModificationException() {
         testPut6();
         Collection<StringSequence> keys = trie.keySet();
+        Iterator<StringSequence> iterator = keys.iterator();
         trie.put(new StringSequence("foo"), "foo");
-        keys.iterator().next();
+        iterator.next();
     }
 
     @Test
@@ -467,11 +523,12 @@ public class SortedListTrieTest {
     }
 
     @Test(expected = ConcurrentModificationException.class)
-    public final void testEntrySetThrowsConcurrentModificationException() {
+    public final void testEntrySetIteratorThrowsConcurrentModificationException() {
         testPut6();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
+        Iterator<Map.Entry<StringSequence, String>> iterator = entrySet.iterator();
         trie.put(new StringSequence("foo"), "foo");
-        entrySet.iterator().next();
+        iterator.next();
     }
 
     @Test

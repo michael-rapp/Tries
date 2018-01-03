@@ -42,12 +42,12 @@ import static de.mrapp.util.Condition.*;
 public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueType> extends
         AbstractTrie<SequenceType, ValueType> implements SortedTrie<SequenceType, ValueType> {
 
-    private static class KeySet<K extends Sequence> extends AbstractSet<K> implements
+    private static class NavigableKeySet<K extends Sequence> extends AbstractSet<K> implements
             NavigableSet<K> {
 
         private final NavigableMap<K, ?> map;
 
-        KeySet(@NotNull final NavigableMap<K, ?> map) {
+        NavigableKeySet(@NotNull final NavigableMap<K, ?> map) {
             ensureNotNull(map, "The map may not be null");
             this.map = map;
         }
@@ -168,19 +168,20 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @Override
         public NavigableSet<K> subSet(final K fromElement, final boolean fromInclusive,
                                       final K toElement, final boolean toInclusive) {
-            return new KeySet<>(map.subMap(fromElement, fromInclusive, toElement, toInclusive));
+            return new NavigableKeySet<>(
+                    map.subMap(fromElement, fromInclusive, toElement, toInclusive));
         }
 
         @NotNull
         @Override
         public NavigableSet<K> headSet(final K toElement, final boolean inclusive) {
-            return new KeySet<>(map.headMap(toElement, inclusive));
+            return new NavigableKeySet<>(map.headMap(toElement, inclusive));
         }
 
         @NotNull
         @Override
         public NavigableSet<K> tailSet(final K fromElement, final boolean inclusive) {
-            return new KeySet<>(map.tailMap(fromElement, inclusive));
+            return new NavigableKeySet<>(map.tailMap(fromElement, inclusive));
         }
 
         @NotNull
@@ -204,7 +205,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public NavigableSet<K> descendingSet() {
-            return new KeySet<>(map.descendingMap());
+            return new NavigableKeySet<>(map.descendingMap());
         }
 
     }
@@ -229,12 +230,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                 Node<K, V> node = trie.getNode(key);
                 if (node == null)
                     return null;
-                if (node.getValue() == null) {
-                    if (entry.getValue() != null)
-                        return null;
-                } else if (!node.getValue().equals(entry.getValue()))
-                    return null;
-                return key;
+                return isValueEqual(node, entry) ? key : null;
             }
 
             @Override
@@ -716,7 +712,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public NavigableSet<K> navigableKeySet() {
-            return new KeySet<>(this);
+            return new NavigableKeySet<>(this);
         }
 
     }
@@ -1645,7 +1641,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @Override
     public final NavigableSet<SequenceType> navigableKeySet() {
         if (this.navigableKeySet == null) {
-            this.navigableKeySet = new KeySet<>(this);
+            this.navigableKeySet = new NavigableKeySet<>(this);
         }
 
         return navigableKeySet;

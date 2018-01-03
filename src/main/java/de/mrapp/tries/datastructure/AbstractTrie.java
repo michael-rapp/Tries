@@ -43,244 +43,323 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
     /**
      * The entry set of a trie as returned by the method {@link #entrySet()}. The entry set is
-     * backed by an iterator, which traverses all nodes of the trie in order to identify the (inner
-     * or leaf) nodes, which contains values.
+     * backed by an {@link EntryIterator}, which traverses all nodes of the trie for which a value
+     * is set.
      */
     private class EntrySet extends AbstractSet<Map.Entry<SequenceType, ValueType>> {
 
-        /**
-         * An iterator, which traverses in all nodes of the trie in order to identify those that
-         * contain values. Only nodes for which a value (null or non-null) is set, are returned by
-         * the iterator's {@link Iterator#next()} method.
-         */
-        private class ValueIterator implements Iterator<Map.Entry<SequenceType, ValueType>> {
-
-            /**
-             * Represents a path from the root to a specific node.
-             */
-            private class Path {
-
-                /**
-                 * The node the path leads to.
-                 */
-                private final Node<SequenceType, ValueType> node;
-
-                /**
-                 * The sequence, which corresponds to the node.
-                 */
-                private final SequenceType sequence;
-
-                /**
-                 * The iterator, which allows to iterate the successors of the node.
-                 */
-                private Iterator<SequenceType> iterator;
-
-                /**
-                 * Creates a new empty path.
-                 *
-                 * @param rootNode The root node of the trie, as an instance of the type {@link
-                 *                 Node} or null, if the trie is empty
-                 */
-                Path(@Nullable final Node<SequenceType, ValueType> rootNode) {
-                    this.node = rootNode;
-                    this.sequence = null;
-                    this.iterator = null;
-                }
-
-                /**
-                 * Creates a new path, which leads to a specific node.
-                 *
-                 * @param node     The node, the path should lead to, as an instance of the type
-                 *                 {@link Node}. The node may not be null
-                 * @param sequence The sequence, which corresponds to the given node, as an instance
-                 *                 of the generic type {@link SequenceType}. The sequence may
-                 *                 neither be null, nor empty
-                 */
-                Path(@NotNull final Node<SequenceType, ValueType> node,
-                     @NotNull final SequenceType sequence) {
-                    ensureNotNull(node, "The node may not be null");
-                    ensureNotNull(sequence, "The sequence may not be null");
-                    ensureFalse(sequence.isEmpty(), "The sequence may not be empty");
-                    this.node = node;
-                    this.sequence = sequence;
-                    this.iterator = null;
-                }
-
-            }
-
-            /**
-             * A stack, which contains the nodes, which remain to be traversed.
-             */
-            private final Deque<Path> stack;
-
-            /**
-             * The path, which leads to the node, which is returned when the {@link #next()} method
-             * is called for the next time.
-             */
-            private Path nextPath;
-
-            /**
-             * Fetches the path, which leads to the node, which should be returned when the
-             * iterator's {@link #next()} method is called for the next time.
-             *
-             * @return The path, which leads to the next node, as an instance of the class {@link
-             * Path} or null, if no nodes with a value are left
-             */
-            @Nullable
-            private Path fetchNext() {
-                while (!this.stack.isEmpty()) {
-                    Path path = this.stack.poll();
-                    Path previousPath = path;
-                    Path downPath = descend(path);
-
-                    while (downPath != null) {
-                        previousPath = downPath;
-                        downPath = descend(downPath);
-                    }
-
-                    if (previousPath.node.isValueSet()) {
-                        return previousPath;
-                    }
-                }
-
-                return null;
-            }
-
-            /**
-             * Descends in the trie until the next node with a value is found.
-             *
-             * @param path The path, which points to the node from which the descend should start,
-             *             as an instance of the class {@link Path}. The path may not be null
-             * @return The path, which points to the next node with a value, as an instance of the
-             * class {@link Path} or null, if no ndoes with a value are left
-             */
-            @Nullable
-            private Path descend(@NotNull final Path path) {
-                if (path.iterator == null) {
-                    path.iterator = path.node.iterator();
-
-                    if (path.node.isValueSet()) {
-                        if (path.iterator.hasNext()) {
-                            stack.push(path);
-                        }
-
-                        return null;
-                    }
-                }
-
-                if (path.iterator != null && path.iterator.hasNext()) {
-                    SequenceType key = path.iterator.next();
-
-                    if (path.iterator.hasNext()) {
-                        stack.push(path);
-                    }
-
-                    if (key != null) {
-                        Node<SequenceType, ValueType> successor = path.node.getSuccessor(key);
-
-                        if (successor != null) {
-                            SequenceType sequence = SequenceUtil.concat(path.sequence, key);
-                            return new Path(successor, sequence);
-                        }
-                    }
-                }
-
-                return null;
-            }
-
-            /**
-             * Creates a new iterator, which allows to iterate all nodes of the trie, which contain
-             * a value.
-             */
-            ValueIterator() {
-                stack = new LinkedList<>();
-
-                if (rootNode != null) {
-                    stack.add(new Path(rootNode));
-                    nextPath = fetchNext();
-                }
-            }
-
-            @Override
-            public boolean hasNext() {
-                checkForModifications();
-                return nextPath != null;
-            }
-
-            @Override
-            public Entry<SequenceType, ValueType> next() {
-                checkForModifications();
-                ensureTrue(hasNext(), null, NoSuchElementException.class);
-                Path result = nextPath;
-                nextPath = fetchNext();
-                return new AbstractMap.SimpleImmutableEntry<>(result.sequence,
-                        result.node.getValue());
-            }
-        }
-
-        /**
-         * The modification count of the trie at the time, when the entry set was created.
-         */
-        private final long modificationCount;
-
-        /**
-         * Throws a {@link ConcurrentModificationException} if the entry set's modification count
-         * differs from the modification count of the trie, it has been created from.
-         */
-        private void checkForModifications() {
-            ensureEqual(this.modificationCount, AbstractTrie.this.modificationCount, null,
-                    ConcurrentModificationException.class);
-        }
-
-        /**
-         * Creates a new entry set of a trie.
-         *
-         * @param modificationCount The current modification count of the trie as a {@link Long}
-         *                          value
-         */
-        EntrySet(final long modificationCount) {
-            this.modificationCount = modificationCount;
-        }
-
         @NotNull
         @Override
-        public Iterator<Map.Entry<SequenceType, ValueType>> iterator() {
-            return new ValueIterator();
+        public Iterator<Entry<SequenceType, ValueType>> iterator() {
+            return new EntryIterator();
         }
 
         @Override
         public int size() {
-            checkForModifications();
             return AbstractTrie.this.size();
+        }
+
+        @Override
+        public boolean contains(final Object o) {
+            if (o instanceof Map.Entry) {
+                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
+                Node<SequenceType, ValueType> node = AbstractTrie.this.getNode(entry.getKey());
+                return node != null && isValueEqual(node, entry);
+            }
+
+            return false;
+        }
+
+        @Override
+        public boolean remove(final Object o) {
+            if (o instanceof Map.Entry) {
+                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
+                return AbstractTrie.this.remove(entry.getKey(), entry.getValue());
+            }
+
+            return false;
         }
 
     }
 
     /**
-     * A map, which contains the key-value mappings of a trie. The entry set is backed by an {@link
-     * EntrySet}.
+     * The values of a trie as returned by the method {@link #values()}. The entry set is backed by
+     * a {@link ValueIterator}, which traverses all values of the trie.
      */
-    private class EntryMap extends AbstractMap<SequenceType, ValueType> {
-
-        /**
-         * The backing entry set.
-         */
-        private final Set<Entry<SequenceType, ValueType>> entrySet;
-
-        /**
-         * Creates a new map, which contains the key-value mappings of a trie.
-         *
-         * @param modificationCount The current modification count of the trie as a {@link Long}
-         *                          value
-         */
-        EntryMap(final long modificationCount) {
-            this.entrySet = Collections.unmodifiableSet(new EntrySet(modificationCount));
-        }
+    private class Values extends AbstractCollection<ValueType> {
 
         @NotNull
         @Override
-        public Set<Entry<SequenceType, ValueType>> entrySet() {
-            return entrySet;
+        public Iterator<ValueType> iterator() {
+            return new ValueIterator();
+        }
+
+        @Override
+        public int size() {
+            return AbstractTrie.this.size();
+        }
+
+        @Override
+        public boolean remove(final Object o) {
+            for (Map.Entry<SequenceType, ValueType> entry : AbstractTrie.this.entrySet()) {
+                if (isEqual(entry.getValue(), o)) {
+                    AbstractTrie.this.remove(entry.getKey());
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        @Override
+        public void clear() {
+            AbstractTrie.this.clear();
+        }
+
+    }
+
+    private class KeySet extends AbstractSet<SequenceType> {
+
+        @NotNull
+        @Override
+        public Iterator<SequenceType> iterator() {
+            return new KeyIterator();
+        }
+
+        @Override
+        public int size() {
+            return AbstractTrie.this.size();
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            return AbstractTrie.this.containsKey(o);
+        }
+
+        @Override
+        public void clear() {
+            AbstractTrie.this.clear();
+        }
+
+        @Override
+        public boolean remove(final Object o) {
+            int oldSize = size();
+            AbstractTrie.this.remove(o);
+            return size() != oldSize;
+        }
+
+    }
+
+    /**
+     * An iterator, which allows to iterate all nodes of the trie for which a value is set.
+     */
+    private class EntryIterator extends AbstractEntryIterator<Map.Entry<SequenceType, ValueType>> {
+
+        @Override
+        public Entry<SequenceType, ValueType> next() {
+            return nextEntry();
+        }
+
+    }
+
+    /**
+     * An iterator, which allows to iterate all values, which are stored by the trie.
+     */
+    private class ValueIterator extends AbstractEntryIterator<ValueType> {
+
+        @Override
+        public ValueType next() {
+            return nextEntry().getValue();
+        }
+
+    }
+
+    /**
+     * An iterator, which allows to iterate all keys, which are stored by the trie.
+     */
+    private class KeyIterator extends AbstractEntryIterator<SequenceType> {
+
+        @Override
+        public SequenceType next() {
+            return nextEntry().getKey();
+        }
+
+    }
+
+    /**
+     * An abstract base class for all iterators, which traverse all nodes of the trie in order to
+     * identify those that contain values. Only nodes for which a value (null or non-null) is set,
+     * are returned by the iterator's {@link #nextEntry()} method.
+     *
+     * @param <T> The type of the iterated items
+     */
+    private abstract class AbstractEntryIterator<T> implements Iterator<T> {
+
+        /**
+         * Represents a path from the root to a specific node.
+         */
+        private class Path {
+
+            /**
+             * The node the path leads to.
+             */
+            private final Node<SequenceType, ValueType> node;
+
+            /**
+             * The sequence, which corresponds to the node.
+             */
+            private final SequenceType sequence;
+
+            /**
+             * The iterator, which allows to iterate the successors of the node.
+             */
+            private Iterator<SequenceType> iterator;
+
+            /**
+             * Creates a new empty path.
+             *
+             * @param rootNode The root node of the trie, as an instance of the type {@link Node} or
+             *                 null, if the trie is empty
+             */
+            Path(@Nullable final Node<SequenceType, ValueType> rootNode) {
+                this.node = rootNode;
+                this.sequence = null;
+                this.iterator = null;
+            }
+
+            /**
+             * Creates a new path, which leads to a specific node.
+             *
+             * @param node     The node, the path should lead to, as an instance of the type {@link
+             *                 Node}. The node may not be null
+             * @param sequence The sequence, which corresponds to the given node, as an instance of
+             *                 the generic type {@link SequenceType}. The sequence may neither be
+             *                 null, nor empty
+             */
+            Path(@NotNull final Node<SequenceType, ValueType> node,
+                 @NotNull final SequenceType sequence) {
+                ensureNotNull(node, "The node may not be null");
+                ensureNotNull(sequence, "The sequence may not be null");
+                ensureFalse(sequence.isEmpty(), "The sequence may not be empty");
+                this.node = node;
+                this.sequence = sequence;
+                this.iterator = null;
+            }
+
+        }
+
+        /**
+         * The modification count when the iterator was instantiated.
+         */
+        private final long modificationCount;
+
+        /**
+         * A stack, which contains the nodes, which remain to be traversed.
+         */
+        private final Deque<Path> stack;
+
+        /**
+         * The path, which leads to the node, which is returned when the {@link #next()} method is
+         * called for the next time.
+         */
+        private Path nextPath;
+
+        /**
+         * Fetches the path, which leads to the node, which should be returned when the iterator's
+         * {@link #next()} method is called for the next time.
+         *
+         * @return The path, which leads to the next node, as an instance of the class {@link Path}
+         * or null, if no nodes with a value are left
+         */
+        @Nullable
+        private Path fetchNext() {
+            while (!this.stack.isEmpty()) {
+                Path path = this.stack.poll();
+                Path previousPath = path;
+                Path downPath = descend(path);
+
+                while (downPath != null) {
+                    previousPath = downPath;
+                    downPath = descend(downPath);
+                }
+
+                if (previousPath.node.isValueSet()) {
+                    return previousPath;
+                }
+            }
+
+            return null;
+        }
+
+        /**
+         * Descends in the trie until the next node with a value is found.
+         *
+         * @param path The path, which points to the node from which the descend should start, as an
+         *             instance of the class {@link Path}. The path may not be null
+         * @return The path, which points to the next node with a value, as an instance of the class
+         * {@link Path} or null, if no ndoes with a value are left
+         */
+        @Nullable
+        private Path descend(@NotNull final Path path) {
+            if (path.iterator == null) {
+                path.iterator = path.node.iterator();
+
+                if (path.node.isValueSet()) {
+                    if (path.iterator.hasNext()) {
+                        stack.push(path);
+                    }
+
+                    return null;
+                }
+            }
+
+            if (path.iterator != null && path.iterator.hasNext()) {
+                SequenceType key = path.iterator.next();
+
+                if (path.iterator.hasNext()) {
+                    stack.push(path);
+                }
+
+                if (key != null) {
+                    Node<SequenceType, ValueType> successor = path.node.getSuccessor(key);
+
+                    if (successor != null) {
+                        SequenceType sequence = SequenceUtil.concat(path.sequence, key);
+                        return new Path(successor, sequence);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        final Map.Entry<SequenceType, ValueType> nextEntry() {
+            ensureEqual(modificationCount, AbstractTrie.this.modificationCount, null,
+                    ConcurrentModificationException.class);
+            ensureTrue(hasNext(), null, NoSuchElementException.class);
+            Path result = nextPath;
+            nextPath = fetchNext();
+            return new AbstractMap.SimpleImmutableEntry<>(result.sequence,
+                    result.node.getValue());
+        }
+
+        /**
+         * Creates a new iterator, which allows to iterate all nodes of the trie, which contain a
+         * value.
+         */
+        AbstractEntryIterator() {
+            this.modificationCount = AbstractTrie.this.modificationCount;
+            this.stack = new LinkedList<>();
+
+            if (AbstractTrie.this.rootNode != null) {
+                this.stack.add(new Path(rootNode));
+                this.nextPath = fetchNext();
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return nextPath != null;
         }
 
     }
@@ -300,6 +379,21 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * iterators.
      */
     long modificationCount;
+
+    /**
+     * The values of the trie.
+     */
+    private Collection<ValueType> values;
+
+    /**
+     * The key set of the trie.
+     */
+    private Set<SequenceType> keySet;
+
+    /**
+     * The entry set of the trie.
+     */
+    private Set<Map.Entry<SequenceType, ValueType>> entrySet;
 
     /**
      * The method, which is invoked on subclasses in order to create the trie's root node.
@@ -397,6 +491,34 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     }
 
     /**
+     * Returns, whether the values of a specific node and entry are equal, or not.
+     *
+     * @param node  The node as an instance of the type {@link Node}. The node may not be null
+     * @param entry The entry as an instance of the type {@link Map.Entry}. The entry may not be
+     *              null
+     * @return True, if the values of the given node and entry are equal, false otherwise
+     */
+    static boolean isValueEqual(@NotNull final Node<?, ?> node,
+                                @NotNull final Map.Entry<?, ?> entry) {
+        return isEqual(node.getValue(), entry.getValue());
+    }
+
+    /**
+     * Returns, whether two objects are equal, or not.
+     *
+     * @param o1 The first object as an instance of the class {@link Object} or null
+     * @param o2 The second object as an instance of the class {@link Object} or null
+     * @return True, if the given objects are equal, false otherwise
+     */
+    static boolean isEqual(@Nullable final Object o1, @Nullable final Object o2) {
+        if (o1 == null) {
+            return o2 == null;
+        }
+
+        return o1.equals(o2);
+    }
+
+    /**
      * Creates a new trie.
      *
      * @param rootNode The root node of the trie as an instance of the type {@link Node} or null, if
@@ -438,9 +560,10 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         return node != null && node.getNodeValue() != null;
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     @Override
     public final boolean containsValue(final Object value) {
-        return new EntryMap(modificationCount).containsValue(value);
+        return values().contains(value);
     }
 
     @Override
@@ -452,19 +575,31 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     @NotNull
     @Override
     public final Set<SequenceType> keySet() {
-        return Collections.unmodifiableSet(new EntryMap(modificationCount).keySet());
+        if (this.keySet == null) {
+            this.keySet = new KeySet();
+        }
+
+        return this.keySet;
     }
 
     @NotNull
     @Override
     public final Collection<ValueType> values() {
-        return Collections.unmodifiableCollection(new EntryMap(modificationCount).values());
+        if (this.values == null) {
+            this.values = new Values();
+        }
+
+        return this.values;
     }
 
     @NotNull
     @Override
     public final Set<Entry<SequenceType, ValueType>> entrySet() {
-        return Collections.unmodifiableSet(new EntryMap(modificationCount).entrySet);
+        if (this.entrySet == null) {
+            this.entrySet = new EntrySet();
+        }
+
+        return this.entrySet;
     }
 
     @Override
