@@ -114,7 +114,8 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
         public boolean remove(final Object o) {
             Map.Entry<String, V> entry = (Entry<String, V>) o;
             String key = entry.getKey();
-            return entrySet.remove(new StringSequence(key));
+            return entrySet.remove(new AbstractMap.SimpleImmutableEntry<>(new StringSequence(key),
+                    entry.getValue()));
         }
 
         @Override

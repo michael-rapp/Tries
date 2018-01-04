@@ -153,7 +153,7 @@ public class StringTrieWrapperTest {
     }
 
     @Test
-    public final void testKeySet() {
+    public final void testKeySetIterator() {
         String key1 = "key1";
         String key2 = "key2";
         Set<StringSequence> keySet = new HashSet<>();
@@ -161,10 +161,68 @@ public class StringTrieWrapperTest {
         keySet.add(new StringSequence(key2));
         keySet.add(null);
         when(trie.keySet()).thenReturn(keySet);
-        Set<String> actualKeySet = trieWrapper.keySet();
-        assertEquals(keySet.size(), actualKeySet.size());
-        assertTrue(keySet.stream()
-                .allMatch(x -> actualKeySet.contains(x != null ? x.toString() : null)));
+        Iterator<String> iterator = trieWrapper.keySet().iterator();
+        Collection<String> actualKeys = new ArrayList<>();
+        actualKeys.add(key1);
+        actualKeys.add(key2);
+        actualKeys.add(null);
+
+        for (int i = 0; i < keySet.size(); i++) {
+            assertTrue(iterator.hasNext());
+            String key = iterator.next();
+            assertTrue(actualKeys.contains(key));
+            actualKeys.remove(key);
+        }
+
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public final void testKeySetRemove() {
+        String key1 = "key1";
+        String key2 = "key2";
+        Set<StringSequence> keySet = new HashSet<>();
+        keySet.add(new StringSequence(key1));
+        keySet.add(new StringSequence(key2));
+        keySet.add(null);
+        when(trie.keySet()).thenReturn(keySet);
+        Set<String> keys = trieWrapper.keySet();
+        boolean removed = keys.remove(key2);
+        assertTrue(removed);
+        assertEquals(2, keys.size());
+        assertTrue(keys.contains(key1));
+        assertFalse(keys.contains(key2));
+        assertTrue(keys.contains(null));
+        assertEquals(2, keySet.size());
+        assertTrue(keySet.contains(new StringSequence(key1)));
+        assertFalse(keySet.contains(new StringSequence(key2)));
+        assertTrue(keySet.contains(null));
+    }
+
+    @Test
+    public final void testKeySetClear() {
+        Set<StringSequence> keySet = new HashSet<>();
+        keySet.add(new StringSequence("key1"));
+        keySet.add(new StringSequence("key2"));
+        keySet.add(null);
+        when(trie.keySet()).thenReturn(keySet);
+        Set<String> keys = trieWrapper.keySet();
+        assertFalse(keys.isEmpty());
+        assertFalse(keySet.isEmpty());
+        keys.clear();
+        assertTrue(keys.isEmpty());
+        assertTrue(keySet.isEmpty());
+    }
+
+    @Test
+    public final void testKeySetSize() {
+        Set<StringSequence> keySet = new HashSet<>();
+        keySet.add(new StringSequence("key1"));
+        keySet.add(new StringSequence("key2"));
+        keySet.add(null);
+        when(trie.keySet()).thenReturn(keySet);
+        Set<String> keys = trieWrapper.keySet();
+        assertEquals(keys.size(), keySet.size());
     }
 
     @Test
@@ -177,25 +235,92 @@ public class StringTrieWrapperTest {
     }
 
     @Test
-    public final void testEntrySet() {
+    public final void testEntrySetIterator() {
         String key1 = "key1";
-        String key2 = "key2";
         String value1 = "value1";
+        String key2 = "key2";
         String value2 = "value2";
         String value3 = "value3";
         Set<Map.Entry<StringSequence, String>> entrySet = new HashSet<>();
-        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence(key1), value1));
-        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence(key2), value2));
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(new StringSequence(key1), value1));
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(new StringSequence(key2), value2));
         entrySet.add(new AbstractMap.SimpleImmutableEntry<>(null, value3));
         when(trie.entrySet()).thenReturn(entrySet);
-        Set<Map.Entry<String, String>> actualEntrySet = trieWrapper.entrySet();
-        assertTrue(entrySet.stream().allMatch(x -> actualEntrySet
-                .contains(
-                        new AbstractMap.SimpleImmutableEntry<String, String>(
-                                x.getKey() != null ? x.getKey().toString() : null,
-                                x.getValue()))));
+        Iterator<Map.Entry<String, String>> iterator = trieWrapper.entrySet().iterator();
+        Collection<Map.Entry<String, String>> actualEntries = new ArrayList<>();
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(key1, value1));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(key2, value2));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(null, value3));
+
+        for (int i = 0; i < entrySet.size(); i++) {
+            assertTrue(iterator.hasNext());
+            Map.Entry<String, String> entry = iterator.next();
+            assertTrue(actualEntries.contains(entry));
+            actualEntries.remove(entry);
+        }
+
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public final void testEntrySetRemove() {
+        String key1 = "key1";
+        String value1 = "value1";
+        String key2 = "key2";
+        String value2 = "value2";
+        String value3 = "value3";
+        Set<Map.Entry<StringSequence, String>> entrySet = new HashSet<>();
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(new StringSequence(key1), value1));
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(new StringSequence(key2), value2));
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(null, value3));
+        when(trie.entrySet()).thenReturn(entrySet);
+        Set<Map.Entry<String, String>> entries = trieWrapper.entrySet();
+        boolean removed = entries.remove(new AbstractMap.SimpleImmutableEntry<>(key2, "invalid"));
+        assertFalse(removed);
+        removed = entries.remove(new AbstractMap.SimpleImmutableEntry<>(key2, value2));
+        assertTrue(removed);
+        assertEquals(2, entries.size());
+        assertTrue(entries.contains(new AbstractMap.SimpleImmutableEntry<>(key1, value1)));
+        assertFalse(entries.contains(new AbstractMap.SimpleImmutableEntry<>(key2, value2)));
+        assertTrue(entries.contains(new AbstractMap.SimpleImmutableEntry<>((String) null, value3)));
+        assertEquals(2, entrySet.size());
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(new StringSequence(key1), value1)));
+        assertFalse(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(new StringSequence(key2), value2)));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>((StringSequence) null, value3)));
+    }
+
+    @Test
+    public final void testEntrySetClear() {
+        String key1 = "key1";
+        String value1 = "value1";
+        String key2 = "key2";
+        String value2 = "value2";
+        String value3 = "value3";
+        Set<Map.Entry<StringSequence, String>> entrySet = new HashSet<>();
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(new StringSequence(key1), value1));
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(new StringSequence(key2), value2));
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(null, value3));
+        when(trie.entrySet()).thenReturn(entrySet);
+        Set<Map.Entry<String, String>> entries = trieWrapper.entrySet();
+        assertFalse(entries.isEmpty());
+        assertFalse(entrySet.isEmpty());
+        entries.clear();
+        assertTrue(entries.isEmpty());
+        assertTrue(entrySet.isEmpty());
+    }
+
+    @Test
+    public final void testEntrySetSize() {
+        Set<Map.Entry<StringSequence, String>> entrySet = new HashSet<>();
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("key1"), "value1"));
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("key2"), "value2"));
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(null, "value3"));
+        when(trie.entrySet()).thenReturn(entrySet);
+        Set<Map.Entry<String, String>> entries = trieWrapper.entrySet();
+        assertEquals(entries.size(), entrySet.size());
     }
 
     @SuppressWarnings("unchecked")
