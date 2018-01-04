@@ -239,14 +239,14 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     }
 
-    private static class SortedMapWrapper<V> extends AbstractMap<String, V> implements
-            SortedMap<String, V> {
+    private static class SortedMapWrapper<V, MapType extends SortedMap<StringSequence, V>> extends
+            AbstractMap<String, V> implements SortedMap<String, V> {
 
-        private final SortedMap<StringSequence, V> map;
+        final MapType map;
 
         private final Comparator<? super String> comparator;
 
-        SortedMapWrapper(@NotNull final SortedMap<StringSequence, V> map) {
+        SortedMapWrapper(@NotNull final MapType map) {
             ensureNotNull(map, "The map may not be null");
             this.map = map;
             Comparator<? super StringSequence> comparator = map.comparator();
@@ -300,6 +300,115 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     }
 
+    private static final class NavigableMapWrapper<V> extends
+            SortedMapWrapper<V, NavigableMap<StringSequence, V>> implements
+            NavigableMap<String, V> {
+
+        NavigableMapWrapper(@NotNull final NavigableMap<StringSequence, V> map) {
+            super(map);
+        }
+
+        @Override
+        public Entry<String, V> lowerEntry(final String key) {
+            return convertEntry(map.lowerEntry(StringSequence.convertFromString(key)));
+        }
+
+        @Override
+        public String lowerKey(final String key) {
+            return StringSequence
+                    .convertToString(map.lowerKey(StringSequence.convertFromString(key)));
+        }
+
+        @Override
+        public Entry<String, V> floorEntry(final String key) {
+            return convertEntry(map.floorEntry(StringSequence.convertFromString(key)));
+        }
+
+        @Override
+        public String floorKey(final String key) {
+            return StringSequence
+                    .convertToString(map.floorKey(StringSequence.convertFromString(key)));
+        }
+
+        @Override
+        public Entry<String, V> ceilingEntry(final String key) {
+            return convertEntry(map.ceilingEntry(StringSequence.convertFromString(key)));
+        }
+
+        @Override
+        public String ceilingKey(final String key) {
+            return StringSequence
+                    .convertToString(map.ceilingKey(StringSequence.convertFromString(key)));
+        }
+
+        @Override
+        public Entry<String, V> higherEntry(final String key) {
+            return convertEntry(map.higherEntry(StringSequence.convertFromString(key)));
+        }
+
+        @Override
+        public String higherKey(final String key) {
+            return StringSequence
+                    .convertToString(map.higherKey(StringSequence.convertFromString(key)));
+        }
+
+        @Override
+        public Entry<String, V> firstEntry() {
+            return convertEntry(map.firstEntry());
+        }
+
+        @Override
+        public Entry<String, V> lastEntry() {
+            return convertEntry(map.lastEntry());
+        }
+
+        @Override
+        public Entry<String, V> pollFirstEntry() {
+            return convertEntry(map.pollFirstEntry());
+        }
+
+        @Override
+        public Entry<String, V> pollLastEntry() {
+            return convertEntry(map.pollLastEntry());
+        }
+
+        @Override
+        public NavigableMap<String, V> descendingMap() {
+            return new NavigableMapWrapper<>(map.descendingMap());
+        }
+
+        @Override
+        public NavigableSet<String> navigableKeySet() {
+            return new NavigableKeySetWrapper(map.navigableKeySet());
+        }
+
+        @Override
+        public NavigableSet<String> descendingKeySet() {
+            return new NavigableKeySetWrapper(map.descendingKeySet());
+        }
+
+        @Override
+        public NavigableMap<String, V> subMap(final String fromKey, final boolean fromInclusive,
+                                              final String toKey, final boolean toInclusive) {
+            return new NavigableMapWrapper<>(
+                    map.subMap(StringSequence.convertFromString(fromKey), fromInclusive,
+                            StringSequence.convertFromString(toKey), toInclusive));
+        }
+
+        @Override
+        public NavigableMap<String, V> headMap(final String toKey, final boolean inclusive) {
+            return new NavigableMapWrapper<>(
+                    map.headMap(StringSequence.convertFromString(toKey), inclusive));
+        }
+
+        @Override
+        public NavigableMap<String, V> tailMap(final String fromKey, final boolean inclusive) {
+            return new NavigableMapWrapper<>(
+                    map.tailMap(StringSequence.convertFromString(fromKey), inclusive));
+        }
+
+    }
+
     /**
      * The constant serial version UID.
      */
@@ -314,8 +423,7 @@ public class SortedStringTrieWrapper<ValueType> extends
      * if the given entry is null
      */
     @Nullable
-    private Entry<String, ValueType> convertEntry(
-            @Nullable final Entry<StringSequence, ValueType> entry) {
+    static <V> Entry<String, V> convertEntry(@Nullable final Entry<StringSequence, V> entry) {
         if (entry != null) {
             return new AbstractMap.SimpleImmutableEntry<>(
                     StringSequence.convertToString(entry.getKey()), entry.getValue());
@@ -398,8 +506,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final NavigableMap<String, ValueType> descendingMap() {
-        // TODO
-        return null;
+        return new NavigableMapWrapper<>(trie.descendingMap());
     }
 
     @Override
@@ -417,22 +524,23 @@ public class SortedStringTrieWrapper<ValueType> extends
                                                         final boolean fromInclusive,
                                                         final String toKey,
                                                         final boolean toInclusive) {
-        // TODO
-        return null;
+        return new NavigableMapWrapper<>(
+                trie.subMap(StringSequence.convertFromString(fromKey), fromInclusive,
+                        StringSequence.convertFromString(toKey), toInclusive));
     }
 
     @Override
     public final NavigableMap<String, ValueType> headMap(final String toKey,
                                                          final boolean inclusive) {
-        // TODO
-        return null;
+        return new NavigableMapWrapper<>(
+                trie.headMap(StringSequence.convertFromString(toKey), inclusive));
     }
 
     @Override
     public final NavigableMap<String, ValueType> tailMap(final String fromKey,
                                                          final boolean inclusive) {
-        // TODO
-        return null;
+        return new NavigableMapWrapper<>(
+                trie.tailMap(StringSequence.convertFromString(fromKey), inclusive));
     }
 
     @Override
