@@ -17,6 +17,7 @@ import de.mrapp.tries.Sequence;
 import de.mrapp.tries.SortedStringTrie;
 import de.mrapp.tries.StringTrie;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
@@ -48,6 +49,31 @@ public class StringSequence implements Sequence, Comparable<StringSequence> {
     public StringSequence(@NotNull final String string) {
         ensureNotNull(string, "The string may not be null");
         this.string = string;
+    }
+
+    /**
+     * Converts a specific {@link StringSequence} to a string.
+     *
+     * @param stringSequence The string sequence to convert as an instance of the class {@link
+     *                       StringSequence} or null
+     * @return The string, which has been created, as a {@link String} or null, if the given string
+     * sequence is null
+     */
+    @Nullable
+    public static String convertToString(@Nullable final StringSequence stringSequence) {
+        return stringSequence != null ? stringSequence.toString() : null;
+    }
+
+    /**
+     * Converts a specific {@link String} to a string sequence.
+     *
+     * @param string The string to convert as a {@link String} or null
+     * @return The string sequence, which has been created, as an instance of the class {@link
+     * StringSequence} or null, if the given string is null
+     */
+    @Nullable
+    public static StringSequence convertFromString(@Nullable final String string) {
+        return string != null ? new StringSequence(string) : null;
     }
 
     @Override

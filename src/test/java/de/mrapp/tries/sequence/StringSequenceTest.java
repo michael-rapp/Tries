@@ -30,6 +30,18 @@ public class StringSequenceTest {
     }
 
     @Test
+    public final void testConvertToString() {
+        assertNull(StringSequence.convertToString(null));
+        assertEquals("foo", StringSequence.convertToString(new StringSequence("foo")));
+    }
+
+    @Test
+    public final void testConvertFromString() {
+        assertNull(StringSequence.convertFromString(null));
+        assertEquals(new StringSequence("foo"), StringSequence.convertFromString("foo"));
+    }
+
+    @Test
     public final void testSubsequenceWithStartParameter() {
         assertEquals(new StringSequence("23"), new StringSequence("123").subsequence(1));
     }
