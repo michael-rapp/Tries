@@ -109,9 +109,46 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
             return new IteratorWrapper<>(entrySet.iterator());
         }
 
+        @SuppressWarnings("unchecked")
+        @Override
+        public boolean remove(final Object o) {
+            Map.Entry<String, V> entry = (Entry<String, V>) o;
+            String key = entry.getKey();
+            return entrySet.remove(new StringSequence(key));
+        }
+
+        @Override
+        public void clear() {
+            entrySet.clear();
+        }
+
         @Override
         public int size() {
             return entrySet.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return entrySet.isEmpty();
+        }
+
+        @Override
+        public boolean contains(final Object o) {
+            Map.Entry<?, ?> entry = (Entry<?, ?>) o;
+            String key = (String) entry.getKey();
+
+            for (Map.Entry<StringSequence, V> e : entrySet) {
+                if ((e.getKey() == null && key == null) ||
+                        (e.getKey() != null && e.getKey().toString().equals(key))) {
+                    if (e.getValue() == null) {
+                        return entry.getValue() == null;
+                    }
+
+                    return e.getValue().equals(entry.getValue());
+                }
+            }
+
+            return false;
         }
 
     }
@@ -180,8 +217,28 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
         }
 
         @Override
+        public boolean remove(final Object o) {
+            return keySet.remove(o != null ? new StringSequence((String) o) : null);
+        }
+
+        @Override
+        public void clear() {
+            keySet.clear();
+        }
+
+        @Override
         public int size() {
             return keySet.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return keySet.isEmpty();
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            return keySet.contains(o != null ? new StringSequence((String) o) : null);
         }
 
     }

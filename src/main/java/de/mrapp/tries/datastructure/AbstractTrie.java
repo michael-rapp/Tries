@@ -87,23 +87,15 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
 
         @Override
         public boolean contains(final Object o) {
-            if (o instanceof Map.Entry) {
-                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
-                Node<K, V> node = backingTrie.getNode(entry.getKey());
-                return node != null && isValueEqual(node, entry);
-            }
-
-            return false;
+            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
+            Node<K, V> node = backingTrie.getNode(entry.getKey());
+            return node != null && isValueEqual(node, entry);
         }
 
         @Override
         public boolean remove(final Object o) {
-            if (o instanceof Map.Entry) {
-                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
-                return backingTrie.remove(entry.getKey(), entry.getValue());
-            }
-
-            return false;
+            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
+            return backingTrie.remove(entry.getKey(), entry.getValue());
         }
 
     }

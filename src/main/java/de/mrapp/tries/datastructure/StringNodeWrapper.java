@@ -121,6 +121,7 @@ public class StringNodeWrapper<ValueType> implements Node<String, ValueType> {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public final Node<String, ValueType> clone() {
         return new StringNodeWrapper<>(node.clone());
