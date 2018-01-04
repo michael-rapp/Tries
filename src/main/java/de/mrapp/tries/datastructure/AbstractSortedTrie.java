@@ -16,6 +16,7 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.Node;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.SortedTrie;
+import de.mrapp.tries.util.EntryUtil;
 import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -136,12 +137,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public K pollFirst() {
-            return getKey(backingMap.pollFirstEntry());
+            return EntryUtil.getKey(backingMap.pollFirstEntry());
         }
 
         @Override
         public K pollLast() {
-            return getKey(backingMap.pollLastEntry());
+            return EntryUtil.getKey(backingMap.pollLastEntry());
         }
 
         @NotNull
@@ -237,7 +238,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                 Node<K, V> node = trie.getNode(key);
                 if (node == null)
                     return null;
-                return isValueEqual(node, entry) ? key : null;
+                return EntryUtil.isValueEqual(node, entry) ? key : null;
             }
 
             @Override
@@ -823,7 +824,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public final K ceilingKey(final K key) {
-            return getKey(onGetCeilingEntry(key));
+            return EntryUtil.getKey(onGetCeilingEntry(key));
         }
 
         @Override
@@ -833,7 +834,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public final K higherKey(final K key) {
-            return getKey(onGetHigherEntry(key));
+            return EntryUtil.getKey(onGetHigherEntry(key));
         }
 
         @Override
@@ -843,7 +844,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public final K floorKey(final K key) {
-            return getKey(onGetFloorEntry(key));
+            return EntryUtil.getKey(onGetFloorEntry(key));
         }
 
         @Override
@@ -853,17 +854,17 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public final K lowerKey(final K key) {
-            return getKey(onGetLowerEntry(key));
+            return EntryUtil.getKey(onGetLowerEntry(key));
         }
 
         @Override
         public final K firstKey() {
-            return getKeyOrThrowException(onGetLowestEntry());
+            return EntryUtil.getKeyOrThrowException(onGetLowestEntry());
         }
 
         @Override
         public final K lastKey() {
-            return getKeyOrThrowException(onGetHighestEntry());
+            return EntryUtil.getKeyOrThrowException(onGetHighestEntry());
         }
 
         @Override
@@ -1850,39 +1851,6 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     }
 
     /**
-     * Returns the key of a specific entry or null, if the entry is null.
-     *
-     * @param entry The entry, whose key should be returned, as an instance of the type {@link
-     *              Map.Entry} or null
-     * @param <K>   The type of the entry's key
-     * @return The key of the given entry as an instance of the generic type {@link K} or null, if
-     * the key or the given entry is null
-     */
-    @Nullable
-    static <K> K getKey(@Nullable final Map.Entry<K, ?> entry) {
-        return entry != null ? entry.getKey() : null;
-    }
-
-    /**
-     * Returns the key of a specific entry or throws a {@link NoSuchElementException}, if the entry
-     * is null.
-     *
-     * @param entry The entry, whose key should be returned, as an instance of the type {@link
-     *              Map.Entry} or null
-     * @param <K>   The type of the entry's key
-     * @return The key of the given entry as an instance of the generic type {@link K} or null, if
-     * the key is null
-     */
-    @Nullable
-    static <K> K getKeyOrThrowException(@Nullable final Map.Entry<K, ?> entry) {
-        if (entry != null) {
-            return entry.getKey();
-        }
-
-        throw new NoSuchElementException();
-    }
-
-    /**
      * The method, which is invoked on subclasses in order to identify the index of a node's
      * successor, which corresponds to a specific sequence.
      *
@@ -1931,32 +1899,32 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final SequenceType lowerKey(final SequenceType key) {
-        return getKey(lowerEntry(key));
+        return EntryUtil.getKey(lowerEntry(key));
     }
 
     @Override
     public final SequenceType higherKey(final SequenceType key) {
-        return getKey(higherEntry(key));
+        return EntryUtil.getKey(higherEntry(key));
     }
 
     @Override
     public final SequenceType floorKey(final SequenceType key) {
-        return getKey(floorEntry(key));
+        return EntryUtil.getKey(floorEntry(key));
     }
 
     @Override
     public final SequenceType ceilingKey(final SequenceType key) {
-        return getKey(ceilingEntry(key));
+        return EntryUtil.getKey(ceilingEntry(key));
     }
 
     @Override
     public final SequenceType firstKey() {
-        return getKeyOrThrowException(firstEntry());
+        return EntryUtil.getKeyOrThrowException(firstEntry());
     }
 
     @Override
     public final SequenceType lastKey() {
-        return getKeyOrThrowException(lastEntry());
+        return EntryUtil.getKeyOrThrowException(lastEntry());
     }
 
     @Override

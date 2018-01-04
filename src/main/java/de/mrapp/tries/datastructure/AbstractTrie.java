@@ -17,6 +17,7 @@ import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.Trie;
+import de.mrapp.tries.util.EntryUtil;
 import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -89,7 +90,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         public boolean contains(final Object o) {
             Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
             Node<K, V> node = backingTrie.getNode(entry.getKey());
-            return node != null && isValueEqual(node, entry);
+            return node != null && EntryUtil.isValueEqual(node, entry);
         }
 
         @Override
@@ -146,7 +147,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         @Override
         public boolean remove(final Object o) {
             for (Map.Entry<K, V> entry : backingTrie.entrySet()) {
-                if (isEqual(entry.getValue(), o)) {
+                if (EntryUtil.isEqual(entry.getValue(), o)) {
                     backingTrie.remove(entry.getKey());
                     return true;
                 }
@@ -677,35 +678,6 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         return null;
-    }
-
-    /**
-     * Returns, whether the values of a specific node and entry are equal, or not.
-     *
-     * @param node  The node as an instance of the type {@link Node}. The node may not be null
-     * @param entry The entry as an instance of the type {@link Map.Entry}. The entry may not be
-     *              null
-     * @return True, if the values of the given node and entry are equal, false otherwise
-     */
-    static boolean isValueEqual(@NotNull final Node<?, ?> node,
-                                @NotNull final Map.Entry<?, ?> entry) {
-        return isEqual(node.getValue(), entry.getValue());
-    }
-
-    /**
-     * Returns, whether two objects are equal, or not.
-     *
-     * @param o1 The first object as an instance of the class {@link Object} or null
-     * @param o2 The second object as an instance of the class {@link Object} or null
-     * @return True, if the given objects are equal, false otherwise
-     */
-    static boolean isEqual(@Nullable final Object o1, @Nullable final Object o2) {
-        if (o1 == null) {
-            if (o2 != null)
-                return false;
-        } else if (!o1.equals(o2))
-            return false;
-        return true;
     }
 
     /**
