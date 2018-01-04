@@ -16,6 +16,7 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.SortedStringTrie;
 import de.mrapp.tries.SortedTrie;
 import de.mrapp.tries.sequence.StringSequence;
+import de.mrapp.tries.util.EntryUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -47,8 +48,8 @@ public class SortedStringTrieWrapper<ValueType> extends
         private final Comparator<? super String> comparator;
 
         /**
-         * Creates a new comparator, which allows to compare instances of the class
-         * {@link StringSequence} by encapsulating a comparator, which compares {@link String}s.
+         * Creates a new comparator, which allows to compare instances of the class {@link
+         * StringSequence} by encapsulating a comparator, which compares {@link String}s.
          *
          * @param comparator The comparator, which should be encapsulated, as an instance of the
          *                   type {@link Comparator}. The comparator may not be null
@@ -96,8 +97,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final String lowerKey(final String key) {
-        Entry<String, ValueType> entry = lowerEntry(key);
-        return entry != null ? entry.getKey() : null;
+        return EntryUtil.getKey(lowerEntry(key));
     }
 
     @Override
@@ -114,8 +114,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final String floorKey(final String key) {
-        Entry<String, ValueType> entry = floorEntry(key);
-        return entry != null ? entry.getKey() : null;
+        return EntryUtil.getKey(floorEntry(key));
     }
 
     @Override
@@ -132,8 +131,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final String ceilingKey(final String key) {
-        Entry<String, ValueType> entry = ceilingEntry(key);
-        return entry != null ? entry.getKey() : null;
+        return EntryUtil.getKey(ceilingEntry(key));
     }
 
     @Override
@@ -150,8 +148,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final String higherKey(final String key) {
-        Entry<String, ValueType> entry = higherEntry(key);
-        return entry != null ? entry.getKey() : null;
+        return EntryUtil.getKey(higherEntry(key));
     }
 
     @Override
@@ -272,14 +269,12 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final String firstKey() {
-        Entry<String, ValueType> entry = firstEntry();
-        return entry != null ? entry.getKey() : null;
+        return EntryUtil.getKey(firstEntry());
     }
 
     @Override
     public final String lastKey() {
-        Entry<String, ValueType> entry = lastEntry();
-        return entry != null ? entry.getKey() : null;
+        return EntryUtil.getKey(lastEntry());
     }
 
     @NotNull
