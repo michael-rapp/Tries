@@ -69,6 +69,184 @@ public class SortedStringTrieWrapper<ValueType> extends
     }
 
     /**
+     * A comparator, which allows to compare {@link String}s by encapsulating a comparator, which
+     * compares instances of the class {@link StringSequence}.
+     */
+    private static final class StringComparatorWrapper implements Comparator<String> {
+
+        /**
+         * The encapsulated comparator.
+         */
+        private final Comparator<? super StringSequence> comparator;
+
+        /**
+         * Creates a new comparator, which allows to compare {@link String}s by encapsulating a
+         * comparator, which compares instances of the class {@link StringSequence}.
+         *
+         * @param comparator The comparator, which should be encapsulated, as an instance of the
+         *                   type {@link Comparator}. The comparator may not be null
+         */
+        StringComparatorWrapper(@NotNull final Comparator<? super StringSequence> comparator) {
+            ensureNotNull(comparator, "The comparator may not be null");
+            this.comparator = comparator;
+        }
+
+        @Override
+        public int compare(final String o1, final String o2) {
+            return comparator.compare(new StringSequence(o1), new StringSequence(o2));
+        }
+
+    }
+
+    private static class SortedKeySetWrapper<SetType extends SortedSet<StringSequence>> extends
+            KeySetWrapper<SetType> implements SortedSet<String> {
+
+        private final Comparator<String> comparator;
+
+        SortedKeySetWrapper(@NotNull final SetType set) {
+            super(set);
+            Comparator<? super StringSequence> comparator = set.comparator();
+            this.comparator = comparator != null ? new StringComparatorWrapper(comparator) : null;
+        }
+
+        @Nullable
+        @Override
+        public final Comparator<? super String> comparator() {
+            return comparator;
+        }
+
+        @NotNull
+        @Override
+        public final SortedSet<String> subSet(final String fromElement, final String toElement) {
+            return new SortedKeySetWrapper<>(
+                    set.subSet(fromElement != null ? new StringSequence(fromElement) : null,
+                            toElement != null ? new StringSequence(toElement) : null));
+        }
+
+        @NotNull
+        @Override
+        public final SortedSet<String> headSet(final String toElement) {
+            return new SortedKeySetWrapper<>(
+                    set.headSet(toElement != null ? new StringSequence(toElement) : null));
+        }
+
+        @NotNull
+        @Override
+        public final SortedSet<String> tailSet(final String fromElement) {
+            return new SortedKeySetWrapper<>(
+                    set.tailSet(fromElement != null ? new StringSequence(fromElement) : null));
+        }
+
+        @Override
+        public final String first() {
+            StringSequence firstKey = set.first();
+            return firstKey != null ? firstKey.toString() : null;
+        }
+
+        @Override
+        public final String last() {
+            StringSequence lastKey = set.last();
+            return lastKey != null ? lastKey.toString() : null;
+        }
+
+    }
+
+    private static final class NavigableKeySetWrapper extends
+            SortedKeySetWrapper<NavigableSet<StringSequence>> implements NavigableSet<String> {
+
+        private NavigableSet<String> descendingSet;
+
+        NavigableKeySetWrapper(@NotNull final NavigableSet<StringSequence> set) {
+            super(set);
+        }
+
+        @Nullable
+        @Override
+        public String lower(final String key) {
+            StringSequence lowerKey = set.lower(new StringSequence(key));
+            return lowerKey != null ? lowerKey.toString() : null;
+        }
+
+        @Nullable
+        @Override
+        public String floor(final String key) {
+            StringSequence floorKey = set.floor(new StringSequence(key));
+            return floorKey != null ? floorKey.toString() : null;
+        }
+
+        @Nullable
+        @Override
+        public String ceiling(final String key) {
+            StringSequence ceilingKey = set.ceiling(new StringSequence(key));
+            return ceilingKey != null ? ceilingKey.toString() : null;
+        }
+
+        @Nullable
+        @Override
+        public String higher(final String key) {
+            StringSequence higherKey = set.higher(new StringSequence(key));
+            return higherKey != null ? higherKey.toString() : null;
+        }
+
+        @Nullable
+        @Override
+        public String pollFirst() {
+            StringSequence firstKey = set.pollFirst();
+            return firstKey != null ? firstKey.toString() : null;
+        }
+
+        @Nullable
+        @Override
+        public String pollLast() {
+            StringSequence lastKey = set.pollLast();
+            return lastKey != null ? lastKey.toString() : null;
+        }
+
+        @NotNull
+        @Override
+        public NavigableSet<String> descendingSet() {
+            if (this.descendingSet == null) {
+                this.descendingSet = new NavigableKeySetWrapper(set.descendingSet());
+            }
+
+            return this.descendingSet;
+        }
+
+        @NotNull
+        @Override
+        public Iterator<String> descendingIterator() {
+            return new KeyIteratorWrapper(set.descendingIterator());
+        }
+
+        @NotNull
+        @Override
+        public NavigableSet<String> subSet(final String fromElement, final boolean fromInclusive,
+                                           final String toElement, final boolean toInclusive) {
+            return new NavigableKeySetWrapper(
+                    set.subSet(fromElement != null ? new StringSequence(fromElement) : null,
+                            fromInclusive, toElement != null ? new StringSequence(toElement) : null,
+                            toInclusive));
+        }
+
+        @NotNull
+        @Override
+        public NavigableSet<String> headSet(final String toElement, final boolean inclusive) {
+            return new NavigableKeySetWrapper(
+                    set.headSet(toElement != null ? new StringSequence(toElement) : null,
+                            inclusive));
+        }
+
+        @NotNull
+        @Override
+        public NavigableSet<String> tailSet(final String fromElement, final boolean inclusive) {
+            return new NavigableKeySetWrapper(
+                    set.tailSet(fromElement != null ? new StringSequence(fromElement) : null,
+                            inclusive));
+        }
+
+    }
+
+    /**
      * The constant serial version UID.
      */
     private static final long serialVersionUID = -1937689954255665817L;
@@ -168,14 +346,12 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final NavigableSet<String> navigableKeySet() {
-        // TODO
-        return null;
+        return new NavigableKeySetWrapper(trie.navigableKeySet());
     }
 
     @Override
     public final NavigableSet<String> descendingKeySet() {
-        // TODO
-        return null;
+        return new NavigableKeySetWrapper(trie.descendingKeySet());
     }
 
     @Override

@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
@@ -50,7 +51,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
          *
          * @param <V> The type of the values, which are stored by the trie
          */
-        private static class IteratorWrapper<V> implements Iterator<Entry<String, V>> {
+        private static final class EntryIteratorWrapper<V> implements Iterator<Entry<String, V>> {
 
             /**
              * The encapsulated iterator.
@@ -64,7 +65,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
              * @param iterator The iterator, which should be encapsulated, as an instance of the
              *                 type {@link Iterator}. The iterator may not be null
              */
-            IteratorWrapper(@NotNull final Iterator<Entry<StringSequence, V>> iterator) {
+            EntryIteratorWrapper(@NotNull final Iterator<Entry<StringSequence, V>> iterator) {
                 ensureNotNull(iterator, "The iterator may not be null");
                 this.iterator = iterator;
             }
@@ -107,7 +108,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
         @NotNull
         @Override
         public Iterator<Entry<String, V>> iterator() {
-            return new IteratorWrapper<>(entrySet.iterator());
+            return new EntryIteratorWrapper<>(entrySet.iterator());
         }
 
         @SuppressWarnings("unchecked")
@@ -153,14 +154,16 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
 
     /**
      * The key set of a {@link StringTrie}. It encapsulates the key set of a {@link Trie}.
+     *
+     * @param <SetType> The type of the encapsulated set
      */
-    private static final class KeySetWrapper extends AbstractSet<String> {
+    static class KeySetWrapper<SetType extends Set<StringSequence>> extends AbstractSet<String> {
 
         /**
          * The iterator, which allows to iterate the entries of a {@link StringTrie}'s key set. It
          * encapsulates the iterator of a {@link Trie}'s key set.
          */
-        private class IteratorWrapper implements Iterator<String> {
+        final class KeyIteratorWrapper implements Iterator<String> {
 
             /**
              * The encapsulated iterator.
@@ -174,7 +177,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
              * @param iterator The iterator, which should be encapsulated, as an instance of the
              *                 type {@link Iterator}. The iterator may not be null
              */
-            IteratorWrapper(@NotNull final Iterator<StringSequence> iterator) {
+            KeyIteratorWrapper(@NotNull final Iterator<StringSequence> iterator) {
                 ensureNotNull(iterator, "The iterator may not be null");
                 this.iterator = iterator;
             }
@@ -193,50 +196,103 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
         }
 
         /**
-         * The encapsulated key set.
+         * The spliterator, which allows to traverse the entries of a {@link StringTrie}'s key set.
+         * It encapsulates the spliterator of a {@link Trie}'s key set.
          */
-        private final Set<StringSequence> keySet;
+        private final class KeySpliteratorWrapper implements Spliterator<String> {
+
+            /**
+             * The encapsulated spliterator.
+             */
+            private final Spliterator<StringSequence> spliterator;
+
+            /**
+             * Creates a new spliterator, which allows to traverse the entries of a {@link
+             * StringTrie}'s key set.
+             *
+             * @param spliterator The spliterator, which should be encapsulated, as an instance of
+             *                    the type {@link Spliterator}. The spliterator may not be null
+             */
+            KeySpliteratorWrapper(@NotNull final Spliterator<StringSequence> spliterator) {
+                ensureNotNull(spliterator, "The spliterator may not be null");
+                this.spliterator = spliterator;
+            }
+
+            @Override
+            public boolean tryAdvance(final Consumer<? super String> action) {
+                return spliterator.tryAdvance(
+                        stringSequence -> action
+                                .accept(stringSequence != null ? stringSequence.toString() : null));
+            }
+
+            @Override
+            public Spliterator<String> trySplit() {
+                Spliterator<StringSequence> spliterator = this.spliterator.trySplit();
+                return spliterator != null ? new KeySpliteratorWrapper(spliterator) : null;
+            }
+
+            @Override
+            public long estimateSize() {
+                return spliterator.estimateSize();
+            }
+
+            @Override
+            public int characteristics() {
+                return spliterator.characteristics();
+            }
+
+        }
+
+        /**
+         * The encapsulated set.
+         */
+        final SetType set;
 
         /**
          * Creates a new key set of a {@link StringTrie}.
          *
-         * @param keySet The key set, which should be encapsulated, as an instance of the type
-         *               {@link Set}. The set may not be null
+         * @param set The set, which should be encapsulated, as an instance of the generic type
+         *            {@link SetType}. The set may not be null
          */
-        KeySetWrapper(@NotNull final Set<StringSequence> keySet) {
-            ensureNotNull(keySet, "The key set may not be null");
-            this.keySet = keySet;
+        KeySetWrapper(@NotNull final SetType set) {
+            ensureNotNull(set, "The set may not be null");
+            this.set = set;
         }
 
         @NotNull
         @Override
-        public Iterator<String> iterator() {
-            return new IteratorWrapper(keySet.iterator());
+        public final Iterator<String> iterator() {
+            return new KeyIteratorWrapper(set.iterator());
         }
 
         @Override
-        public boolean remove(final Object o) {
-            return keySet.remove(o != null ? new StringSequence((String) o) : null);
+        public final boolean remove(final Object o) {
+            return set.remove(o != null ? new StringSequence((String) o) : null);
         }
 
         @Override
-        public void clear() {
-            keySet.clear();
+        public final void clear() {
+            set.clear();
         }
 
         @Override
-        public int size() {
-            return keySet.size();
+        public final int size() {
+            return set.size();
         }
 
         @Override
-        public boolean isEmpty() {
-            return keySet.isEmpty();
+        public final boolean isEmpty() {
+            return set.isEmpty();
         }
 
         @Override
-        public boolean contains(Object o) {
-            return keySet.contains(o != null ? new StringSequence((String) o) : null);
+        public final boolean contains(Object o) {
+            return set.contains(o != null ? new StringSequence((String) o) : null);
+        }
+
+        @Override
+        public final Spliterator<String> spliterator() {
+            return new KeySpliteratorWrapper(set.spliterator());
         }
 
     }
@@ -311,7 +367,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
     @NotNull
     @Override
     public final Set<String> keySet() {
-        return new KeySetWrapper(trie.keySet());
+        return new KeySetWrapper<>(trie.keySet());
     }
 
     @NotNull
