@@ -115,9 +115,8 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
         @Override
         public boolean remove(final Object o) {
             Map.Entry<String, V> entry = (Entry<String, V>) o;
-            String key = entry.getKey();
-            return entrySet.remove(new AbstractMap.SimpleImmutableEntry<>(new StringSequence(key),
-                    entry.getValue()));
+            return entrySet.remove(new AbstractMap.SimpleImmutableEntry<>(
+                    StringSequence.convertFromString(entry.getKey()), entry.getValue()));
         }
 
         @Override
@@ -267,7 +266,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
 
         @Override
         public final boolean remove(final Object o) {
-            return set.remove(o != null ? new StringSequence((String) o) : null);
+            return set.remove(StringSequence.convertFromString((String) o));
         }
 
         @Override
@@ -287,7 +286,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
 
         @Override
         public final boolean contains(Object o) {
-            return set.contains(o != null ? new StringSequence((String) o) : null);
+            return set.contains(StringSequence.convertFromString((String) o));
         }
 
         @Override
@@ -330,7 +329,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
 
     @Override
     public final boolean containsKey(final Object key) {
-        return trie.containsKey(key != null ? new StringSequence((String) key) : null);
+        return trie.containsKey(StringSequence.convertFromString((String) key));
     }
 
     @Override
@@ -340,17 +339,17 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
 
     @Override
     public final ValueType get(final Object key) {
-        return trie.get(key != null ? new StringSequence((String) key) : null);
+        return trie.get(StringSequence.convertFromString((String) key));
     }
 
     @Override
     public final ValueType put(final String key, final ValueType value) {
-        return trie.put(key != null ? new StringSequence(key) : null, value);
+        return trie.put(StringSequence.convertFromString(key), value);
     }
 
     @Override
     public final ValueType remove(final Object key) {
-        return trie.remove(key != null ? new StringSequence((String) key) : null);
+        return trie.remove(StringSequence.convertFromString((String) key));
     }
 
     @Override

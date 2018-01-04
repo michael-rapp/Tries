@@ -177,7 +177,7 @@ public final class Tries {
     public static <V> StringTrie<V> singletonStringTrie(@Nullable final String key,
                                                         @Nullable final V value) {
         return new StringTrieWrapper<>(
-                new SingletonTrie<>(key != null ? new StringSequence(key) : null, value));
+                new SingletonTrie<>(StringSequence.convertFromString(key), value));
     }
 
     /**
@@ -196,7 +196,7 @@ public final class Tries {
     public static <V> SortedStringTrie<V> singletonSortedStringTrie(@Nullable final String key,
                                                                     @Nullable final V value) {
         return new SortedStringTrieWrapper<>(
-                new SingletonSortedTrie<>(key != null ? new StringSequence(key) : null, value));
+                new SingletonSortedTrie<>(StringSequence.convertFromString(key), value));
     }
 
     /**
@@ -204,7 +204,7 @@ public final class Tries {
      * provide users with "read-only" access to internal tries. Query operations on the returned
      * trie "read through" to the specified trie, whereas attempts to modify the returned trie
      * result in an {@link UnsupportedOperationException}.
-     *
+     * <p>
      * The returned trie will be serializable if the specified trie is serializable.
      *
      * @param <K>  The type of the sequences, which are used as the trie's keys
@@ -225,7 +225,7 @@ public final class Tries {
      * provide users with "read-only" access to internal tries. Query operations on the returned
      * trie "read through" to the specified trie, whereas attempts to modify the returned trie
      * result in an {@link UnsupportedOperationException}.
-     *
+     * <p>
      * The returned trie will be serializable if the specified trie is serializable.
      *
      * @param <K>  The type of the sequences, which are used as the trie's keys
@@ -246,7 +246,7 @@ public final class Tries {
      * provide users with "read-only" access to internal tries. Query operations on the returned
      * trie "read through" to the specified trie, whereas attempts to modify the returned trie
      * result in an {@link UnsupportedOperationException}.
-     *
+     * <p>
      * The returned trie will be serializable if the specified trie is serializable.
      *
      * @param <V>  The type of the values, which are stored by trie
@@ -265,7 +265,7 @@ public final class Tries {
      * modules to provide users with "read-only" access to internal tries. Query operations on the
      * returned trie "read through" to the specified trie, whereas attempts to modify the returned
      * trie result in an {@link UnsupportedOperationException}.
-     *
+     * <p>
      * The returned trie will be serializable if the specified trie is serializable.
      *
      * @param <V>  The type of the values, which are stored by trie

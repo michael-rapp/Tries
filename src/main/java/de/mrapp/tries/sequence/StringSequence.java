@@ -78,14 +78,14 @@ public class StringSequence implements Sequence, Comparable<StringSequence> {
 
     @Override
     public final Sequence subsequence(final int start, final int end) {
-        return new StringSequence(string.substring(start, end));
+        return convertFromString(string.substring(start, end));
     }
 
     @Override
     public final Sequence concat(@NotNull final Sequence sequence) {
         ensureNotNull(sequence, "The sequence may not be null");
         StringSequence stringSequence = (StringSequence) sequence;
-        return new StringSequence(string.concat(stringSequence.string));
+        return convertFromString(string.concat(stringSequence.string));
     }
 
     @Override

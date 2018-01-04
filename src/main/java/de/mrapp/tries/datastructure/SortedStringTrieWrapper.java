@@ -93,7 +93,8 @@ public class SortedStringTrieWrapper<ValueType> extends
 
         @Override
         public int compare(final String o1, final String o2) {
-            return comparator.compare(new StringSequence(o1), new StringSequence(o2));
+            return comparator.compare(StringSequence.convertFromString(o1),
+                    StringSequence.convertFromString(o2));
         }
 
     }
@@ -119,22 +120,22 @@ public class SortedStringTrieWrapper<ValueType> extends
         @Override
         public final SortedSet<String> subSet(final String fromElement, final String toElement) {
             return new SortedKeySetWrapper<>(
-                    set.subSet(fromElement != null ? new StringSequence(fromElement) : null,
-                            toElement != null ? new StringSequence(toElement) : null));
+                    set.subSet(StringSequence.convertFromString(fromElement),
+                            StringSequence.convertFromString(toElement)));
         }
 
         @NotNull
         @Override
         public final SortedSet<String> headSet(final String toElement) {
             return new SortedKeySetWrapper<>(
-                    set.headSet(toElement != null ? new StringSequence(toElement) : null));
+                    set.headSet(StringSequence.convertFromString(toElement)));
         }
 
         @NotNull
         @Override
         public final SortedSet<String> tailSet(final String fromElement) {
             return new SortedKeySetWrapper<>(
-                    set.tailSet(fromElement != null ? new StringSequence(fromElement) : null));
+                    set.tailSet(StringSequence.convertFromString(fromElement)));
         }
 
         @Override
@@ -163,28 +164,28 @@ public class SortedStringTrieWrapper<ValueType> extends
         @Nullable
         @Override
         public String lower(final String key) {
-            StringSequence lowerKey = set.lower(new StringSequence(key));
+            StringSequence lowerKey = set.lower(StringSequence.convertFromString(key));
             return lowerKey != null ? lowerKey.toString() : null;
         }
 
         @Nullable
         @Override
         public String floor(final String key) {
-            StringSequence floorKey = set.floor(new StringSequence(key));
+            StringSequence floorKey = set.floor(StringSequence.convertFromString(key));
             return floorKey != null ? floorKey.toString() : null;
         }
 
         @Nullable
         @Override
         public String ceiling(final String key) {
-            StringSequence ceilingKey = set.ceiling(new StringSequence(key));
+            StringSequence ceilingKey = set.ceiling(StringSequence.convertFromString(key));
             return ceilingKey != null ? ceilingKey.toString() : null;
         }
 
         @Nullable
         @Override
         public String higher(final String key) {
-            StringSequence higherKey = set.higher(new StringSequence(key));
+            StringSequence higherKey = set.higher(StringSequence.convertFromString(key));
             return higherKey != null ? higherKey.toString() : null;
         }
 
@@ -223,25 +224,22 @@ public class SortedStringTrieWrapper<ValueType> extends
         public NavigableSet<String> subSet(final String fromElement, final boolean fromInclusive,
                                            final String toElement, final boolean toInclusive) {
             return new NavigableKeySetWrapper(
-                    set.subSet(fromElement != null ? new StringSequence(fromElement) : null,
-                            fromInclusive, toElement != null ? new StringSequence(toElement) : null,
-                            toInclusive));
+                    set.subSet(StringSequence.convertFromString(fromElement), fromInclusive,
+                            StringSequence.convertFromString(toElement), toInclusive));
         }
 
         @NotNull
         @Override
         public NavigableSet<String> headSet(final String toElement, final boolean inclusive) {
             return new NavigableKeySetWrapper(
-                    set.headSet(toElement != null ? new StringSequence(toElement) : null,
-                            inclusive));
+                    set.headSet(StringSequence.convertFromString(toElement), inclusive));
         }
 
         @NotNull
         @Override
         public NavigableSet<String> tailSet(final String fromElement, final boolean inclusive) {
             return new NavigableKeySetWrapper(
-                    set.tailSet(fromElement != null ? new StringSequence(fromElement) : null,
-                            inclusive));
+                    set.tailSet(StringSequence.convertFromString(fromElement), inclusive));
         }
 
     }
@@ -280,7 +278,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final Entry<String, ValueType> lowerEntry(final String key) {
-        return convertEntry(trie.lowerEntry(new StringSequence(key)));
+        return convertEntry(trie.lowerEntry(StringSequence.convertFromString(key)));
     }
 
     @Override
@@ -290,7 +288,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final Entry<String, ValueType> floorEntry(final String key) {
-        return convertEntry(trie.floorEntry(new StringSequence(key)));
+        return convertEntry(trie.floorEntry(StringSequence.convertFromString(key)));
     }
 
     @Override
@@ -300,7 +298,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final Entry<String, ValueType> ceilingEntry(final String key) {
-        return convertEntry(trie.ceilingEntry(new StringSequence(key)));
+        return convertEntry(trie.ceilingEntry(StringSequence.convertFromString(key)));
     }
 
     @Override
@@ -310,7 +308,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final Entry<String, ValueType> higherEntry(final String key) {
-        return convertEntry(trie.higherEntry(new StringSequence(key)));
+        return convertEntry(trie.higherEntry(StringSequence.convertFromString(key)));
     }
 
     @Override
