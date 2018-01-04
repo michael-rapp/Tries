@@ -18,6 +18,7 @@ import de.mrapp.tries.SortedTrie;
 import de.mrapp.tries.sequence.StringSequence;
 import de.mrapp.tries.util.EntryUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -73,6 +74,22 @@ public class SortedStringTrieWrapper<ValueType> extends
     private static final long serialVersionUID = -1937689954255665817L;
 
     /**
+     * Converts an entry of the encapsulated trie into an entry of the wrapper.
+     *
+     * @param entry The entry, which should be encapsulated, as an instance of the type {@link
+     *              Entry} or null
+     * @return The entry, which has been created, as an instance of the type {@link Entry} or null,
+     * if the given entry is null
+     */
+    @Nullable
+    private Entry<String, ValueType> convertEntry(
+            @Nullable final Entry<StringSequence, ValueType> entry) {
+        StringSequence key = EntryUtil.getKey(entry);
+        return key != null ?
+                new AbstractMap.SimpleImmutableEntry<>(key.toString(), entry.getValue()) : null;
+    }
+
+    /**
      * Creates a new wrapper, which implements the interface {@link SortedStringTrie}.
      *
      * @param trie The trie, which should be encapsulated, as an instance of the type {@link
@@ -85,14 +102,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final Entry<String, ValueType> lowerEntry(final String key) {
-        Entry<StringSequence, ValueType> entry = trie.lowerEntry(new StringSequence(key));
-
-        if (entry != null) {
-            String lowerKey = entry.getKey() != null ? entry.getKey().toString() : null;
-            return new AbstractMap.SimpleImmutableEntry<>(lowerKey, entry.getValue());
-        }
-
-        return null;
+        return convertEntry(trie.lowerEntry(new StringSequence(key)));
     }
 
     @Override
@@ -102,14 +112,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final Entry<String, ValueType> floorEntry(final String key) {
-        Entry<StringSequence, ValueType> entry = trie.floorEntry(new StringSequence(key));
-
-        if (entry != null) {
-            String floorKey = entry.getKey() != null ? entry.getKey().toString() : null;
-            return new AbstractMap.SimpleImmutableEntry<>(floorKey, entry.getValue());
-        }
-
-        return null;
+        return convertEntry(trie.floorEntry(new StringSequence(key)));
     }
 
     @Override
@@ -119,14 +122,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final Entry<String, ValueType> ceilingEntry(final String key) {
-        Entry<StringSequence, ValueType> entry = trie.ceilingEntry(new StringSequence(key));
-
-        if (entry != null) {
-            String ceilingKey = entry.getKey() != null ? entry.getKey().toString() : null;
-            return new AbstractMap.SimpleImmutableEntry<>(ceilingKey, entry.getValue());
-        }
-
-        return null;
+        return convertEntry(trie.ceilingEntry(new StringSequence(key)));
     }
 
     @Override
@@ -136,14 +132,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final Entry<String, ValueType> higherEntry(final String key) {
-        Entry<StringSequence, ValueType> entry = trie.higherEntry(new StringSequence(key));
-
-        if (entry != null) {
-            String higherKey = entry.getKey() != null ? entry.getKey().toString() : null;
-            return new AbstractMap.SimpleImmutableEntry<>(higherKey, entry.getValue());
-        }
-
-        return null;
+        return convertEntry(trie.higherEntry(new StringSequence(key)));
     }
 
     @Override
@@ -153,50 +142,22 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final Entry<String, ValueType> firstEntry() {
-        Entry<StringSequence, ValueType> entry = trie.firstEntry();
-
-        if (entry != null) {
-            String key = entry.getKey() != null ? entry.getKey().toString() : null;
-            return new AbstractMap.SimpleImmutableEntry<>(key, entry.getValue());
-        }
-
-        return null;
+        return convertEntry(trie.firstEntry());
     }
 
     @Override
     public final Entry<String, ValueType> lastEntry() {
-        Entry<StringSequence, ValueType> entry = trie.lastEntry();
-
-        if (entry != null) {
-            String key = entry.getKey() != null ? entry.getKey().toString() : null;
-            return new AbstractMap.SimpleImmutableEntry<>(key, entry.getValue());
-        }
-
-        return null;
+        return convertEntry(trie.lastEntry());
     }
 
     @Override
     public final Entry<String, ValueType> pollFirstEntry() {
-        Entry<StringSequence, ValueType> entry = trie.pollFirstEntry();
-
-        if (entry != null) {
-            String key = entry.getKey() != null ? entry.getKey().toString() : null;
-            return new AbstractMap.SimpleImmutableEntry<>(key, entry.getValue());
-        }
-
-        return null;
+        return convertEntry(trie.pollFirstEntry());
     }
 
     @Override
     public final Entry<String, ValueType> pollLastEntry() {
-        Entry<StringSequence, ValueType> entry = trie.pollLastEntry();
-
-        if (entry != null) {
-            String key = entry.getKey() != null ? entry.getKey().toString() : null;
-            return new AbstractMap.SimpleImmutableEntry<>(key, entry.getValue());
-        }
-
-        return null;
+        return convertEntry(trie.pollLastEntry());
     }
 
     @Override
