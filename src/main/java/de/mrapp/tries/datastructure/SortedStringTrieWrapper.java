@@ -203,8 +203,9 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public Comparator<? super String> comparator() {
-        // TODO
-        return null;
+        Comparator<? super StringSequence> comparator = trie.comparator();
+        return comparator instanceof StringSequenceComparatorWrapper ?
+                ((StringSequenceComparatorWrapper) comparator).comparator : null;
     }
 
     @NotNull
