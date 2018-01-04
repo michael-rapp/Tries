@@ -17,6 +17,7 @@ import de.mrapp.tries.Node;
 import de.mrapp.tries.StringTrie;
 import de.mrapp.tries.Trie;
 import de.mrapp.tries.sequence.StringSequence;
+import de.mrapp.tries.util.EntryUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -141,11 +142,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
             for (Map.Entry<StringSequence, V> e : entrySet) {
                 if ((e.getKey() == null && key == null) ||
                         (e.getKey() != null && e.getKey().toString().equals(key))) {
-                    if (e.getValue() == null) {
-                        return entry.getValue() == null;
-                    }
-
-                    return e.getValue().equals(entry.getValue());
+                    return EntryUtil.isEqual(e.getValue(), entry.getValue());
                 }
             }
 
