@@ -43,7 +43,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
      *
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class EntrySetWrapper<V> extends AbstractSet<Entry<String, V>> {
+    static final class EntrySetWrapper<V> extends AbstractSet<Entry<String, V>> {
 
         /**
          * The iterator, which allows to iterate the entries of a {@link StringTrie}'s entry set. It

@@ -239,6 +239,67 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     }
 
+    private static class SortedMapWrapper<V> extends AbstractMap<String, V> implements
+            SortedMap<String, V> {
+
+        private final SortedMap<StringSequence, V> map;
+
+        private final Comparator<? super String> comparator;
+
+        SortedMapWrapper(@NotNull final SortedMap<StringSequence, V> map) {
+            ensureNotNull(map, "The map may not be null");
+            this.map = map;
+            Comparator<? super StringSequence> comparator = map.comparator();
+            this.comparator = comparator != null ? new StringComparatorWrapper(comparator) : null;
+        }
+
+        @Override
+        public final Comparator<? super String> comparator() {
+            return comparator;
+        }
+
+        @NotNull
+        @Override
+        public final SortedMap<String, V> subMap(final String fromKey, final String toKey) {
+            return new SortedMapWrapper<>(map.subMap(StringSequence.convertFromString(fromKey),
+                    StringSequence.convertFromString(toKey)));
+        }
+
+        @NotNull
+        @Override
+        public final SortedMap<String, V> headMap(final String toKey) {
+            return new SortedMapWrapper<>(map.headMap(StringSequence.convertFromString(toKey)));
+        }
+
+        @NotNull
+        @Override
+        public final SortedMap<String, V> tailMap(final String fromKey) {
+            return new SortedMapWrapper<>(map.tailMap(StringSequence.convertFromString(fromKey)));
+        }
+
+        @Override
+        public final String firstKey() {
+            return StringSequence.convertToString(map.firstKey());
+        }
+
+        @Override
+        public final String lastKey() {
+            return StringSequence.convertToString(map.lastKey());
+        }
+
+        @NotNull
+        @Override
+        public final Set<Entry<String, V>> entrySet() {
+            return new EntrySetWrapper<>(map.entrySet());
+        }
+
+        @Override
+        public boolean remove(final Object key, final Object value) {
+            return map.remove(StringSequence.convertFromString((String) key), value);
+        }
+
+    }
+
     /**
      * The constant serial version UID.
      */
@@ -384,22 +445,20 @@ public class SortedStringTrieWrapper<ValueType> extends
     @NotNull
     @Override
     public final SortedMap<String, ValueType> subMap(final String fromKey, final String toKey) {
-        // TODO
-        return null;
+        return new SortedMapWrapper<>(trie.subMap(StringSequence.convertFromString(fromKey),
+                StringSequence.convertFromString(toKey)));
     }
 
     @NotNull
     @Override
     public final SortedMap<String, ValueType> headMap(final String toKey) {
-        // TODO
-        return null;
+        return new SortedMapWrapper<>(trie.headMap(StringSequence.convertFromString(toKey)));
     }
 
     @NotNull
     @Override
     public final SortedMap<String, ValueType> tailMap(final String fromKey) {
-        // TODO
-        return null;
+        return new SortedMapWrapper<>(trie.tailMap(StringSequence.convertFromString(fromKey)));
     }
 
     @Override
