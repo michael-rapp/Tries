@@ -141,8 +141,7 @@ public class StringNodeWrapper<ValueType> implements Node<String, ValueType> {
 
             @Override
             public String next() {
-                StringSequence sequence = iterator.next();
-                return sequence != null ? sequence.toString() : null;
+                return StringSequence.convertToString(iterator.next());
             }
 
         };

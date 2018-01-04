@@ -80,7 +80,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
                 Entry<StringSequence, V> next = iterator.next();
 
                 if (next != null) {
-                    String key = next.getKey() != null ? next.getKey().toString() : null;
+                    String key = StringSequence.convertToString(next.getKey());
                     return new AbstractMap.SimpleImmutableEntry<>(key, next.getValue());
                 }
 
@@ -141,7 +141,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
 
             for (Map.Entry<StringSequence, V> e : entrySet) {
                 if ((e.getKey() == null && key == null) ||
-                        (e.getKey() != null && e.getKey().toString().equals(key))) {
+                        (key != null && key.equals(StringSequence.convertToString(e.getKey())))) {
                     return EntryUtil.isEqual(e.getValue(), entry.getValue());
                 }
             }
@@ -188,8 +188,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
 
             @Override
             public String next() {
-                StringSequence next = iterator.next();
-                return next != null ? next.toString() : null;
+                return StringSequence.convertToString(iterator.next());
             }
 
         }
@@ -221,7 +220,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
             public boolean tryAdvance(final Consumer<? super String> action) {
                 return spliterator.tryAdvance(
                         stringSequence -> action
-                                .accept(stringSequence != null ? stringSequence.toString() : null));
+                                .accept(StringSequence.convertToString(stringSequence)));
             }
 
             @Override

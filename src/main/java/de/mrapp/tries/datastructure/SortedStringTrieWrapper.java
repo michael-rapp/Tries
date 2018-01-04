@@ -63,7 +63,8 @@ public class SortedStringTrieWrapper<ValueType> extends
 
         @Override
         public final int compare(final StringSequence o1, final StringSequence o2) {
-            return comparator.compare(o1.toString(), o2.toString());
+            return comparator.compare(StringSequence.convertToString(o1),
+                    StringSequence.convertToString(o2));
         }
 
     }
@@ -140,14 +141,12 @@ public class SortedStringTrieWrapper<ValueType> extends
 
         @Override
         public final String first() {
-            StringSequence firstKey = set.first();
-            return firstKey != null ? firstKey.toString() : null;
+            return StringSequence.convertToString(set.first());
         }
 
         @Override
         public final String last() {
-            StringSequence lastKey = set.last();
-            return lastKey != null ? lastKey.toString() : null;
+            return StringSequence.convertToString(set.last());
         }
 
     }
@@ -164,43 +163,39 @@ public class SortedStringTrieWrapper<ValueType> extends
         @Nullable
         @Override
         public String lower(final String key) {
-            StringSequence lowerKey = set.lower(StringSequence.convertFromString(key));
-            return lowerKey != null ? lowerKey.toString() : null;
+            return StringSequence.convertToString(set.lower(StringSequence.convertFromString(key)));
         }
 
         @Nullable
         @Override
         public String floor(final String key) {
-            StringSequence floorKey = set.floor(StringSequence.convertFromString(key));
-            return floorKey != null ? floorKey.toString() : null;
+            return StringSequence.convertToString(set.floor(StringSequence.convertFromString(key)));
         }
 
         @Nullable
         @Override
         public String ceiling(final String key) {
-            StringSequence ceilingKey = set.ceiling(StringSequence.convertFromString(key));
-            return ceilingKey != null ? ceilingKey.toString() : null;
+            return StringSequence
+                    .convertToString(set.ceiling(StringSequence.convertFromString(key)));
         }
 
         @Nullable
         @Override
         public String higher(final String key) {
-            StringSequence higherKey = set.higher(StringSequence.convertFromString(key));
-            return higherKey != null ? higherKey.toString() : null;
+            return StringSequence
+                    .convertToString(set.higher(StringSequence.convertFromString(key)));
         }
 
         @Nullable
         @Override
         public String pollFirst() {
-            StringSequence firstKey = set.pollFirst();
-            return firstKey != null ? firstKey.toString() : null;
+            return StringSequence.convertToString(set.pollFirst());
         }
 
         @Nullable
         @Override
         public String pollLast() {
-            StringSequence lastKey = set.pollLast();
-            return lastKey != null ? lastKey.toString() : null;
+            return StringSequence.convertToString(set.pollLast());
         }
 
         @NotNull
@@ -260,9 +255,13 @@ public class SortedStringTrieWrapper<ValueType> extends
     @Nullable
     private Entry<String, ValueType> convertEntry(
             @Nullable final Entry<StringSequence, ValueType> entry) {
-        StringSequence key = EntryUtil.getKey(entry);
-        return key != null ?
-                new AbstractMap.SimpleImmutableEntry<>(key.toString(), entry.getValue()) : null;
+        if (entry != null) {
+            return new AbstractMap.SimpleImmutableEntry<>(
+                    StringSequence.convertToString(entry.getKey()), entry.getValue());
+
+        }
+
+        return null;
     }
 
     /**
