@@ -100,11 +100,26 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     }
 
+    /**
+     * The sorted key set of a {@link SortedStringTrie}. It encapsulates the sorted set of a {@link
+     * SortedTrie}.
+     *
+     * @param <SetType> The type of the encapsulated set
+     */
     private static class SortedKeySetWrapper<SetType extends SortedSet<StringSequence>> extends
             KeySetWrapper<SetType> implements SortedSet<String> {
 
+        /**
+         * The comparator of the sorted set.
+         */
         private final Comparator<String> comparator;
 
+        /**
+         * Creates a new sorted key set of a {@link SortedStringTrie}.
+         *
+         * @param set The srt, which should be encapsulated, as an instance of the generic type
+         *            {@link SetType}. The set may not be null
+         */
         SortedKeySetWrapper(@NotNull final SetType set) {
             super(set);
             Comparator<? super StringSequence> comparator = set.comparator();
@@ -151,11 +166,24 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     }
 
+    /**
+     * The navigable key set of a {@link SortedStringTrie}. It encapsulates the navigable key set of
+     * a {@link SortedTrie}.
+     */
     private static final class NavigableKeySetWrapper extends
             SortedKeySetWrapper<NavigableSet<StringSequence>> implements NavigableSet<String> {
 
+        /**
+         * The descending key set.
+         */
         private NavigableSet<String> descendingSet;
 
+        /**
+         * Creates a new navigable key set of a {@link SortedStringTrie}.
+         *
+         * @param set The set, which should be encapsulated, as an instance of the type {@link
+         *            NavigableSet}. The set may not be null
+         */
         NavigableKeySetWrapper(@NotNull final NavigableSet<StringSequence> set) {
             super(set);
         }
@@ -239,13 +267,32 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     }
 
+    /**
+     * The sorted map of a {@link SortedStringTrie}. It encapsulates the sorted set of a {@link
+     * SortedTrie}.
+     *
+     * @param <V>       The type of the values, which are stored by the trie
+     * @param <MapType> The type of the encapsulated map
+     */
     private static class SortedMapWrapper<V, MapType extends SortedMap<StringSequence, V>> extends
             AbstractMap<String, V> implements SortedMap<String, V> {
 
+        /**
+         * The encapsulated map.
+         */
         final MapType map;
 
+        /**
+         * The comparator of the sorted map.
+         */
         private final Comparator<? super String> comparator;
 
+        /**
+         * Cereates a new sorted map of a {@link SortedStringTrie}.
+         *
+         * @param map The map, which should be encapsulated, as an instance of the generic type
+         *            {@link MapType}. The map may not be null
+         */
         SortedMapWrapper(@NotNull final MapType map) {
             ensureNotNull(map, "The map may not be null");
             this.map = map;
@@ -294,16 +341,28 @@ public class SortedStringTrieWrapper<ValueType> extends
         }
 
         @Override
-        public boolean remove(final Object key, final Object value) {
+        public final boolean remove(final Object key, final Object value) {
             return map.remove(StringSequence.convertFromString((String) key), value);
         }
 
     }
 
+    /**
+     * The navigable map of a {@link SortedStringTrie}. It encapsulates the navigable map of a
+     * {@link SortedTrie}.
+     *
+     * @param <V> The type of the values, which are stored by the trie
+     */
     private static final class NavigableMapWrapper<V> extends
             SortedMapWrapper<V, NavigableMap<StringSequence, V>> implements
             NavigableMap<String, V> {
 
+        /**
+         * Creates a new navigable map of a {@link SortedStringTrie}.
+         *
+         * @param map The map, which should be encapsulated, as an instance of the type {@link
+         *            NavigableMap}. The map may not be null
+         */
         NavigableMapWrapper(@NotNull final NavigableMap<StringSequence, V> map) {
             super(map);
         }
