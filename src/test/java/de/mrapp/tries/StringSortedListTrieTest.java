@@ -13,7 +13,6 @@
  */
 package de.mrapp.tries;
 
-import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
 import java.util.Comparator;
@@ -21,7 +20,6 @@ import java.util.Comparator;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +28,13 @@ import static org.mockito.Mockito.when;
  *
  * @author Michael Rapp
  */
-public class StringSortedListTrieTest {
+public class StringSortedListTrieTest extends
+        AbstractStringNonPatriciaSortedTrieTest<StringSortedListTrie<String>> {
+
+    @Override
+    final StringSortedListTrie<String> onCreateTrie() {
+        return new StringSortedListTrie<>();
+    }
 
     @Test
     public final void testDefaultConstructor() {

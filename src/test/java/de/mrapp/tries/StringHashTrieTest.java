@@ -22,14 +22,17 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Michael Rapp
  */
-public class StringHashTrieTest {
+public class StringHashTrieTest extends AbstractStringNonPatriciaTrieTest<StringHashTrie<String>> {
+
+    @Override
+    StringHashTrie<String> onCreateTrie() {
+        return new StringHashTrie<>();
+    }
 
     @Test
     public final void testToString() {
-        StringHashTrie<String> trie = new StringHashTrie<>();
-        trie.put("key1", "value1");
-        trie.put("key2", "value2");
-        assertEquals("StringHashTrie [key1=value1, key2=value2]", trie.toString());
+        testPut3();
+        assertEquals("StringHashTrie [tea=tea, ted=ted, to=to]", trie.toString());
     }
 
 }

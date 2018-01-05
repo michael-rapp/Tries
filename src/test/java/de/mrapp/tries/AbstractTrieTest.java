@@ -13,8 +13,11 @@
  */
 package de.mrapp.tries;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Map;
 
 /**
  * An abstract base class for all tests, which test the functionality of a {@link Trie}
@@ -24,11 +27,13 @@ import org.junit.Test;
  * @param <ValueType>    The type of the values, which are stored by the trie
  * @author Michael Rapp
  */
-public abstract class AbstractTrieTest<SequenceType extends Sequence, ValueType, TrieType extends Trie<SequenceType, ValueType>> {
+public abstract class AbstractTrieTest<SequenceType, ValueType, TrieType extends Map<SequenceType, ValueType>> {
 
     TrieType trie;
 
     abstract TrieType onCreateTrie();
+
+    abstract Node<SequenceType, ValueType> getRootNode(@NotNull final TrieType trie);
 
     @Before
     public void before() {

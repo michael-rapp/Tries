@@ -23,7 +23,8 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Michael Rapp
  */
-public class HashTrieTest extends AbstractStringSequenceTrieTest<HashTrie<StringSequence, String>> {
+public class HashTrieTest extends
+        AbstractStringSequenceNonPatriciaTrieTest<HashTrie<StringSequence, String>> {
 
     @Override
     final HashTrie<StringSequence, String> onCreateTrie() {

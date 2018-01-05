@@ -87,6 +87,11 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
                 return null;
             }
 
+            @Override
+            public void remove() {
+                iterator.remove();
+            }
+
         }
 
         /**
@@ -189,6 +194,11 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
             @Override
             public String next() {
                 return StringSequence.convertToString(iterator.next());
+            }
+
+            @Override
+            public void remove() {
+                iterator.remove();
             }
 
         }

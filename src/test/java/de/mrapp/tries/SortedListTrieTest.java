@@ -16,9 +16,7 @@ package de.mrapp.tries;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
-import java.util.*;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the functionality of the class {@link SortedListTrie}.
@@ -26,7 +24,7 @@ import static org.junit.Assert.*;
  * @author Michael Rapp
  */
 public class SortedListTrieTest extends
-        AbstractStringSequenceSortedTrieTest<SortedListTrie<StringSequence, String>> {
+        AbstractStringSequenceNonPatriciaSortedTrieTest<SortedListTrie<StringSequence, String>> {
 
     @Override
     final SortedListTrie<StringSequence, String> onCreateTrie() {
