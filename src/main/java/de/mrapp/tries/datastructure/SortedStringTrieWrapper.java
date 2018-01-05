@@ -16,7 +16,6 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.SortedStringTrie;
 import de.mrapp.tries.SortedTrie;
 import de.mrapp.tries.sequence.StringSequence;
-import de.mrapp.tries.util.EntryUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -301,6 +300,41 @@ public class SortedStringTrieWrapper<ValueType> extends
         }
 
         @Override
+        public final int size() {
+            return map.size();
+        }
+
+        @Override
+        public final boolean isEmpty() {
+            return map.isEmpty();
+        }
+
+        @Override
+        public final boolean containsKey(final Object key) {
+            return map.containsKey(StringSequence.convertFromString((String) key));
+        }
+
+        @Override
+        public final boolean containsValue(final Object value) {
+            return map.containsValue(value);
+        }
+
+        @Override
+        public final V get(final Object key) {
+            return map.get(StringSequence.convertFromString((String) key));
+        }
+
+        @Override
+        public final V remove(final Object key) {
+            return map.remove(StringSequence.convertFromString((String) key));
+        }
+
+        @Override
+        public final void clear() {
+            map.clear();
+        }
+
+        @Override
         public final Comparator<? super String> comparator() {
             return comparator;
         }
@@ -493,6 +527,11 @@ public class SortedStringTrieWrapper<ValueType> extends
     }
 
     /**
+     * The comparator of the sorted trie.
+     */
+    private Comparator<? super String> comparator;
+
+    /**
      * Creates a new wrapper, which implements the interface {@link SortedStringTrie}.
      *
      * @param trie The trie, which should be encapsulated, as an instance of the type {@link
@@ -501,6 +540,9 @@ public class SortedStringTrieWrapper<ValueType> extends
     public SortedStringTrieWrapper(
             @NotNull final SortedTrie<StringSequence, ValueType> trie) {
         super(trie);
+        Comparator<? super StringSequence> comparator = trie.comparator();
+        this.comparator = comparator != null ? new StringComparatorWrapper(comparator) : null;
+
     }
 
     @Override
@@ -510,7 +552,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final String lowerKey(final String key) {
-        return EntryUtil.getKey(lowerEntry(key));
+        return StringSequence.convertToString(trie.lowerKey(StringSequence.convertFromString(key)));
     }
 
     @Override
@@ -520,7 +562,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final String floorKey(final String key) {
-        return EntryUtil.getKey(floorEntry(key));
+        return StringSequence.convertToString(trie.floorKey(StringSequence.convertFromString(key)));
     }
 
     @Override
@@ -530,7 +572,8 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final String ceilingKey(final String key) {
-        return EntryUtil.getKey(ceilingEntry(key));
+        return StringSequence
+                .convertToString(trie.ceilingKey(StringSequence.convertFromString(key)));
     }
 
     @Override
@@ -540,7 +583,8 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final String higherKey(final String key) {
-        return EntryUtil.getKey(higherEntry(key));
+        return StringSequence
+                .convertToString(trie.higherKey(StringSequence.convertFromString(key)));
     }
 
     @Override
@@ -604,9 +648,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public Comparator<? super String> comparator() {
-        Comparator<? super StringSequence> comparator = trie.comparator();
-        return comparator instanceof StringSequenceComparatorWrapper ?
-                ((StringSequenceComparatorWrapper) comparator).comparator : null;
+        return comparator;
     }
 
     @NotNull
@@ -630,12 +672,12 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final String firstKey() {
-        return EntryUtil.getKey(firstEntry());
+        return StringSequence.convertToString(trie.firstKey());
     }
 
     @Override
     public final String lastKey() {
-        return EntryUtil.getKey(lastEntry());
+        return StringSequence.convertToString(trie.lastKey());
     }
 
     @NotNull
