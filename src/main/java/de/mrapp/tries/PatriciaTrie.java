@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.Map;
 
 /**
  * A sorted trie, which stores the successor of nodes in sorted lists. In contrast to a {@link
@@ -43,7 +44,7 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType> extends
     private static final long serialVersionUID = 3229102065205655196L;
 
     /**
-     * Creates a new patricia trie.
+     * Creates a new Patricia trie.
      *
      * @param rootNode   The root node of the trie as an instance of the type {@link Node} or null,
      *                   if the trie should be empty
@@ -57,7 +58,24 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType> extends
     }
 
     /**
-     * Creates a new empty patricia trie.
+     * Creates a new, empty Patricia trie.
+     */
+    public PatriciaTrie() {
+        super(null);
+    }
+
+    /**
+     * Creates a new Patricia trie, which contains all key-value pairs that are contained by a map.
+     *
+     * @param map The map, which contains the key-value pairs that should be added to the trie, as
+     *            an instance of the type {@link Map}. The map may not be null
+     */
+    public PatriciaTrie(@NotNull final Map<SequenceType, ValueType> map) {
+        super(null, map);
+    }
+
+    /**
+     * Creates a new, empty Patricia trie.
      *
      * @param comparator The comparator, which should be used to compare keys with each other, as an
      *                   instance of the type {@link Comparator} or null, if the natural ordering of
@@ -65,6 +83,20 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType> extends
      */
     public PatriciaTrie(@Nullable final Comparator<? super SequenceType> comparator) {
         super(comparator);
+    }
+
+    /**
+     * Creates a new Patrica trie, which contains all key-value pairs that are contained by a map.
+     *
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of< the type {@link Comparator} or null, if the natural ordering
+     *                   of the keys should be used
+     * @param map        The map, which contains the key-value pairs that should be added to the
+     *                   trie, as an instance of the type {@link Map}. The map may not be null
+     */
+    public PatriciaTrie(@Nullable final Comparator<? super SequenceType> comparator,
+                        @NotNull final Map<SequenceType, ValueType> map) {
+        super(comparator, map);
     }
 
     @Nullable

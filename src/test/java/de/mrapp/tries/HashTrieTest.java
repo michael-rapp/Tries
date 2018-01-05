@@ -16,6 +16,9 @@ package de.mrapp.tries;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -29,6 +32,19 @@ public class HashTrieTest extends
     @Override
     final HashTrie<StringSequence, String> onCreateTrie() {
         return new HashTrie<>();
+    }
+
+    @Test
+    public void testConstructorWithMapParameter() {
+        String value1 = "foo";
+        String value2 = "bar";
+        Map<StringSequence, String> map = new HashMap<>();
+        map.put(new StringSequence(value1), value1);
+        map.put(new StringSequence(value2), value2);
+        Trie<StringSequence, String> trie = new HashTrie<>(map);
+        assertEquals(2, trie.size());
+        assertEquals(value1, trie.get(new StringSequence(value1)));
+        assertEquals(value2, trie.get(new StringSequence(value2)));
     }
 
     @Test

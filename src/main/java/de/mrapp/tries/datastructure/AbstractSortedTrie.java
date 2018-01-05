@@ -1892,6 +1892,21 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         this(null, comparator);
     }
 
+    /**
+     * Creates a new sorted trie, which contains all key-value pairs that are contained in a map.
+     *
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
+     * @param map        The map, which contains the key-value pairs that should be added to the
+     *                   trie, as an instance of the type {@link Map}. The map may not be null
+     */
+    public AbstractSortedTrie(@Nullable final Comparator<? super SequenceType> comparator,
+                              @NotNull final Map<SequenceType, ValueType> map) {
+        this(comparator);
+        putAll(map);
+    }
+
     @Override
     public final Comparator<? super SequenceType> comparator() {
         return comparator;

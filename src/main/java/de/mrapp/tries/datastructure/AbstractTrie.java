@@ -695,7 +695,19 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * Creates a new empty trie.
      */
     public AbstractTrie() {
-        this(null);
+        this((Node<SequenceType, ValueType>) null);
+    }
+
+    /**
+     * Creates a new trie, which contains all key-value pairs that are contained in a map.
+     *
+     * @param map The map, which contains the key-value pairs that should be added to the trie, as
+     *            an instance of the type {@link Map}. The map may not be null
+     */
+    public AbstractTrie(@NotNull final Map<SequenceType, ValueType> map) {
+        this();
+        ensureNotNull(map, "The map may not be null");
+        putAll(map);
     }
 
     @Nullable

@@ -16,7 +16,14 @@ package de.mrapp.tries;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests the functionality of the class {@link SortedListTrie}.
@@ -29,6 +36,42 @@ public class SortedListTrieTest extends
     @Override
     final SortedListTrie<StringSequence, String> onCreateTrie() {
         return new SortedListTrie<>();
+    }
+
+    @Test
+    public void testConstructorWithComparatorParameter() {
+        Comparator<? super StringSequence> comparator = mock(Comparator.class);
+        SortedTrie<StringSequence, String> trie = new SortedListTrie<>(comparator);
+        assertEquals(comparator, trie.comparator());
+    }
+
+    @Test
+    public void testConstructorWithMapParameter() {
+        String value1 = "foo";
+        String value2 = "bar";
+        Map<StringSequence, String> map = new HashMap<>();
+        map.put(new StringSequence(value1), value1);
+        map.put(new StringSequence(value2), value2);
+        SortedTrie<StringSequence, String> trie = new SortedListTrie<>(map);
+        assertEquals(2, trie.size());
+        assertEquals(value1, trie.get(new StringSequence(value1)));
+        assertEquals(value2, trie.get(new StringSequence(value2)));
+    }
+
+    @Test
+    public void testConstructorWithComparatorAndMapParameter() {
+        String value1 = "foo";
+        String value2 = "bar";
+        Map<StringSequence, String> map = new HashMap<>();
+        map.put(new StringSequence(value1), value1);
+        map.put(new StringSequence(value2), value2);
+        Comparator<? super StringSequence> comparator = (Comparator<StringSequence>) (o1, o2) -> o1
+                .toString().compareTo(o2.toString());
+        SortedTrie<StringSequence, String> trie = new SortedListTrie<>(comparator, map);
+        assertEquals(2, trie.size());
+        assertEquals(value1, trie.get(new StringSequence(value1)));
+        assertEquals(value2, trie.get(new StringSequence(value2)));
+        assertEquals(comparator, trie.comparator());
     }
 
     @Test

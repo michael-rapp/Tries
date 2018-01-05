@@ -20,6 +20,7 @@ import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -58,6 +59,16 @@ public class HashTrie<SequenceType extends Sequence, ValueType> extends
      */
     public HashTrie() {
         super();
+    }
+
+    /**
+     * Creates a new unsorted trie, which contains all key-value pairs that are contained by a map.
+     *
+     * @param map The map, which contains the key-value pairs that should be added to the trie, as
+     *            an instance of the type {@link Map}. The map may not be null
+     */
+    public HashTrie(@NotNull final Map<SequenceType, ValueType> map) {
+        super(map);
     }
 
     @NotNull
