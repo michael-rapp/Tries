@@ -23,14 +23,14 @@ import java.util.Map;
 /**
  * Defines the interface of a trie, which allows to use character sequences, represented by the
  * class {@link String}, as keys.
- *
+ * <p>
  * This interface and its implementing classes should be preferred over the interface {@link Trie},
  * if character sequences should be stored in a trie. This is, because it offers a less complex API,
  * hiding the actual sequence implementation that is used internally (which is {@link
  * StringSequence}) and providing API methods that exclusively make use of the class {@link
  * String}.
  *
- * @param <ValueType> The type of the values, which are stored by trie
+ * @param <ValueType> The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */

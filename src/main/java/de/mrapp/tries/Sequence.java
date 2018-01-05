@@ -21,7 +21,7 @@ import java.io.Serializable;
  * Defines the interface, a sequence, which can be used as the keys of a {@link Trie} or {@link
  * SortedTrie} must implement. A sequence is a ordered list of elements, e.g. characters, numbers or
  * symbols.
- *
+ * <p>
  * Implementations of this class must be immutable, i.e. the {@link #concat(Sequence)} and {@link
  * #subsequence(int, int)} methods must return a new object instead of modifying the original one.
  * Furthermore, the {@link #hashCode()} and {@link #equals(Object)} methods must be overridden by

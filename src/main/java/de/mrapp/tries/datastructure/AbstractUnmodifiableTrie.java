@@ -32,7 +32,7 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * change the trie's state.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
- * @param <ValueType>    The type of the values, which are stored by trie
+ * @param <ValueType>    The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */

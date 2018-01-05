@@ -24,7 +24,7 @@ import static de.mrapp.util.Condition.ensureTrue;
 /**
  * Defines the interface, a node of a trie must implement. It extends the interface {@link Iterable}
  * to be able to iterate the keys, which correspond to the node's successors.
- *
+ * <p>
  * If the successors of the node are sorted, sublasses must implement the interface {@link
  * RandomAccess}.
  *

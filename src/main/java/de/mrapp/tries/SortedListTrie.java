@@ -32,7 +32,7 @@ import java.util.NoSuchElementException;
  * implementation should be preferred, if the order of keys is relevant.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
- * @param <ValueType>    The type of the values, which are stored by trie
+ * @param <ValueType>    The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */

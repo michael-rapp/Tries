@@ -24,7 +24,7 @@ import java.util.NavigableMap;
  * guarantee the trie's keys to be stored in a particular order. When iterating the trie, its
  * entries, keys and values are guaranteed to be traversed in the correct order.
  *
- * @param <ValueType> The type of the values, which are stored by trie
+ * @param <ValueType> The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */

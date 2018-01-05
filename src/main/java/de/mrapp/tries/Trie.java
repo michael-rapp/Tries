@@ -23,18 +23,18 @@ import java.util.Map;
  * Defines the interface of a trie (also called prefix tree, digital tree or radix tree). A trie is
  * a tree data structure that can be used to store an associative array where the keys are sequences
  * (e.g. sequences of characters or lists of digits).
- *
+ * <p>
  * Tries allow to efficiently search for sequences (and their values) that share a common prefix. As
  * nodes with a common prefix share the same predecessors, tries also provide some kind of
  * compression.
- *
+ * <p>
  * In a trie values are only associated with the leaf nodes and with some inner nodes. As all
  * successors of a node share a common prefix of the sequence, which is associated with that node,
  * the position of a value in the trie specifies the key it is associated with. The root node
  * corresponds to an empty sequence.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
- * @param <ValueType>    The type of the values, which are stored by trie
+ * @param <ValueType>    The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */

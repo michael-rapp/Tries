@@ -69,7 +69,7 @@ public final class Tries {
      * Returns the empty {@link Trie} (immutable). The returned trie is serializable.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      * @return The empty trie as an instance of the type {@link Trie}. The trie may not be null
      * @see #EMPTY_TRIE
      */
@@ -83,7 +83,7 @@ public final class Tries {
      * Returns the empty {@link SortedTrie} (immutable). The returned trie is serializable.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
-     * @param <V> The type of the values, which are stored by trie
+     * @param <V> The type of the values, which are stored by the trie
      * @return The empty trie as an instance of the type {@link SortedTrie}. The trie may not be
      * null
      * @see #EMPTY_SORTED_TRIE
@@ -127,7 +127,7 @@ public final class Tries {
      * serializable.
      *
      * @param <K>   The type of the sequences, which are used as the trie's keys
-     * @param <V>   The type of the values, which are stored by trie
+     * @param <V>   The type of the values, which are stored by the trie
      * @param key   The key of the entry, which should be stored in the trie, as an instance of the
      *              generic type {@link K} or null
      * @param value The value of the entry, which should be stored in the trie, as an instance of
@@ -146,7 +146,7 @@ public final class Tries {
      * trie is serializable.
      *
      * @param <K>   The type of the sequences, which are used as the trie's keys
-     * @param <V>   The type of the values, which are stored by trie
+     * @param <V>   The type of the values, which are stored by the trie
      * @param key   The key of the entry, which should be stored in the trie, as an instance of the
      *              generic type {@link K} or null
      * @param value The value of the entry, which should be stored in the trie, as an instance of
@@ -165,7 +165,7 @@ public final class Tries {
      * Returns an immutable {@link StringTrie}, which only contains a single entry. The returned
      * trie is serializable.
      *
-     * @param <V>   The type of the values, which are stored by trie
+     * @param <V>   The type of the values, which are stored by the trie
      * @param key   The key of the entry, which should be stored in the trie, as a {@link String} or
      *              null
      * @param value The value of the entry, which should be stored in the trie, as an instance of
@@ -184,7 +184,7 @@ public final class Tries {
      * Returns an immutable {@link SortedStringTrie}, which only contains a single entry. The
      * returned trie is serializable.
      *
-     * @param <V>   The type of the values, which are stored by trie
+     * @param <V>   The type of the values, which are stored by the trie
      * @param key   The key of the entry, which should be stored in the trie, as a {@link String} or
      *              null
      * @param value The value of the entry, which should be stored in the trie, as an instance of
@@ -208,7 +208,7 @@ public final class Tries {
      * The returned trie will be serializable if the specified trie is serializable.
      *
      * @param <K>  The type of the sequences, which are used as the trie's keys
-     * @param <V>  The type of the values, which are stored by trie
+     * @param <V>  The type of the values, which are stored by the trie
      * @param trie The trie for which an unmodifiable view should be returned as an instance of the
      *             type {@link Trie}. The trie may not be null
      * @return An unmodifiable view of the given trie as an instance of the type {@link Trie}. The
@@ -229,7 +229,7 @@ public final class Tries {
      * The returned trie will be serializable if the specified trie is serializable.
      *
      * @param <K>  The type of the sequences, which are used as the trie's keys
-     * @param <V>  The type of the values, which are stored by trie
+     * @param <V>  The type of the values, which are stored by the trie
      * @param trie The trie for which an unmodifiable view should be returned as an instance of the
      *             type {@link SortedTrie}. The trie may not be null
      * @return An unmodifiable view of the given trie as an instance of the type {@link SortedTrie}.
@@ -249,7 +249,7 @@ public final class Tries {
      * <p>
      * The returned trie will be serializable if the specified trie is serializable.
      *
-     * @param <V>  The type of the values, which are stored by trie
+     * @param <V>  The type of the values, which are stored by the trie
      * @param trie The trie for which an unmodifiable view should be returned as an instance of the
      *             type {@link StringTrie}. The trie may not be null
      * @return An unmodifiable view of the given trie as an instance of the type {@link StringTrie}.
@@ -268,7 +268,7 @@ public final class Tries {
      * <p>
      * The returned trie will be serializable if the specified trie is serializable.
      *
-     * @param <V>  The type of the values, which are stored by trie
+     * @param <V>  The type of the values, which are stored by the trie
      * @param trie The trie for which an unmodifiable view should be returned as an instance of the
      *             type {@link SortedStringTrie}. The trie may not be null
      * @return An unmodifiable view of the given trie as an instance of the type {@link

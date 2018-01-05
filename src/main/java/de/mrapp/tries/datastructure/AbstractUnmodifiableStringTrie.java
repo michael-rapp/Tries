@@ -30,7 +30,7 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * encapsulated trie and throw {@link UnsupportedOperationException}s when calling a method, which
  * attempts to change the trie's state.
  *
- * @param <ValueType> The type of the values, which are stored by trie
+ * @param <ValueType> The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */
