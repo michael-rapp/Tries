@@ -116,7 +116,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
             Node<SequenceType, ValueType> currentNode = newRootNode;
             SequenceType suffix = sequence;
 
-            while (!suffix.isEmpty()) {
+            while (suffix != null && !suffix.isEmpty()) {
                 Pair<Node<SequenceType, ValueType>, SequenceType> pair = addSuccessor(currentNode,
                         suffix);
                 Node<SequenceType, ValueType> successor = pair.first;

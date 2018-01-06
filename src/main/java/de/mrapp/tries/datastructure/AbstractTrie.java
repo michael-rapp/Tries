@@ -802,13 +802,13 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         if (suffix == null || suffix.isEmpty()) {
             previousValue = currentNode.setNodeValue(new NodeValue<>(value));
         } else {
-            while (!suffix.isEmpty()) {
+            while (suffix != null && !suffix.isEmpty()) {
                 Pair<Node<SequenceType, ValueType>, SequenceType> pair = addSuccessor(currentNode,
                         suffix);
                 Node<SequenceType, ValueType> successor = pair.first;
                 suffix = pair.second;
 
-                if (suffix.isEmpty()) {
+                if (suffix == null || suffix.isEmpty()) {
                     successor.setNodeValue(new NodeValue<>(value));
                 }
 
@@ -861,7 +861,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
                         Node<SequenceType, ValueType> successor = pair.first;
                         suffix = pair.second;
 
-                        if (suffix.isEmpty()) {
+                        if (suffix == null || suffix.isEmpty()) {
                             if (successor.hasSuccessors()) {
                                 lastRetainedNode = null;
                                 suffixToRemove = null;
