@@ -206,21 +206,23 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends
 
     @Override
     public final int indexOf(@NotNull final KeyType key) {
-        Comparator<KeyType> comparator = SequenceUtil.comparator(this.comparator);
-        int min = 0;
-        int max = successors.size() - 1;
+        if (hasSuccessors()) {
+            Comparator<KeyType> comparator = SequenceUtil.comparator(this.comparator);
+            int min = 0;
+            int max = successors.size() - 1;
 
-        while (min <= max) {
-            int pivot = (min + max) >>> 1;
-            Edge<KeyType, ValueType> edge = successors.get(pivot);
-            int order = comparator.compare(edge.key, key);
+            while (min <= max) {
+                int pivot = (min + max) >>> 1;
+                Edge<KeyType, ValueType> edge = successors.get(pivot);
+                int order = comparator.compare(edge.key, key);
 
-            if (order < 0) {
-                min = pivot + 1;
-            } else if (order > 0) {
-                max = pivot - 1;
-            } else {
-                return pivot;
+                if (order < 0) {
+                    min = pivot + 1;
+                } else if (order > 0) {
+                    max = pivot - 1;
+                } else {
+                    return pivot;
+                }
             }
         }
 
