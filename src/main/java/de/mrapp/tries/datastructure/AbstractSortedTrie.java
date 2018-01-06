@@ -463,7 +463,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         /**
          * The comparator, which is used to compare keys with each other.
          */
-        private final Comparator<K> comparator;
+        private final Comparator<? super K> comparator;
 
         final K fromKey, toKey;
 

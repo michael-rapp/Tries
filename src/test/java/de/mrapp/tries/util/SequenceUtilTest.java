@@ -17,6 +17,7 @@ import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
 import java.util.Comparator;
+import java.util.function.Function;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -83,19 +84,19 @@ public class SequenceUtilTest {
 
     @Test
     public final void testCompareIfFirstKeyIsNullAndSecondKeyIsNotNull() {
-        Comparator<StringSequence> sequenceComparator = SequenceUtil.comparator(null);
+        Comparator<? super StringSequence> sequenceComparator = SequenceUtil.comparator(null);
         assertEquals(-1, sequenceComparator.compare(null, new StringSequence("foo")));
     }
 
     @Test
     public final void testCompareIfFirstKeyIsNullAndSecondKeyIsNull() {
-        Comparator<StringSequence> sequenceComparator = SequenceUtil.comparator(null);
+        Comparator<? super StringSequence> sequenceComparator = SequenceUtil.comparator(null);
         assertEquals(0, sequenceComparator.compare(null, null));
     }
 
     @Test
     public final void testCompareIfFirstKeyIsNotNullAndSecondKeyIsNull() {
-        Comparator<StringSequence> sequenceComparator = SequenceUtil.comparator(null);
+        Comparator<? super StringSequence> sequenceComparator = SequenceUtil.comparator(null);
         assertEquals(1, sequenceComparator.compare(new StringSequence("foo"), null));
     }
 
@@ -104,7 +105,7 @@ public class SequenceUtilTest {
         StringSequence sequence1 = new StringSequence("foo");
         StringSequence sequence2 = new StringSequence("bar");
         Comparator<StringSequence> comparator = mock(Comparator.class);
-        Comparator<StringSequence> sequenceComparator = SequenceUtil.comparator(comparator);
+        Comparator<? super StringSequence> sequenceComparator = SequenceUtil.comparator(comparator);
         sequenceComparator.compare(sequence1, sequence2);
         verify(comparator, times(1)).compare(sequence1, sequence2);
     }
@@ -113,7 +114,7 @@ public class SequenceUtilTest {
     public final void testCompareIfComparatorIsNull() {
         StringSequence sequence1 = new StringSequence("foo");
         StringSequence sequence2 = new StringSequence("bar");
-        Comparator<StringSequence> sequenceComparator = SequenceUtil.comparator(null);
+        Comparator<? super StringSequence> sequenceComparator = SequenceUtil.comparator(null);
         int c = sequenceComparator.compare(sequence1, sequence2);
         assertEquals("foo".compareTo("bar"), c);
     }
@@ -130,6 +131,27 @@ public class SequenceUtilTest {
                 .getCommonPrefix(new StringSequence("foo"), new StringSequence("fox")));
         assertEquals(new StringSequence("foo"), SequenceUtil
                 .getCommonPrefix(new StringSequence("foo"), new StringSequence("foo")));
+    }
+
+    @Test
+    public final void testBinarySearch() {
+        StringSequence[] sequences = new StringSequence[]{new StringSequence(
+                "bar"), new StringSequence("bla"), new StringSequence("fasel"), new StringSequence(
+                "foo"), new StringSequence("foobar")};
+        Function<Integer, StringSequence> getter = index -> sequences[index];
+        assertEquals(-1, SequenceUtil.binarySearch(0, getter, null, new StringSequence("foobar")));
+        assertEquals(-1, SequenceUtil
+                .binarySearch(sequences.length, getter, null, new StringSequence("invalid")));
+        assertEquals(0, SequenceUtil
+                .binarySearch(sequences.length, getter, null, new StringSequence("bar")));
+        assertEquals(1, SequenceUtil
+                .binarySearch(sequences.length, getter, null, new StringSequence("bla")));
+        assertEquals(2, SequenceUtil
+                .binarySearch(sequences.length, getter, null, new StringSequence("fasel")));
+        assertEquals(3, SequenceUtil
+                .binarySearch(sequences.length, getter, null, new StringSequence("foo")));
+        assertEquals(4, SequenceUtil
+                .binarySearch(sequences.length, getter, null, new StringSequence("foobar")));
     }
 
 }

@@ -65,7 +65,7 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends
         /**
          * The comparator, which is used to compare the keys of edges with each other.
          */
-        private final Comparator<K> comparator;
+        private final Comparator<? super K> comparator;
 
         /**
          * Creates a new directed edge, which references the successor of a node.
@@ -206,27 +206,8 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends
 
     @Override
     public final int indexOf(@NotNull final KeyType key) {
-        if (hasSuccessors()) {
-            Comparator<KeyType> comparator = SequenceUtil.comparator(this.comparator);
-            int min = 0;
-            int max = successors.size() - 1;
-
-            while (min <= max) {
-                int pivot = (min + max) >>> 1;
-                Edge<KeyType, ValueType> edge = successors.get(pivot);
-                int order = comparator.compare(edge.key, key);
-
-                if (order < 0) {
-                    min = pivot + 1;
-                } else if (order > 0) {
-                    max = pivot - 1;
-                } else {
-                    return pivot;
-                }
-            }
-        }
-
-        return -1;
+        return SequenceUtil.binarySearch(getSuccessorCount(), index -> successors.get(index).key,
+                comparator, key);
     }
 
     @NotNull

@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.function.Function;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
@@ -165,7 +166,7 @@ public class SequenceUtil {
      * Comparator}. The comparator may not be null
      */
     @NotNull
-    public static <T extends Sequence> Comparator<T> comparator(
+    public static <T extends Sequence> Comparator<? super T> comparator(
             @Nullable final Comparator<? super T> comparator) {
         return new SequenceComparator<>(comparator);
     }
@@ -206,7 +207,50 @@ public class SequenceUtil {
 
             return commonPrefix;
         }
+    }
 
+    /**
+     * Performs a binary search to find a specific sequence.
+     *
+     * @param size       The total number of sequences as an {@link Integer} value
+     * @param getter     A function, which returns the corresponding sequence for a given index, as
+     *                   an instance of the type {@link Function}. The function may not be null
+     * @param comparator A comparator, which allows to compare sequences to each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural order of
+     *                   the sequences should be used
+     * @param sequence   The sequence to search for as an instance of the generic type {@link T}.
+     *                   The sequence may not be null
+     * @param <T>        The type of the sequences
+     * @return The index of the given sequence as an {@link Integer} value or -1, if the sequence
+     * could not be found
+     */
+    public static <T extends Sequence> int binarySearch(final int size,
+                                                        @NotNull final Function<Integer, T> getter,
+                                                        @Nullable final Comparator<? super T> comparator,
+                                                        @NotNull final T sequence) {
+        ensureNotNull(getter, "The function may not be null");
+
+        if (size > 0) {
+            Comparator<? super T> comp = SequenceUtil.comparator(comparator);
+            int min = 0;
+            int max = size - 1;
+
+            while (min <= max) {
+                int pivot = (min + max) >>> 1;
+                T currentSequence = getter.apply(pivot);
+                int order = comp.compare(currentSequence, sequence);
+
+                if (order < 0) {
+                    min = pivot + 1;
+                } else if (order > 0) {
+                    max = pivot - 1;
+                } else {
+                    return pivot;
+                }
+            }
+        }
+
+        return -1;
     }
 
 }
