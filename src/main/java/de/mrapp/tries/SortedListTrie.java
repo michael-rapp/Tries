@@ -117,7 +117,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
             SequenceType suffix = sequence;
 
             while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = addSuccessor(currentNode,
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onAddSuccessor(currentNode,
                         suffix);
                 Node<SequenceType, ValueType> successor = pair.first;
                 suffix = pair.second;
@@ -146,7 +146,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
 
     @Nullable
     @Override
-    protected final Pair<Node<SequenceType, ValueType>, SequenceType> getSuccessor(
+    protected final Pair<Node<SequenceType, ValueType>, SequenceType> onGetSuccessor(
             @NotNull final Node<SequenceType, ValueType> node,
             @NotNull final SequenceType sequence) {
         SequenceType prefix = SequenceUtil.subsequence(sequence, 0, 1);
@@ -162,7 +162,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
 
     @NotNull
     @Override
-    protected final Pair<Node<SequenceType, ValueType>, SequenceType> addSuccessor(
+    protected final Pair<Node<SequenceType, ValueType>, SequenceType> onAddSuccessor(
             @NotNull final Node<SequenceType, ValueType> node,
             @NotNull final SequenceType sequence) {
         SequenceType prefix = SequenceUtil.subsequence(sequence, 0, 1);
@@ -172,8 +172,8 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType> extends
     }
 
     @Override
-    protected final void removeSuccessor(@NotNull final Node<SequenceType, ValueType> node,
-                                         @NotNull final SequenceType sequence) {
+    protected final void onRemoveSuccessor(@NotNull final Node<SequenceType, ValueType> node,
+                                           @NotNull final SequenceType sequence) {
         node.removeSuccessor(sequence);
     }
 

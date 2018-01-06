@@ -31,8 +31,8 @@ import static de.mrapp.util.Condition.*;
  * An abstract base class for all tries. It implements the methods of the interface {@link Map}. In
  * particular it provides general implementations of lookup, insert and delete operations without
  * forcing constraints on the trie's structure. Subclasses must implement the methods {@link
- * #getSuccessor(Node, Sequence)}, {@link #addSuccessor(Node, Sequence)} and {@link
- * #removeSuccessor(Node, Sequence)} depending on the trie's structure.
+ * #onGetSuccessor(Node, Sequence)}, {@link #onAddSuccessor(Node, Sequence)} and {@link
+ * #onRemoveSuccessor(Node, Sequence)} depending on the trie's structure.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by the trie
@@ -608,7 +608,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * instance of the class {@link Pair} or null, if no matching successor is available
      */
     @Nullable
-    protected abstract Pair<Node<SequenceType, ValueType>, SequenceType> getSuccessor(
+    protected abstract Pair<Node<SequenceType, ValueType>, SequenceType> onGetSuccessor(
             @NotNull final Node<SequenceType, ValueType> node,
             @NotNull final SequenceType sequence);
 
@@ -626,7 +626,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * class {@link Pair}. The pair may not be null
      */
     @NotNull
-    protected abstract Pair<Node<SequenceType, ValueType>, SequenceType> addSuccessor(
+    protected abstract Pair<Node<SequenceType, ValueType>, SequenceType> onAddSuccessor(
             @NotNull final Node<SequenceType, ValueType> node,
             @NotNull final SequenceType sequence);
 
@@ -641,8 +641,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      *                 instance of the generic type {@link SequenceType}. The sequence may neither
      *                 be null, nor empty
      */
-    protected abstract void removeSuccessor(@NotNull final Node<SequenceType, ValueType> node,
-                                            @NotNull final SequenceType sequence);
+    protected abstract void onRemoveSuccessor(@NotNull final Node<SequenceType, ValueType> node,
+                                              @NotNull final SequenceType sequence);
 
     /**
      * Traverses the trie in order to returns the node, which corresponds to a specific key.
@@ -663,7 +663,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             SequenceType suffix = sequence;
 
             while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(currentNode,
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode,
                         suffix);
 
                 if (pair == null) {
@@ -786,7 +786,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         SequenceType suffix = key;
 
         while (suffix != null && !suffix.isEmpty()) {
-            Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(currentNode,
+            Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode,
                     suffix);
 
             if (pair == null) {
@@ -803,7 +803,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             previousValue = currentNode.setNodeValue(new NodeValue<>(value));
         } else {
             while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = addSuccessor(currentNode,
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onAddSuccessor(currentNode,
                         suffix);
                 Node<SequenceType, ValueType> successor = pair.first;
                 suffix = pair.second;
@@ -847,7 +847,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
                 SequenceType suffix = sequence;
 
                 while (!suffix.isEmpty()) {
-                    Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(
+                    Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(
                             currentNode, suffix);
 
                     if (pair == null) {
@@ -876,7 +876,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
                                     clear();
                                 } else {
                                     if (suffixToRemove != null) {
-                                        removeSuccessor(lastRetainedNode, suffixToRemove);
+                                        onRemoveSuccessor(lastRetainedNode, suffixToRemove);
                                     }
 
                                     modificationCount++;

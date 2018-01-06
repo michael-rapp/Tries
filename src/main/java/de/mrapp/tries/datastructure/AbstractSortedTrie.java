@@ -1681,7 +1681,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                         clear();
                     } else {
                         if (suffixToRemove != null) {
-                            removeSuccessor(lastRetainedNode, suffixToRemove);
+                            onRemoveSuccessor(lastRetainedNode, suffixToRemove);
                         }
 
                         modificationCount++;
@@ -1712,7 +1712,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             SequenceType suffix = key;
 
             while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSuccessor(currentNode,
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode,
                         suffix);
 
                 if (pair == null) {
