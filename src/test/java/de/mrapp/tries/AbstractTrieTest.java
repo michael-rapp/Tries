@@ -14,10 +14,14 @@
 package de.mrapp.tries;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * An abstract base class for all tests, which test the functionality of a {@link Trie}
@@ -33,7 +37,52 @@ public abstract class AbstractTrieTest<SequenceType, ValueType, TrieType extends
 
     abstract TrieType onCreateTrie();
 
+    abstract SequenceType convertToSequence(@NotNull final String string);
+
     abstract Node<SequenceType, ValueType> getRootNode(@NotNull final TrieType trie);
+
+    final void verifyRootNode(@Nullable final Node<SequenceType, String> node) {
+        verifyRootNode(node, null);
+    }
+
+    final void verifyRootNode(@Nullable final Node<SequenceType, String> node,
+                              @Nullable final String value) {
+        assertNotNull(node);
+        assertNull(node.getPredecessor());
+
+        if (value == null) {
+            assertNull(node.getNodeValue());
+        } else {
+            assertNotNull(node.getNodeValue());
+            assertEquals(value, node.getValue());
+        }
+    }
+
+    final void verifySuccessors(@Nullable final Node<SequenceType, String> node,
+                                @NotNull final String... successors) {
+        assertNotNull(node);
+        assertEquals(successors.length, node.getSuccessorCount());
+
+        for (String successor : successors) {
+            getSuccessor(node, successor);
+        }
+    }
+
+    final Node<SequenceType, String> getSuccessor(
+            @Nullable final Node<SequenceType, String> node,
+            @NotNull final String successor) {
+        assertNotNull(node);
+        Node<SequenceType, String> childNode = node.getSuccessor(convertToSequence(successor));
+        assertNotNull(childNode);
+        return childNode;
+    }
+
+    final void verifyLeaf(@Nullable final Node<SequenceType, String> node,
+                          @Nullable final String value) {
+        assertNotNull(node);
+        Assert.assertEquals(new NodeValue<>(value), node.getNodeValue());
+        assertEquals(0, node.getSuccessorCount());
+    }
 
     @Before
     public void before() {

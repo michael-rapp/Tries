@@ -33,49 +33,6 @@ import static org.junit.Assert.*;
 public abstract class AbstractStringSequenceTrieTest<TrieType extends Trie<StringSequence, String>>
         extends AbstractTrieTest<StringSequence, String, TrieType> {
 
-    final void verifyRootNode(@Nullable final Node<StringSequence, String> node) {
-        verifyRootNode(node, null);
-    }
-
-    final void verifyRootNode(@Nullable final Node<StringSequence, String> node,
-                              @Nullable final String value) {
-        assertNotNull(node);
-        assertNull(node.getPredecessor());
-
-        if (value == null) {
-            assertNull(node.getNodeValue());
-        } else {
-            assertNotNull(node.getNodeValue());
-            assertEquals(value, node.getValue());
-        }
-    }
-
-    final void verifySuccessors(@Nullable final Node<StringSequence, String> node,
-                                @NotNull final String... successors) {
-        assertNotNull(node);
-        assertEquals(successors.length, node.getSuccessorCount());
-
-        for (String successor : successors) {
-            getSuccessor(node, successor);
-        }
-    }
-
-    final Node<StringSequence, String> getSuccessor(
-            @Nullable final Node<StringSequence, String> node,
-            @NotNull final String successor) {
-        assertNotNull(node);
-        Node<StringSequence, String> childNode = node.getSuccessor(new StringSequence(successor));
-        assertNotNull(childNode);
-        return childNode;
-    }
-
-    final void verifyLeaf(@Nullable final Node<StringSequence, String> node,
-                          @Nullable final String value) {
-        assertNotNull(node);
-        Assert.assertEquals(new NodeValue<>(value), node.getNodeValue());
-        assertEquals(0, node.getSuccessorCount());
-    }
-
     /**
      * Adds "tea" to the trie.
      */
