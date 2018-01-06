@@ -170,4 +170,43 @@ public class SequenceUtil {
         return new SequenceComparator<>(comparator);
     }
 
+    /**
+     * Returns the longest common prefix of two sequences.
+     *
+     * @param sequence1 The first sequence as an instance of the generic type {@link T}. The
+     *                  sequence may not be null
+     * @param sequence2 The second sequence as an instance of the generic type {@link T}. The
+     *                  sequence may not be null
+     * @param <T>       The type of the sequences
+     * @return The longest common prefix of the given sequences as an instance of the generic type
+     * {@link T} or null, if the sequences do not have a common prefix
+     */
+    public static <T extends Sequence> T getCommonPrefix(@NotNull final T sequence1,
+                                                         @NotNull final T sequence2) {
+        ensureNotNull(sequence1, "The first sequence may not be null");
+        ensureNotNull(sequence2, "The second sequence may not be null");
+
+        if (sequence1.isEmpty() || sequence2.isEmpty()) {
+            return null;
+        } else {
+            boolean matches = true;
+            T commonPrefix = null;
+            int length = 0;
+
+            while (matches && length < sequence1.length() && length < sequence2.length()) {
+                length++;
+                T prefix1 = subsequence(sequence1, 0, length);
+                T prefix2 = subsequence(sequence2, 0, length);
+                matches = prefix1.equals(prefix2);
+
+                if (matches) {
+                    commonPrefix = prefix1;
+                }
+            }
+
+            return commonPrefix;
+        }
+
+    }
+
 }

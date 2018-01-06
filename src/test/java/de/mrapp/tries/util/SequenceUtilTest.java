@@ -118,4 +118,18 @@ public class SequenceUtilTest {
         assertEquals("foo".compareTo("bar"), c);
     }
 
+    @Test
+    public final void testGetCommonPrefix() {
+        assertNull(SequenceUtil.getCommonPrefix(new StringSequence(""), new StringSequence("foo")));
+        assertNull(SequenceUtil.getCommonPrefix(new StringSequence("foo"), new StringSequence("")));
+        assertNull(
+                SequenceUtil.getCommonPrefix(new StringSequence("foo"), new StringSequence("bar")));
+        assertEquals(new StringSequence("f"), SequenceUtil
+                .getCommonPrefix(new StringSequence("foo"), new StringSequence("fxx")));
+        assertEquals(new StringSequence("fo"), SequenceUtil
+                .getCommonPrefix(new StringSequence("foo"), new StringSequence("fox")));
+        assertEquals(new StringSequence("foo"), SequenceUtil
+                .getCommonPrefix(new StringSequence("foo"), new StringSequence("foo")));
+    }
+
 }
