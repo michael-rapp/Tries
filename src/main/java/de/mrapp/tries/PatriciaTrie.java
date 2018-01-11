@@ -15,6 +15,7 @@ package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.AbstractSortedTrie;
 import de.mrapp.tries.datastructure.SortedListNode;
+import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -114,27 +115,56 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType> extends
         return new SortedListNode<>(comparator);
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     @Override
-    protected final Pair<Node<SequenceType, ValueType>, SequenceType> getSuccessor(
+    protected final Pair<Node<SequenceType, ValueType>, SequenceType> onGetSuccessor(
             @NotNull final Node<SequenceType, ValueType> node,
             @NotNull final SequenceType sequence) {
-        // TODO
+        SequenceType firstElement = SequenceUtil.subsequence(sequence, 0, 1);
+        int index = SequenceUtil.binarySearch(node.getSuccessorCount(), node::getSuccessorKey,
+                (o1, o2) -> ((Comparable<? super SequenceType>) SequenceUtil.subsequence(o1, 0, 1))
+                        .compareTo(SequenceUtil.subsequence(o2, 0, 1)), firstElement);
+
+        if (index != -1) {
+            SequenceType successorKey = node.getSuccessorKey(index);
+            SequenceType commonPrefix = SequenceUtil.getCommonPrefix(sequence, successorKey);
+
+            if (commonPrefix != null) {
+                Node<SequenceType, ValueType> successor = node.getSuccessor(index);
+                SequenceType suffix = commonPrefix.length() < successorKey.length() ?
+                        SequenceUtil.subsequence(successorKey, commonPrefix.length() + 1) : null;
+                return Pair.create(successor, suffix);
+            }
+        }
+
         return null;
     }
 
     @NotNull
     @Override
-    protected final Pair<Node<SequenceType, ValueType>, SequenceType> addSuccessor(
+    protected final Pair<Node<SequenceType, ValueType>, SequenceType> onAddSuccessor(
             @NotNull final Node<SequenceType, ValueType> node,
             @NotNull final SequenceType sequence) {
-        // TODO
-        return null;
+        Node<SequenceType, ValueType> currentNode = node;
+        SequenceType suffix = sequence;
+        Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(node, suffix);
+
+        if (pair != null) {
+            currentNode = pair.first;
+            suffix = pair.second;
+        }
+
+        if (suffix != null && !suffix.isEmpty()) {
+            currentNode = currentNode.addSuccessor(suffix);
+        }
+
+        return Pair.create(currentNode, null);
     }
 
     @Override
-    protected final void removeSuccessor(@NotNull final Node<SequenceType, ValueType> node,
-                                         @NotNull final SequenceType sequence) {
+    protected final void onRemoveSuccessor(@NotNull final Node<SequenceType, ValueType> node,
+                                           @NotNull final SequenceType sequence) {
         // TODO
     }
 
