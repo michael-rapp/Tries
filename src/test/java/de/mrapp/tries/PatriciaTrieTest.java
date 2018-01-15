@@ -136,4 +136,37 @@ public class PatriciaTrieTest
         verifyLeaf(successorUbens, string);
     }
 
+    /**
+     * Adds "romane", "romanus", romulus", "rubens" and "ruber" to the trie.
+     */
+    @Test
+    public final void testPut5() {
+        testPut4();
+        String string = "ruber";
+        String previous = trie.put(convertToSequence(string), string);
+        assertNull(previous);
+        assertEquals(string, trie.get(convertToSequence(string)));
+        assertEquals(5, trie.size());
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "r");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
+        verifySuccessors(successor, "om", "ube");
+        Node<StringSequence, String> successorOm = getSuccessor(successor, "om");
+        verifySuccessors(successorOm, "an", "ulus");
+        Node<StringSequence, String> successorAn = getSuccessor(successorOm, "an");
+        verifySuccessors(successorAn, "e", "us");
+        Node<StringSequence, String> successorE = getSuccessor(successorAn, "e");
+        verifyLeaf(successorE, "romane");
+        Node<StringSequence, String> successorUs = getSuccessor(successorAn, "us");
+        verifyLeaf(successorUs, "romanus");
+        Node<StringSequence, String> successorUlus = getSuccessor(successorOm, "ulus");
+        verifyLeaf(successorUlus, "romulus");
+        Node<StringSequence, String> successorUbe = getSuccessor(successor, "ube");
+        verifySuccessors(successorUbe, "ns", "r");
+        Node<StringSequence, String> successorNs = getSuccessor(successorUbe, "ns");
+        verifyLeaf(successorNs, "rubens");
+        Node<StringSequence, String> successorR = getSuccessor(successorUbe, "r");
+        verifyLeaf(successorR, "ruber");
+    }
+
 }

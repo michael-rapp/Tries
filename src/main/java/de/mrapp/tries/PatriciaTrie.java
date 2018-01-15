@@ -129,10 +129,10 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
                 Node<SequenceType, ValueType> successor = node.getSuccessor(index);
 
                 if (!readOnly) {
-                    node.removeSuccessor(index);
                     SequenceType intermediateSuffix = getSuffix(successorKey, commonPrefix);
 
                     if (intermediateSuffix != null && !intermediateSuffix.isEmpty()) {
+                        node.removeSuccessor(index);
                         Node<SequenceType, ValueType> intermediateNode = node.addSuccessor(commonPrefix);
                         intermediateNode.addSuccessor(intermediateSuffix, successor);
                         successor = intermediateNode;
