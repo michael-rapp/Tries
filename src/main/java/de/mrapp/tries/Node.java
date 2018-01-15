@@ -22,44 +22,38 @@ import java.util.RandomAccess;
 import static de.mrapp.util.Condition.ensureTrue;
 
 /**
- * Defines the interface, a node of a trie must implement. It extends the interface {@link Iterable}
- * to be able to iterate the keys, which correspond to the node's successors.
+ * Defines the interface, a node of a trie must implement. It extends the interface {@link Iterable} to be able to
+ * iterate the keys, which correspond to the node's successors.
  * <p>
- * If the successors of the node are sorted, sublasses must implement the interface {@link
- * RandomAccess}.
+ * If the successors of the node are sorted, sublasses must implement the interface {@link RandomAccess}.
  *
  * @param <KeyType>   The type of the keys, which are associated with the node's successors
  * @param <ValueType> The type of the node's value
  * @author Michael Rapp
  * @since 1.0.0
  */
-public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializable,
-        Cloneable {
+public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializable, Cloneable {
 
     /**
      * Returns the value of the node.
      *
-     * @return The value of the node encapsulated by a {@link NodeValue} wrapper or null, if the
-     * node does not correspond to a key, which has been put into the trie
+     * @return The value of the node encapsulated by a {@link NodeValue} wrapper or null, if the node does not
+     * correspond to a key, which has been put into the trie
      */
-    @Nullable
-    NodeValue<ValueType> getNodeValue();
+    @Nullable NodeValue<ValueType> getNodeValue();
 
     /**
      * Sets the value of the node.
      *
-     * @param nodeValue A wrapper, which encapsulates the value, which should be set, as an instance
-     *                  of the class {@link NodeValue} or null, if the node does not correspond to a
-     *                  key, which has been put into the trie
-     * @return The previous value of the node as an instance of the class {@link NodeValue} or null,
-     * if no value was set
+     * @param nodeValue A wrapper, which encapsulates the value, which should be set, as an instance of the class {@link
+     *                  NodeValue} or null, if the node does not correspond to a key, which has been put into the trie
+     * @return The previous value of the node as an instance of the class {@link NodeValue} or null, if no value was set
      */
-    @Nullable
-    NodeValue<ValueType> setNodeValue(@Nullable final NodeValue<ValueType> nodeValue);
+    @Nullable NodeValue<ValueType> setNodeValue(@Nullable final NodeValue<ValueType> nodeValue);
 
     /**
-     * Returns the unboxed value of the node, i.e. null, if {@link #getNodeValue()} returns null, or
-     * the encapsulated value of the returned {@link NodeValue} otherwise.
+     * Returns the unboxed value of the node, i.e. null, if {@link #getNodeValue()} returns null, or the encapsulated
+     * value of the returned {@link NodeValue} otherwise.
      *
      * @return The unboxed value of the node as an instance of the generic type {@link ValueType}
      */
@@ -69,8 +63,8 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
     }
 
     /**
-     * Returns, whether a value is set for the node, or not. If a value is set, the node corresponds
-     * to a key, which has been put into the trie.
+     * Returns, whether a value is set for the node, or not. If a value is set, the node corresponds to a key, which has
+     * been put into the trie.
      *
      * @return True, if a value is set for the node, false otherwise
      */
@@ -97,21 +91,20 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
     /**
      * Returns the successor of the node, which corresponds to a specific key.
      *
-     * @param key The key of the successor, which should be returned, as an instance of the generic
-     *            type {@link KeyType}. The key may not be null
-     * @return The successor, which corresponds to the given key, as an instance of the type {@link
-     * Node} or null, if no successor corresponds to the given key
+     * @param key The key of the successor, which should be returned, as an instance of the generic type {@link
+     *            KeyType}. The key may not be null
+     * @return The successor, which corresponds to the given key, as an instance of the type {@link Node} or null, if no
+     * successor corresponds to the given key
      */
-    @Nullable
-    Node<KeyType, ValueType> getSuccessor(@NotNull KeyType key);
+    @Nullable Node<KeyType, ValueType> getSuccessor(@NotNull KeyType key);
 
     /**
      * Creates a new successor and adds it to the node.
      *
-     * @param key The key, which corresponds to the successor to be created, as an instance of the
-     *            generic type {@link KeyType}. The key may not be null
-     * @return The successor, which has been added, as an instance of the type {@link Node}. The
-     * successor may not be null
+     * @param key The key, which corresponds to the successor to be created, as an instance of the generic type {@link
+     *            KeyType}. The key may not be null
+     * @return The successor, which has been added, as an instance of the type {@link Node}. The successor may not be
+     * null
      */
     @NotNull
     default Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key) {
@@ -121,42 +114,50 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
     /**
      * Adds a specific successor to the node.
      *
-     * @param key       The key, which corresponds to the successor to be created, as an instance of
-     *                  the generic type {@link KeyType}. The key may not be null
-     * @param successor The successor, which should be added, as an instance of the type {@link
-     *                  Node} or null, if the successor should be created
-     * @return The successor, which has been added, as an instance of the type {@link Node}. The
-     * successor may not be null
+     * @param key       The key, which corresponds to the successor to be created, as an instance of the generic type
+     *                  {@link KeyType}. The key may not be null
+     * @param successor The successor, which should be added, as an instance of the type {@link Node} or null, if the
+     *                  successor should be created
+     * @return The successor, which has been added, as an instance of the type {@link Node}. The successor may not be
+     * null
      */
-    @NotNull
-    Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key,
-                                          @Nullable final Node<KeyType, ValueType> successor);
+    @NotNull Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key,
+                                                   @Nullable final Node<KeyType, ValueType> successor);
 
     /**
      * Removes the successor, which corresponds to a specific key.
      *
-     * @param key The key, which corresponds to the successor, which should be removed, as an
-     *            instance of the generic type {@link KeyType}. The key may not be null
+     * @param key The key, which corresponds to the successor, which should be removed, as an instance of the generic
+     *            type {@link KeyType}. The key may not be null
      */
     void removeSuccessor(@NotNull final KeyType key);
 
     /**
-     * Returns the number of successors for which values are set, i.e. {@link #isValueSet()} returns
-     * <code>true</code>. All successors of the node are taken into account recursively down to the
-     * leaf nodes.
+     * Removes the successor at a specific index. If the index is invalid, an {@link IndexOutOfBoundsException} is
+     * thrown. If the node's successors are not sorted, an {@link UnsupportedOperationException} is thrown.
+     *
+     * @param index The index of the successor, which should be removed, as an {@link Integer} value
+     */
+    default void removeSuccessor(final int index) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the number of successors for which values are set, i.e. {@link #isValueSet()} returns <code>true</code>.
+     * All successors of the node are taken into account recursively down to the leaf nodes.
      *
      * @return The number of successor, for which values are set, as an {@link Integer} value
      */
     int getSuccessorValueCount();
 
     /**
-     * Returns the key, which corresponds to the successor at a specific index. If the index is
-     * invalid, an {@link IndexOutOfBoundsException} is thrown. If the node's successor or are not
-     * sorted, an {@link UnsupportedOperationException} is thrown.
+     * Returns the key, which corresponds to the successor at a specific index. If the index is invalid, an {@link
+     * IndexOutOfBoundsException} is thrown. If the node's successor or are not sorted, an {@link
+     * UnsupportedOperationException} is thrown.
      *
      * @param index The index of the key, which should be returned, as an {@link Integer} value
-     * @return The key of the successor at the given index as an instance of the generic type {@link
-     * KeyType}. The key may not be null
+     * @return The key of the successor at the given index as an instance of the generic type {@link KeyType}. The key
+     * may not be null
      */
     @NotNull
     default KeyType getSuccessorKey(final int index) {
@@ -164,43 +165,38 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
     }
 
     /**
-     * Returns the key, which corresponds to the first successor. If the node's successors are not
-     * sorted, an {@link UnsupportedOperationException} is thrown.
+     * Returns the key, which corresponds to the first successor. If the node's successors are not sorted, an {@link
+     * UnsupportedOperationException} is thrown.
      *
-     * @return The key of the first successor as an instance of the generic type {@link KeyType} or
-     * null, if the node does not have any successors
+     * @return The key of the first successor as an instance of the generic type {@link KeyType} or null, if the node
+     * does not have any successors
      */
     @Nullable
     default KeyType getFirstSuccessorKey() {
-        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
-                UnsupportedOperationException.class);
+        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null, UnsupportedOperationException.class);
         return hasSuccessors() ? getSuccessorKey(0) : null;
     }
 
     /**
-     * Returns the key, which corresponds to the last successor. If the node's successors are not
-     * sorted, an {@link UnsupportedOperationException} is thrown.
+     * Returns the key, which corresponds to the last successor. If the node's successors are not sorted, an {@link
+     * UnsupportedOperationException} is thrown.
      *
-     * @return The key of the last successor as an instance of the generic type {@link KeyType} or
-     * null, if the node does not have any successors
+     * @return The key of the last successor as an instance of the generic type {@link KeyType} or null, if the node
+     * does not have any successors
      */
     @Nullable
     default KeyType getLastSuccessorKey() {
-        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
-                UnsupportedOperationException.class);
+        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null, UnsupportedOperationException.class);
         int successorCount = getSuccessorCount();
         return successorCount > 0 ? getSuccessorKey(successorCount - 1) : null;
     }
 
     /**
-     * Returns the successor at a specific index. If the index is invalid, an {@link
-     * IndexOutOfBoundsException} is thrown. If the node's successors are not sorted, an {@link
-     * UnsupportedOperationException} is thrown.
+     * Returns the successor at a specific index. If the index is invalid, an {@link IndexOutOfBoundsException} is
+     * thrown. If the node's successors are not sorted, an {@link UnsupportedOperationException} is thrown.
      *
-     * @param index The index of the successor, which which should be returned, as an {@link
-     *              Integer} value
-     * @return The successor at the given index as an instance of the type {@link Node}. The
-     * successor may not be null
+     * @param index The index of the successor, which which should be returned, as an {@link Integer} value
+     * @return The successor at the given index as an instance of the type {@link Node}. The successor may not be null
      */
     @NotNull
     default Node<KeyType, ValueType> getSuccessor(final int index) {
@@ -208,79 +204,75 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
     }
 
     /**
-     * Returns the first successor. If the node's successors are not sorted, an {@link
-     * UnsupportedOperationException} is thrown.
+     * Returns the first successor. If the node's successors are not sorted, an {@link UnsupportedOperationException} is
+     * thrown.
      *
-     * @return The first successor as an instance of the type {@link Node} or null, if the node does
-     * not have any successors
+     * @return The first successor as an instance of the type {@link Node} or null, if the node does not have any
+     * successors
      */
     @Nullable
     default Node<KeyType, ValueType> getFirstSuccessor() {
-        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
-                UnsupportedOperationException.class);
+        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null, UnsupportedOperationException.class);
         return hasSuccessors() ? getSuccessor(0) : null;
     }
 
     /**
-     * Returns the last successor. If the node's successors are not sorted, an {@link
-     * UnsupportedOperationException} is thrown.
+     * Returns the last successor. If the node's successors are not sorted, an {@link UnsupportedOperationException} is
+     * thrown.
      *
-     * @return The last successor as an instance of the type {@link Node} or null, if the node does
-     * not have any successors
+     * @return The last successor as an instance of the type {@link Node} or null, if the node does not have any
+     * successors
      */
     @Nullable
     default Node<KeyType, ValueType> getLastSuccessor() {
-        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
-                UnsupportedOperationException.class);
+        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null, UnsupportedOperationException.class);
         int successorCount = getSuccessorCount();
         return successorCount > 0 ? getSuccessor(successorCount - 1) : null;
     }
 
     /**
-     * Returns the index of the successor, which corresponds to a specific key. If the node's
-     * successors are not sorted, an {@link UnsupportedOperationException} is thrown.
+     * Returns the index of the successor, which corresponds to a specific key. If the node's successors are not sorted,
+     * an {@link UnsupportedOperationException} is thrown.
      *
-     * @param key The key of the successor, whose index should be returned, as an instance of the
-     *            type {@link KeyType}. The key may not be null
-     * @return The index of the successor, which corresponds to the given key, as an {@link Integer}
-     * value or -1, if no such successor is available
+     * @param key The key of the successor, whose index should be returned, as an instance of the type {@link KeyType}.
+     *            The key may not be null
+     * @return The index of the successor, which corresponds to the given key, as an {@link Integer} value or -1, if no
+     * such successor is available
      */
     default int indexOf(@NotNull KeyType key) {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Increases the number of successors for which values are set by a specific amount. This causes
-     * the number of successors of the node's predecessors to be increased recursively as well.
+     * Increases the number of successors for which values are set by a specific amount. This causes the number of
+     * successors of the node's predecessors to be increased recursively as well.
      *
-     * @param by The amount, the number of successor should be increased by, as an {@link Integer}
-     *           value. The amount must be at least 0
+     * @param by The amount, the number of successor should be increased by, as an {@link Integer} value. The amount
+     *           must be at least 0
      */
     void increaseSuccessorValueCount(int by);
 
     /**
-     * Decreases the number of successors for which values are set by a specific amount. This causes
-     * the number of successors of the node's predecessors to be decreased recursively as well.
+     * Decreases the number of successors for which values are set by a specific amount. This causes the number of
+     * successors of the node's predecessors to be decreased recursively as well.
      *
-     * @param by The amount, the number of successor should be decreased by, as an {@link Integer}
-     *           value. The amount must be at least 0
+     * @param by The amount, the number of successor should be decreased by, as an {@link Integer} value. The amount
+     *           must be at least 0
      */
     void decreaseSuccessorValueCount(int by);
 
     /**
      * Returns the predecessor of the node.
      *
-     * @return The predecessor of the node as an instance of the type {@link Node} or null, if no
-     * predecessor is set
+     * @return The predecessor of the node as an instance of the type {@link Node} or null, if no predecessor is set
      */
-    @Nullable
-    Node<KeyType, ValueType> getPredecessor();
+    @Nullable Node<KeyType, ValueType> getPredecessor();
 
     /**
      * Sets the predecessor of the node.
      *
-     * @param predecessor The predecessor, which should be set, as an instance of the type {@link
-     *                    Node} or null, if no predecessor should be set
+     * @param predecessor The predecessor, which should be set, as an instance of the type {@link Node} or null, if no
+     *                    predecessor should be set
      */
     void setPredecessor(@Nullable final Node<KeyType, ValueType> predecessor);
 

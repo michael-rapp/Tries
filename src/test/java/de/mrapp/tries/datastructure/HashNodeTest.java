@@ -165,6 +165,12 @@ public class HashNodeTest {
         node.indexOf(new StringSequence("c"));
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testRemoveSuccessorByIndex() {
+        HashNode<StringSequence, String> node = new HashNode<>();
+        node.removeSuccessor(2);
+    }
+
     @Test
     public final void testClone() {
         StringSequence key = new StringSequence("key");

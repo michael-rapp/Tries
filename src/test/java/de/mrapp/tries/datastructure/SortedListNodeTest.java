@@ -211,6 +211,21 @@ public class SortedListNodeTest {
     }
 
     @Test
+    public final void testRemoveSuccessorByIndex() {
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        Node<StringSequence, String> successor = node.addSuccessor(new StringSequence("a"));
+        successor.setNodeValue(new NodeValue<>("a"));
+        successor = node.addSuccessor(new StringSequence("b"));
+        successor.setNodeValue(new NodeValue<>("b"));
+        assertEquals(2, node.getSuccessorCount());
+        assertEquals(2, node.getSuccessorValueCount());
+        node.removeSuccessor(1);
+        assertEquals(1, node.getSuccessorCount());
+        assertEquals(1, node.getSuccessorValueCount());
+        assertEquals(new StringSequence("a"), node.getSuccessorKey(0));
+    }
+
+    @Test
     public final void testClone() {
         StringSequence key = new StringSequence("key");
         SortedListNode<StringSequence, String> node = new SortedListNode<>(null);

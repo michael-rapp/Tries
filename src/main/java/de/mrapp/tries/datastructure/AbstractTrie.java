@@ -28,24 +28,21 @@ import java.util.*;
 import static de.mrapp.util.Condition.*;
 
 /**
- * An abstract base class for all tries. It implements the methods of the interface {@link Map}. In
- * particular it provides general implementations of lookup, insert and delete operations without
- * forcing constraints on the trie's structure. Subclasses must implement the methods {@link
- * #onGetSuccessor(Node, Sequence)}, {@link #onAddSuccessor(Node, Sequence)} and {@link
- * #onRemoveSuccessor(Node, Sequence)} depending on the trie's structure.
+ * An abstract base class for all tries. It implements the methods of the interface {@link Map}. In particular it
+ * provides general implementations of lookup, insert and delete operations without forcing constraints on the trie's
+ * structure. Subclasses must implement the methods {@link #onGetSuccessor(Node, Sequence, boolean)}, {@link
+ * #onAddSuccessor(Node, Sequence)} and {@link #onRemoveSuccessor(Node, Sequence)} depending on the trie's structure.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */
-public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
-        implements Trie<SequenceType, ValueType> {
+public abstract class AbstractTrie<SequenceType extends Sequence, ValueType> implements Trie<SequenceType, ValueType> {
 
     /**
-     * The entry set of a trie as returned by the method {@link Trie#entrySet()}. The entry set is
-     * backed by an {@link EntryIterator}, which traverses all nodes of the trie for which a value
-     * is set.
+     * The entry set of a trie as returned by the method {@link Trie#entrySet()}. The entry set is backed by an {@link
+     * EntryIterator}, which traverses all nodes of the trie for which a value is set.
      *
      * @param <K>        The type of the sequences, which are used as the trie's keys
      * @param <V>        The type of the values, which are stored by the trie
@@ -62,8 +59,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         /**
          * Creates a new entry set of a specific backing trie.
          *
-         * @param backingTrie The backing trie as an instance of the generic type {@link TrieType}.
-         *                    The trie may not be null
+         * @param backingTrie The backing trie as an instance of the generic type {@link TrieType}. The trie may not be
+         *                    null
          */
         EntrySet(@NotNull final TrieType backingTrie) {
             ensureNotNull(backingTrie, "The backing trie may not be null");
@@ -102,8 +99,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     }
 
     /**
-     * The values of a trie as returned by the method {@link Trie#values()}. The entry set is backed
-     * by a {@link ValueIterator}, which traverses all values of the trie.
+     * The values of a trie as returned by the method {@link Trie#values()}. The entry set is backed by a {@link
+     * ValueIterator}, which traverses all values of the trie.
      *
      * @param <K>        The type of the sequences, which are used as the trie's keys
      * @param <V>        The type of the values, which are stored by the trie
@@ -120,8 +117,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         /**
          * Creates the values of a specific backing trie.
          *
-         * @param backingTrie The backing trie as an instance of the generic type {@link TrieType}.
-         *                    The trie may not be null
+         * @param backingTrie The backing trie as an instance of the generic type {@link TrieType}. The trie may not be
+         *                    null
          */
         Values(@NotNull final TrieType backingTrie) {
             ensureNotNull(backingTrie, "The backing trie may not be null");
@@ -164,19 +161,18 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     }
 
     /**
-     * The key set of a trie as returned by the method {@link Trie#keySet()}. The entry set is
-     * backed by a {@link KeyIterator}, which traverses all keys of the trie.
+     * The key set of a trie as returned by the method {@link Trie#keySet()}. The entry set is backed by a {@link
+     * KeyIterator}, which traverses all keys of the trie.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
      */
-    protected static final class KeySet<K extends Sequence> extends
-            AbstractKeySet<K, AbstractTrie<K, ?>> {
+    protected static final class KeySet<K extends Sequence> extends AbstractKeySet<K, AbstractTrie<K, ?>> {
 
         /**
          * Creates a new key set of a specific backing trie.
          *
-         * @param backingTrie The backing trie as an instance of the generic type {@link
-         *                    AbstractTrie}. The trie may not be null
+         * @param backingTrie The backing trie as an instance of the generic type {@link AbstractTrie}. The trie may not
+         *                    be null
          */
         KeySet(@NotNull final AbstractTrie<K, ?> backingTrie) {
             super(backingTrie);
@@ -207,8 +203,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         /**
          * Creates a new key set.
          *
-         * @param backingMap The backing map, which should be used, as an instance of the generic
-         *                   type {@link MapType}. The backing map may not be null
+         * @param backingMap The backing map, which should be used, as an instance of the generic type {@link MapType}.
+         *                   The backing map may not be null
          */
         AbstractKeySet(@NotNull final MapType backingMap) {
             ensureNotNull(backingMap, "The backing map may not be null");
@@ -251,15 +247,14 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class EntryIterator<K extends Sequence, V> extends
-            AbstractEntryIterator<K, V, Map.Entry<K, V>> {
+    private static final class EntryIterator<K extends Sequence, V>
+            extends AbstractEntryIterator<K, V, Map.Entry<K, V>> {
 
         /**
-         * Creates a new iterator, which allows to iterate all nodes of a trie for which a value is
-         * set.
+         * Creates a new iterator, which allows to iterate all nodes of a trie for which a value is set.
          *
-         * @param trie The trie, which should be traversed by the iterator, as an instance of the
-         *             class {@link AbstractTrie}. The trie may not be null
+         * @param trie The trie, which should be traversed by the iterator, as an instance of the class {@link
+         *             AbstractTrie}. The trie may not be null
          */
         EntryIterator(@NotNull final AbstractTrie<K, V> trie) {
             super(trie);
@@ -278,14 +273,13 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class ValueIterator<K extends Sequence, V> extends
-            AbstractEntryIterator<K, V, V> {
+    private static final class ValueIterator<K extends Sequence, V> extends AbstractEntryIterator<K, V, V> {
 
         /**
          * Creates a new iterator, which allows to iterate all values, which are stored by a trie.
          *
-         * @param trie The trie, which should be traversed by the iterator, as an instance of the
-         *             class {@link AbstractTrie}. The trie may not be null
+         * @param trie The trie, which should be traversed by the iterator, as an instance of the class {@link
+         *             AbstractTrie}. The trie may not be null
          */
         ValueIterator(@NotNull final AbstractTrie<K, V> trie) {
             super(trie);
@@ -304,14 +298,13 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class KeyIterator<K extends Sequence, V> extends
-            AbstractEntryIterator<K, V, K> {
+    private static final class KeyIterator<K extends Sequence, V> extends AbstractEntryIterator<K, V, K> {
 
         /**
          * Creates a new iterator, which allows to iterate all keys, which are stored by a trie.
          *
-         * @param trie The trie, which should be traversed by the iterator, as an instance of the
-         *             class {@link AbstractTrie}. The trie may not be null
+         * @param trie The trie, which should be traversed by the iterator, as an instance of the class {@link
+         *             AbstractTrie}. The trie may not be null
          */
         KeyIterator(@NotNull final AbstractTrie<K, V> trie) {
             super(trie);
@@ -325,16 +318,16 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     }
 
     /**
-     * An abstract base class for all iterators, which traverse all nodes of the trie in order to
-     * identify those that contain values. Only nodes for which a value (null or non-null) is set,
-     * are returned by the iterator's {@link #nextEntry()} method.
+     * An abstract base class for all iterators, which traverse all nodes of the trie in order to identify those that
+     * contain values. Only nodes for which a value (null or non-null) is set, are returned by the iterator's {@link
+     * #nextEntry()} method.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      * @param <T> The type of the iterated items
      */
-    private abstract static class AbstractEntryIterator<K extends Sequence, V, T> extends
-            AbstractIterator<K, V, T, AbstractTrie<K, V>> {
+    private abstract static class AbstractEntryIterator<K extends Sequence, V, T>
+            extends AbstractIterator<K, V, T, AbstractTrie<K, V>> {
 
         /**
          * Represents a path from the root to a specific node.
@@ -359,8 +352,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             /**
              * Creates a new empty path.
              *
-             * @param rootNode The root node of the trie, as an instance of the type {@link Node} or
-             *                 null, if the trie is empty
+             * @param rootNode The root node of the trie, as an instance of the type {@link Node} or null, if the trie
+             *                 is empty
              */
             Path(@Nullable final Node<K, V> rootNode) {
                 this.node = rootNode;
@@ -371,11 +364,10 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             /**
              * Creates a new path, which leads to a specific node.
              *
-             * @param node     The node, the path should lead to, as an instance of the type {@link
-             *                 Node}. The node may not be null
-             * @param sequence The sequence, which corresponds to the given node, as an instance of
-             *                 the generic type {@link K}. The sequence may neither be null, nor
-             *                 empty
+             * @param node     The node, the path should lead to, as an instance of the type {@link Node}. The node may
+             *                 not be null
+             * @param sequence The sequence, which corresponds to the given node, as an instance of the generic type
+             *                 {@link K}. The sequence may neither be null, nor empty
              */
             Path(@NotNull final Node<K, V> node, @NotNull final K sequence) {
                 ensureNotNull(node, "The node may not be null");
@@ -399,17 +391,17 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         private final Deque<Path> stack;
 
         /**
-         * The path, which leads to the node, which is returned when the {@link #next()} method is
-         * called for the next time.
+         * The path, which leads to the node, which is returned when the {@link #next()} method is called for the next
+         * time.
          */
         private Path nextPath;
 
         /**
-         * Fetches the path, which leads to the node, which should be returned when the iterator's
-         * {@link #next()} method is called for the next time.
+         * Fetches the path, which leads to the node, which should be returned when the iterator's {@link #next()}
+         * method is called for the next time.
          *
-         * @return The path, which leads to the next node, as an instance of the class {@link Path}
-         * or null, if no nodes with a value are left
+         * @return The path, which leads to the next node, as an instance of the class {@link Path} or null, if no nodes
+         * with a value are left
          */
         @Nullable
         private Path fetchNext() {
@@ -434,10 +426,10 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         /**
          * Descends in the trie until the next node with a value is found.
          *
-         * @param path The path, which points to the node from which the descend should start, as an
-         *             instance of the class {@link Path}. The path may not be null
-         * @return The path, which points to the next node with a value, as an instance of the class
-         * {@link Path} or null, if no ndoes with a value are left
+         * @param path The path, which points to the node from which the descend should start, as an instance of the
+         *             class {@link Path}. The path may not be null
+         * @return The path, which points to the next node with a value, as an instance of the class {@link Path} or
+         * null, if no ndoes with a value are left
          */
         @Nullable
         private Path descend(@NotNull final Path path) {
@@ -474,22 +466,19 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         }
 
         final Map.Entry<K, V> nextEntry() {
-            ensureEqual(expectedModificationCount, trie.modificationCount, null,
-                    ConcurrentModificationException.class);
+            ensureEqual(expectedModificationCount, trie.modificationCount, null, ConcurrentModificationException.class);
             ensureTrue(hasNext(), null, NoSuchElementException.class);
             Path result = nextPath;
             nextPath = fetchNext();
-            lastReturned = new AbstractMap.SimpleImmutableEntry<>(result.sequence,
-                    result.node.getValue());
+            lastReturned = new AbstractMap.SimpleImmutableEntry<>(result.sequence, result.node.getValue());
             return lastReturned;
         }
 
         /**
-         * Creates a new iterator, which allows to iterate all nodes of the trie, which contain a
-         * value.
+         * Creates a new iterator, which allows to iterate all nodes of the trie, which contain a value.
          *
-         * @param trie The trie, which should be traversed by the iterator, as an instance of the
-         *             class {@link AbstractTrie}. The trie may not be null
+         * @param trie The trie, which should be traversed by the iterator, as an instance of the class {@link
+         *             AbstractTrie}. The trie may not be null
          */
         AbstractEntryIterator(@NotNull final AbstractTrie<K, V> trie) {
             super(trie);
@@ -510,8 +499,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         @Override
         public void remove() {
             ensureNotNull(lastReturned, null, IllegalStateException.class);
-            ensureEqual(expectedModificationCount, trie.modificationCount, null,
-                    ConcurrentModificationException.class);
+            ensureEqual(expectedModificationCount, trie.modificationCount, null, ConcurrentModificationException.class);
             trie.remove(lastReturned.getKey());
             lastReturned = null;
             expectedModificationCount = trie.modificationCount;
@@ -543,8 +531,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         /**
          * Creates a new iterator, which operates on a trie.
          *
-         * @param trie The trie, the iterator should operate on, as an instance of the generic type
-         *             {@link TrieType}. The trie may not be null
+         * @param trie The trie, the iterator should operate on, as an instance of the generic type {@link TrieType}.
+         *             The trie may not be null
          */
         AbstractIterator(@NotNull final TrieType trie) {
             ensureNotNull(trie, "The trie may not be null");
@@ -565,8 +553,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     Node<SequenceType, ValueType> rootNode;
 
     /**
-     * A counter, which is increased whenever the trie is modified. It is used to fast-fail
-     * iterators by throwing a {@link ConcurrentModificationException}.
+     * A counter, which is increased whenever the trie is modified. It is used to fast-fail iterators by throwing a
+     * {@link ConcurrentModificationException}.
      */
     long modificationCount;
 
@@ -588,58 +576,57 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     /**
      * The method, which is invoked on subclasses in order to create the trie's root node.
      *
-     * @return The root node, which has been created, as an instance of the type {@link Node}. The
-     * root node may not be null
+     * @return The root node, which has been created, as an instance of the type {@link Node}. The root node may not be
+     * null
      */
     @NotNull
     protected abstract Node<SequenceType, ValueType> createRootNode();
 
     /**
-     * The method, which is invoked on subclasses in order to retrieve the successor of a specific
-     * node, which corresponds to a specific sequence. Depending on the trie's structure, the suffix
-     * of the sequence can be processed to any extend.
+     * The method, which is invoked on subclasses in order to retrieve the successor of a specific node, which
+     * corresponds to a specific sequence. Depending on the trie's structure, the suffix of the sequence can be
+     * processed to any extend.
      *
-     * @param node     The node, whose successor should be returned, as an instance of the type
-     *                 {@link Node}. The node may not be null
-     * @param sequence The sequence, the successor corresponds to, as an instance of the generic
-     *                 type {@link SequenceType}. The sequence may neither be null, nor empty
-     * @return A pair, which contains the successor, which corresponds to the given sequence, as
-     * well as the suffix of the sequence, depending on how far it has been processed, as an
-     * instance of the class {@link Pair} or null, if no matching successor is available
+     * @param node     The node, whose successor should be returned, as an instance of the type {@link Node}. The node
+     *                 may not be null
+     * @param sequence The sequence, the successor corresponds to, as an instance of the generic type {@link
+     *                 SequenceType}. The sequence may neither be null, nor empty
+     * @param readOnly True, if the method is invoked as part of a read-only operation, i.e. the trie's structure may
+     *                 not be modified, false otherwise
+     * @return A pair, which contains the successor, which corresponds to the given sequence, as well as the suffix of
+     * the sequence, depending on how far it has been processed, as an instance of the class {@link Pair} or null, if no
+     * matching successor is available
      */
     @Nullable
     protected abstract Pair<Node<SequenceType, ValueType>, SequenceType> onGetSuccessor(
-            @NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType sequence);
+            @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence,
+            final boolean readOnly);
 
     /**
-     * The method, which is invoked on subclasses in order to add a successor to a specific node.
-     * Depending on the trie's structure, the given sequence can be processed to any extend.
+     * The method, which is invoked on subclasses in order to add a successor to a specific node. Depending on the
+     * trie's structure, the given sequence can be processed to any extend.
      *
-     * @param node     The node, the successor should be added to, as an instance of the type {@link
-     *                 Node}. The node may not be null
-     * @param sequence The sequence, the successor, which should be added, corresponds to, as an
-     *                 instance of the generic type {@link SequenceType}. The sequence may neither
-     *                 be null, nor empty
-     * @return A pair, which contains the successor, which has been created, as well as the suffix
-     * of the given sequence, depending on how far it has been processed, as an instance of the
-     * class {@link Pair}. The pair may not be null
+     * @param node     The node, the successor should be added to, as an instance of the type {@link Node}. The node may
+     *                 not be null
+     * @param sequence The sequence, the successor, which should be added, corresponds to, as an instance of the generic
+     *                 type {@link SequenceType}. The sequence may neither be null, nor empty
+     * @return A pair, which contains the successor, which has been created, as well as the suffix of the given
+     * sequence, depending on how far it has been processed, as an instance of the class {@link Pair}. The pair may not
+     * be null
      */
     @NotNull
     protected abstract Pair<Node<SequenceType, ValueType>, SequenceType> onAddSuccessor(
-            @NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType sequence);
+            @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence);
 
     /**
-     * The method, which is invoked on subclasses in order to remove the successor, which
-     * corresponds to a specific sequence, from a specific node. Depending on the trie's structure
-     * the given sequence can be processed to any extend.
+     * The method, which is invoked on subclasses in order to remove the successor, which corresponds to a specific
+     * sequence, from a specific node. Depending on the trie's structure the given sequence can be processed to any
+     * extend.
      *
-     * @param node     The node, the successor should be removed from, as an instance of the type
-     *                 {@link Node}. The node may not be null
-     * @param sequence The sequence, the successor, which should be removed, corresponds to, as an
-     *                 instance of the generic type {@link SequenceType}. The sequence may neither
-     *                 be null, nor empty
+     * @param node     The node, the successor should be removed from, as an instance of the type {@link Node}. The node
+     *                 may not be null
+     * @param sequence The sequence, the successor, which should be removed, corresponds to, as an instance of the
+     *                 generic type {@link SequenceType}. The sequence may neither be null, nor empty
      */
     protected abstract void onRemoveSuccessor(@NotNull final Node<SequenceType, ValueType> node,
                                               @NotNull final SequenceType sequence);
@@ -647,11 +634,11 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     /**
      * Traverses the trie in order to returns the node, which corresponds to a specific key.
      *
-     * @param key The key, the node, which should be returned, corresponds to, as an instance of the
-     *            class {@link Object}. If the key cannot be cast to the generic type {@link
-     *            SequenceType}, a {@link ClassCastException} will be thrown
-     * @return The node, which corresponds to the given key, as an instance of the type {@link Node}
-     * or null, if no such node is available
+     * @param key The key, the node, which should be returned, corresponds to, as an instance of the class {@link
+     *            Object}. If the key cannot be cast to the generic type {@link SequenceType}, a {@link
+     *            ClassCastException} will be thrown
+     * @return The node, which corresponds to the given key, as an instance of the type {@link Node} or null, if no such
+     * node is available
      */
     @SuppressWarnings("unchecked")
     @Nullable
@@ -663,8 +650,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             SequenceType suffix = sequence;
 
             while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode,
-                        suffix);
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode, suffix, true);
 
                 if (pair == null) {
                     return null;
@@ -683,8 +669,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     /**
      * Creates a new trie.
      *
-     * @param rootNode The root node of the trie as an instance of the type {@link Node} or null, if
-     *                 the trie should be empty
+     * @param rootNode The root node of the trie as an instance of the type {@link Node} or null, if the trie should be
+     *                 empty
      */
     protected AbstractTrie(@Nullable final Node<SequenceType, ValueType> rootNode) {
         this.rootNode = rootNode;
@@ -701,8 +687,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
     /**
      * Creates a new trie, which contains all key-value pairs that are contained in a map.
      *
-     * @param map The map, which contains the key-value pairs that should be added to the trie, as
-     *            an instance of the type {@link Map}. The map may not be null
+     * @param map The map, which contains the key-value pairs that should be added to the trie, as an instance of the
+     *            type {@link Map}. The map may not be null
      */
     public AbstractTrie(@NotNull final Map<SequenceType, ValueType> map) {
         this();
@@ -786,8 +772,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
         SequenceType suffix = key;
 
         while (suffix != null && !suffix.isEmpty()) {
-            Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode,
-                    suffix);
+            Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode, suffix, false);
 
             if (pair == null) {
                 break;
@@ -803,8 +788,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
             previousValue = currentNode.setNodeValue(new NodeValue<>(value));
         } else {
             while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onAddSuccessor(currentNode,
-                        suffix);
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onAddSuccessor(currentNode, suffix);
                 Node<SequenceType, ValueType> successor = pair.first;
                 suffix = pair.second;
 
@@ -847,8 +831,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType>
                 SequenceType suffix = sequence;
 
                 while (!suffix.isEmpty()) {
-                    Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(
-                            currentNode, suffix);
+                    Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode, suffix, false);
 
                     if (pair == null) {
                         return null;

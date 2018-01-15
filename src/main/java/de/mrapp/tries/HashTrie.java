@@ -24,20 +24,17 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * A unsorted trie, which stores the successors of nodes in hash maps. The edges between nodes
- * always correspond to exactly one element of a sequence. Therefore, even if a subsequence of
- * length n is not shared between multiple keys, the trie contains n nodes to store that
- * subsequence. As the used hash maps enable to lookup successors in constant time, this
- * implementation should be preferred over {@link SortedListTrie}, if the order of keys is
- * irrelevant.
+ * A unsorted trie, which stores the successors of nodes in hash maps. The edges between nodes always correspond to
+ * exactly one element of a sequence. Therefore, even if a subsequence of length n is not shared between multiple keys,
+ * the trie contains n nodes to store that subsequence. As the used hash maps enable to lookup successors in constant
+ * time, this implementation should be preferred over {@link SortedListTrie}, if the order of keys is irrelevant.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class HashTrie<SequenceType extends Sequence, ValueType> extends
-        AbstractTrie<SequenceType, ValueType> {
+public class HashTrie<SequenceType extends Sequence, ValueType> extends AbstractTrie<SequenceType, ValueType> {
 
     /**
      * The constant serial version UID.
@@ -47,8 +44,8 @@ public class HashTrie<SequenceType extends Sequence, ValueType> extends
     /**
      * Creates a new unsorted trie, which stores the successors of nodes in hash maps.
      *
-     * @param rootNode The root node of the trie as an instance of the type {@link Node} or null, if
-     *                 the trie should be empty
+     * @param rootNode The root node of the trie as an instance of the type {@link Node} or null, if the trie should be
+     *                 empty
      */
     private HashTrie(@Nullable final Node<SequenceType, ValueType> rootNode) {
         super(rootNode);
@@ -64,8 +61,8 @@ public class HashTrie<SequenceType extends Sequence, ValueType> extends
     /**
      * Creates a new unsorted trie, which contains all key-value pairs that are contained by a map.
      *
-     * @param map The map, which contains the key-value pairs that should be added to the trie, as
-     *            an instance of the type {@link Map}. The map may not be null
+     * @param map The map, which contains the key-value pairs that should be added to the trie, as an instance of the
+     *            type {@link Map}. The map may not be null
      */
     public HashTrie(@NotNull final Map<SequenceType, ValueType> map) {
         super(map);
@@ -80,8 +77,8 @@ public class HashTrie<SequenceType extends Sequence, ValueType> extends
     @Nullable
     @Override
     protected final Pair<Node<SequenceType, ValueType>, SequenceType> onGetSuccessor(
-            @NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType sequence) {
+            @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence,
+            final boolean readOnly) {
         SequenceType prefix = SequenceUtil.subsequence(sequence, 0, 1);
         Node<SequenceType, ValueType> successor = node.getSuccessor(prefix);
 
@@ -96,8 +93,7 @@ public class HashTrie<SequenceType extends Sequence, ValueType> extends
     @NotNull
     @Override
     protected final Pair<Node<SequenceType, ValueType>, SequenceType> onAddSuccessor(
-            @NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType sequence) {
+            @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence) {
         SequenceType prefix = SequenceUtil.subsequence(sequence, 0, 1);
         Node<SequenceType, ValueType> successor = node.addSuccessor(prefix);
         SequenceType suffix = SequenceUtil.subsequence(sequence, 1);
@@ -121,8 +117,7 @@ public class HashTrie<SequenceType extends Sequence, ValueType> extends
             SequenceType suffix = key;
 
             while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onAddSuccessor(currentNode,
-                        suffix);
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onAddSuccessor(currentNode, suffix);
                 Node<SequenceType, ValueType> successor = pair.first;
                 suffix = pair.second;
                 currentNode = successor;

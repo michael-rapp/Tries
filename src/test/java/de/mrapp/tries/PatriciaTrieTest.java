@@ -25,8 +25,8 @@ import static org.junit.Assert.*;
  *
  * @author Michael Rapp
  */
-public class PatriciaTrieTest extends
-        AbstractSortedTrieTest<StringSequence, String, PatriciaTrie<StringSequence, String>> {
+public class PatriciaTrieTest
+        extends AbstractSortedTrieTest<StringSequence, String, PatriciaTrie<StringSequence, String>> {
 
     @Override
     final PatriciaTrie<StringSequence, String> onCreateTrie() {
@@ -39,8 +39,7 @@ public class PatriciaTrieTest extends
     }
 
     @Override
-    final Node<StringSequence, String> getRootNode(
-            @NotNull final PatriciaTrie<StringSequence, String> trie) {
+    final Node<StringSequence, String> getRootNode(@NotNull final PatriciaTrie<StringSequence, String> trie) {
         return trie.getRootNode();
     }
 
@@ -65,7 +64,6 @@ public class PatriciaTrieTest extends
     /**
      * Adds "romane" and "romanus" to the trie.
      */
-    @Ignore
     @Test
     public final void testPut2() {
         testPut1();
@@ -79,7 +77,7 @@ public class PatriciaTrieTest extends
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "roman");
         verifySuccessors(successor, "e", "us");
         Node<StringSequence, String> successorE = getSuccessor(successor, "e");
-        verifyLeaf(successorE, string);
+        verifyLeaf(successorE, "romane");
         Node<StringSequence, String> successorUs = getSuccessor(successor, "us");
         verifyLeaf(successorUs, string);
     }
