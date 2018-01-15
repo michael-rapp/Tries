@@ -15,7 +15,6 @@ package de.mrapp.tries;
 
 import de.mrapp.tries.sequence.StringSequence;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -167,6 +166,43 @@ public class PatriciaTrieTest
         verifyLeaf(successorNs, "rubens");
         Node<StringSequence, String> successorR = getSuccessor(successorUbe, "r");
         verifyLeaf(successorR, "ruber");
+    }
+
+    /**
+     * Adds "romane", "romanus", romulus", "rubens", "ruber" and "rubicon" to the trie.
+     */
+    @Test
+    public final void testPut6() {
+        testPut5();
+        String string = "rubicon";
+        String previous = trie.put(convertToSequence(string), string);
+        assertNull(previous);
+        assertEquals(string, trie.get(convertToSequence(string)));
+        assertEquals(6, trie.size());
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "r");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
+        verifySuccessors(successor, "om", "ub");
+        Node<StringSequence, String> successorOm = getSuccessor(successor, "om");
+        verifySuccessors(successorOm, "an", "ulus");
+        Node<StringSequence, String> successorAn = getSuccessor(successorOm, "an");
+        verifySuccessors(successorAn, "e", "us");
+        Node<StringSequence, String> successorE = getSuccessor(successorAn, "e");
+        verifyLeaf(successorE, "romane");
+        Node<StringSequence, String> successorUs = getSuccessor(successorAn, "us");
+        verifyLeaf(successorUs, "romanus");
+        Node<StringSequence, String> successorUlus = getSuccessor(successorOm, "ulus");
+        verifyLeaf(successorUlus, "romulus");
+        Node<StringSequence, String> successorUb = getSuccessor(successor, "ub");
+        verifySuccessors(successorUb, "e", "icon");
+        Node<StringSequence, String> successorE2 = getSuccessor(successorUb, "e");
+        verifySuccessors(successorE2, "ns", "r");
+        Node<StringSequence, String> successorNs = getSuccessor(successorE2, "ns");
+        verifyLeaf(successorNs, "rubens");
+        Node<StringSequence, String> successorR = getSuccessor(successorE2, "r");
+        verifyLeaf(successorR, "ruber");
+        Node<StringSequence, String> successorIcon = getSuccessor(successorUb, "icon");
+        verifyLeaf(successorIcon, "rubicon");
     }
 
 }
