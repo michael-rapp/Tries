@@ -17,6 +17,8 @@ import de.mrapp.tries.sequence.StringSequence;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.util.*;
+
 import static org.junit.Assert.*;
 
 /**
@@ -433,6 +435,388 @@ public class PatriciaTrieTest
         verifySuccessors(getRootNode(trie), "romane");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "romane");
         verifyLeaf(successor, string2);
+    }
+
+    @Test
+    public final void testPutAll() {
+        String string1 = "romane";
+        String string2 = "romanus";
+        Map<StringSequence, String> map = new HashMap<>();
+        map.put(convertToSequence(string1), string1);
+        map.put(convertToSequence(string2), string2);
+        trie.putAll(map);
+        assertEquals(2, trie.size());
+        assertEquals(string1, trie.get(convertToSequence(string1)));
+        assertEquals(string2, trie.get(convertToSequence(string2)));
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "roman");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "roman");
+        verifySuccessors(successor, "e", "us");
+        Node<StringSequence, String> successorE = getSuccessor(successor, "e");
+        verifyLeaf(successorE, string1);
+        Node<StringSequence, String> successorUs = getSuccessor(successor, "us");
+        verifyLeaf(successorUs, string2);
+    }
+
+    @Test
+    public final void testClear() {
+        testPut7();
+        trie.clear();
+        assertTrue(trie.isEmpty());
+        assertEquals(0, trie.size());
+        assertNull(getRootNode(trie));
+        assertNull(trie.get(convertToSequence("romane")));
+        assertNull(trie.get(convertToSequence("romanus")));
+        assertNull(trie.get(convertToSequence("romulus")));
+        assertNull(trie.get(convertToSequence("rubens")));
+        assertNull(trie.get(convertToSequence("ruber")));
+        assertNull(trie.get(convertToSequence("rubicon")));
+        assertNull(trie.get(convertToSequence("rubicundus")));
+        assertTrue(trie.values().isEmpty());
+        assertTrue(trie.keySet().isEmpty());
+        assertTrue(trie.entrySet().isEmpty());
+    }
+
+    @Test
+    public final void testValues() {
+        testPutWithEmptyKey();
+        Collection<String> values = trie.values();
+        assertEquals(10, values.size());
+        assertTrue(values.contains("romane"));
+        assertTrue(values.contains("romanus"));
+        assertTrue(values.contains("romulus"));
+        assertTrue(values.contains("rubens"));
+        assertTrue(values.contains("ruber"));
+        assertTrue(values.contains("rubicon"));
+        assertTrue(values.contains("rubicundus"));
+        assertTrue(values.contains(null));
+        assertTrue(values.contains("empty"));
+    }
+
+    @Test
+    public final void testValuesIterator() {
+        testPutWithEmptyKey();
+        Collection<String> values = trie.values();
+        assertEquals(10, values.size());
+        Collection<String> actualValues = new ArrayList<>();
+        actualValues.add("romane");
+        actualValues.add("romanus");
+        actualValues.add("romulus");
+        actualValues.add("romulus");
+        actualValues.add("rubens");
+        actualValues.add("ruber");
+        actualValues.add("rubicon");
+        actualValues.add("rubicundus");
+        actualValues.add(null);
+        actualValues.add("empty");
+        Iterator<String> iterator = values.iterator();
+
+        for (int i = 0; i < 10; i++) {
+            assertTrue(iterator.hasNext());
+            String value = iterator.next();
+            assertTrue(actualValues.contains(value));
+            actualValues.remove(value);
+        }
+
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public final void testValuesIteratorRemove() {
+        testPut3();
+        Iterator<String> iterator = trie.values().iterator();
+        assertEquals("romane", iterator.next());
+        assertEquals("romanus", iterator.next());
+        iterator.remove();
+        assertEquals("romulus", iterator.next());
+        assertEquals(2, trie.size());
+        assertTrue(trie.containsKey(convertToSequence("romane")));
+        assertFalse(trie.containsKey(convertToSequence("romanus")));
+        assertTrue(trie.containsKey(convertToSequence("romulus")));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testValuesImmutable() {
+        testPut6();
+        Collection<String> values = trie.values();
+        values.add("foo");
+    }
+
+    @Test(expected = ConcurrentModificationException.class)
+    public final void testValuesIteratorThrowsConcurrentModificationException() {
+        testPut6();
+        Collection<String> values = trie.values();
+        Iterator<String> iterator = values.iterator();
+        trie.put(convertToSequence("foo"), "foo");
+        iterator.next();
+    }
+
+    @Test
+    public final void testContainsValue() {
+        testPutWithEmptyKey();
+        assertEquals(10, trie.size());
+        assertTrue(trie.containsValue("romane"));
+        assertTrue(trie.containsValue("romanus"));
+        assertTrue(trie.containsValue("romulus"));
+        assertTrue(trie.containsValue("rubens"));
+        assertTrue(trie.containsValue("ruber"));
+        assertTrue(trie.containsValue("rubicon"));
+        assertTrue(trie.containsValue("rubicundus"));
+        assertTrue(trie.containsValue(null));
+        assertTrue(trie.containsValue("empty"));
+    }
+
+    @Test
+    public final void testKeySet() {
+        testPutWithEmptyKey();
+        Collection<StringSequence> keys = trie.keySet();
+        assertEquals(10, keys.size());
+        assertTrue(keys.contains(convertToSequence("romane")));
+        assertTrue(keys.contains(convertToSequence("romanus")));
+        assertTrue(keys.contains(convertToSequence("romulus")));
+        assertTrue(keys.contains(convertToSequence("rubens")));
+        assertTrue(keys.contains(convertToSequence("ruber")));
+        assertTrue(keys.contains(convertToSequence("rubicon")));
+        assertTrue(keys.contains(convertToSequence("rubicundus")));
+        assertTrue(keys.contains(convertToSequence("A")));
+        assertTrue(keys.contains(convertToSequence("B")));
+        assertTrue(keys.contains(null));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testKeySetImmutable() {
+        testPut6();
+        Collection<StringSequence> keys = trie.keySet();
+        keys.add(convertToSequence("foo"));
+    }
+
+    @Test
+    public final void testKeySetIterator() {
+        testPutWithEmptyKey();
+        Collection<StringSequence> keys = trie.keySet();
+        assertEquals(10, keys.size());
+        Iterator<StringSequence> iterator = keys.iterator();
+        Collection<StringSequence> actualKeys = new ArrayList<>();
+        actualKeys.add(convertToSequence("romane"));
+        actualKeys.add(convertToSequence("romanus"));
+        actualKeys.add(convertToSequence("romulus"));
+        actualKeys.add(convertToSequence("rubens"));
+        actualKeys.add(convertToSequence("ruber"));
+        actualKeys.add(convertToSequence("rubicon"));
+        actualKeys.add(convertToSequence("rubicundus"));
+        actualKeys.add(convertToSequence("A"));
+        actualKeys.add(convertToSequence("B"));
+        actualKeys.add(null);
+
+        for (int i = 0; i < 10; i++) {
+            assertTrue(iterator.hasNext());
+            StringSequence key = iterator.next();
+            assertTrue(actualKeys.contains(key));
+            actualKeys.remove(key);
+        }
+
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public final void testKeySetIteratorRemove() {
+        testPut3();
+        Iterator<StringSequence> iterator = trie.keySet().iterator();
+        assertEquals(convertToSequence("romane"), iterator.next());
+        assertEquals(convertToSequence("romanus"), iterator.next());
+        iterator.remove();
+        assertEquals(convertToSequence("romulus"), iterator.next());
+        assertEquals(2, trie.size());
+        assertTrue(trie.containsKey(convertToSequence("romane")));
+        assertFalse(trie.containsKey(convertToSequence("romanus")));
+        assertTrue(trie.containsKey(convertToSequence("romulus")));
+    }
+
+    @Test(expected = ConcurrentModificationException.class)
+    public final void testKeySetIteratorThrowsConcurrentModificationException() {
+        testPut6();
+        Collection<StringSequence> keys = trie.keySet();
+        Iterator<StringSequence> iterator = keys.iterator();
+        trie.put(convertToSequence("foo"), "foo");
+        iterator.next();
+    }
+
+    @Test
+    public final void testContainsKey() {
+        testPutWithEmptyKey();
+        assertEquals(10, trie.size());
+        assertTrue(trie.containsKey(convertToSequence("romane")));
+        assertTrue(trie.containsKey(convertToSequence("romanus")));
+        assertTrue(trie.containsKey(convertToSequence("romulus")));
+        assertTrue(trie.containsKey(convertToSequence("rubens")));
+        assertTrue(trie.containsKey(convertToSequence("ruber")));
+        assertTrue(trie.containsKey(convertToSequence("rubicon")));
+        assertTrue(trie.containsKey(convertToSequence("rubicundus")));
+        assertTrue(trie.containsKey(convertToSequence("A")));
+        assertTrue(trie.containsKey(convertToSequence("B")));
+        assertTrue(trie.containsKey(convertToSequence("")));
+        assertTrue(trie.containsKey(null));
+    }
+
+    @Test
+    public final void testEntrySet() {
+        testPutWithEmptyKey();
+        Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
+        assertEquals(10, entrySet.size());
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), (String) null)));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "romulus")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>((StringSequence) null, "empty")));
+    }
+
+    @Test
+    public final void testEntrySetIterator() {
+        testPutWithEmptyKey();
+        Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
+        assertEquals(10, entrySet.size());
+        Collection<Map.Entry<StringSequence, String>> actualEntries = new ArrayList<>();
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), null));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "romulus"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(null, "empty"));
+        Iterator<Map.Entry<StringSequence, String>> iterator = entrySet.iterator();
+
+        for (int i = 0; i < 10; i++) {
+            assertTrue(iterator.hasNext());
+            Map.Entry<StringSequence, String> entry = iterator.next();
+            assertTrue(actualEntries.contains(entry));
+            actualEntries.remove(entry);
+        }
+
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public final void testEntrySetIteratorRemove() {
+        testPut3();
+        Iterator<Map.Entry<StringSequence, String>> iterator = trie.entrySet().iterator();
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"), iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"), iterator.next());
+        iterator.remove();
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"), iterator.next());
+        assertEquals(2, trie.size());
+        assertTrue(trie.containsKey(convertToSequence("romane")));
+        assertFalse(trie.containsKey(convertToSequence("romanus")));
+        assertTrue(trie.containsKey(convertToSequence("romulus")));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void testEntrySetImmutable() {
+        testPut6();
+        Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("foo"), "foo"));
+    }
+
+    @Test(expected = ConcurrentModificationException.class)
+    public final void testEntrySetIteratorThrowsConcurrentModificationException() {
+        testPut6();
+        Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
+        Iterator<Map.Entry<StringSequence, String>> iterator = entrySet.iterator();
+        trie.put(convertToSequence("foo"), "foo");
+        iterator.next();
+    }
+
+    @Test
+    public final void testRemoveIfKeyIsNotContainedAndIsPrefix() {
+        // TODO
+    }
+
+    @Test
+    public final void testRemoveIfKeyIsNotContainedAndSharesPrefix() {
+        // TODO
+    }
+
+    @Test
+    public final void testRemoveIfKeyIsNotContainedAndContainsOtherKeyAsPrefix() {
+        // TODO
+    }
+
+    @Test
+    public final void testRemoveIfKeyIsTheOnlyOne() {
+        // TODO
+    }
+
+    @Test
+    public final void testRemoveIfKeySharesPrefix() {
+        // TODO
+    }
+
+    @Test
+    public final void testRemoveIfKeyIsPrefix() {
+        // TODO
+    }
+
+    @Test
+    public final void testRemoveIfKeyContainsOtherKeyAsPrefix() {
+        // TODO
+    }
+
+    @Test
+    public final void testRemoveEmptyKey() {
+        // TODO
+    }
+
+    @Test
+    public final void testRemoveNullKey() {
+        // TODO
+    }
+
+    @Test
+    public final void testRemoveEmptyKeyIfKeyIsTheOnlyOne() {
+        // TODO
+    }
+
+    @Test
+    public final void testRemoveNullKeyIfKeyIsTheOnlyOne() {
+        // TODO
+    }
+
+    @Test
+    public final void testHashCode() {
+        PatriciaTrie<StringSequence, String> trie1 = new PatriciaTrie<>();
+        PatriciaTrie<StringSequence, String> trie2 = new PatriciaTrie<>();
+        assertEquals(trie1.hashCode(), trie1.hashCode());
+        assertEquals(trie1.hashCode(), trie2.hashCode());
+        trie1.put(convertToSequence("foo"), "value");
+        assertNotEquals(trie1.hashCode(), trie2.hashCode());
+        trie2.put(convertToSequence("foo"), "value");
+        assertEquals(trie1.hashCode(), trie2.hashCode());
+        trie1.put(convertToSequence("fob"), "value2");
+        assertNotEquals(trie1.hashCode(), trie2.hashCode());
+    }
+
+    @Test
+    public final void testEquals() {
+        PatriciaTrie<StringSequence, String> trie1 = new PatriciaTrie<>();
+        PatriciaTrie<StringSequence, String> trie2 = new PatriciaTrie<>();
+        assertFalse(trie1.equals(null));
+        assertFalse(trie1.equals(new Object()));
+        assertTrue(trie1.equals(trie1));
+        assertTrue(trie1.equals(trie2));
+        trie1.put(convertToSequence("foo"), "value");
+        assertFalse(trie1.equals(trie2));
+        trie2.put(convertToSequence("foo"), "value");
+        assertTrue(trie1.equals(trie2));
+        trie1.put(convertToSequence("fob"), "value2");
+        assertFalse(trie1.equals(trie2));
     }
 
 }

@@ -277,7 +277,6 @@ public abstract class AbstractNonPatriciaTrieTest<SequenceType, TrieType extends
         assertTrue(trie.values().isEmpty());
         assertTrue(trie.keySet().isEmpty());
         assertTrue(trie.entrySet().isEmpty());
-
     }
 
     @Test
