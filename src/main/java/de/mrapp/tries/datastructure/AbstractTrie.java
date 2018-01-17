@@ -30,7 +30,7 @@ import static de.mrapp.util.Condition.*;
 /**
  * An abstract base class for all tries. It implements the methods of the interface {@link Map}. In particular it
  * provides general implementations of lookup, insert and delete operations without forcing constraints on the trie's
- * structure. Subclasses must implement the methods {@link #onGetSuccessor(Node, Sequence, boolean)}, {@link
+ * structure. Subclasses must implement the methods {@link #onGetSuccessor(Node, Sequence, Operation)}, {@link
  * #onAddSuccessor(Node, Sequence)} and {@link #onRemoveSuccessor(Node, Sequence)} depending on the trie's structure.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
@@ -543,6 +543,28 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType> imp
     }
 
     /**
+     * An enum, which contains all types of operations, which can be performed on a trie.
+     */
+    protected enum Operation {
+
+        /**
+         * An operation, which retrieves data from the trie.
+         */
+        GET,
+
+        /**
+         * An operation, which removes data from the trie.
+         */
+        REMOVE,
+
+        /**
+         * An operation, which puts data into the trie.
+         */
+        PUT
+
+    }
+
+    /**
      * The constant serial version UID.
      */
     private static final long serialVersionUID = -9049598420902876017L;
@@ -587,12 +609,12 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType> imp
      * corresponds to a specific sequence. Depending on the trie's structure, the suffix of the sequence can be
      * processed to any extend.
      *
-     * @param node     The node, whose successor should be returned, as an instance of the type {@link Node}. The node
-     *                 may not be null
-     * @param sequence The sequence, the successor corresponds to, as an instance of the generic type {@link
-     *                 SequenceType}. The sequence may neither be null, nor empty
-     * @param readOnly True, if the method is invoked as part of a read-only operation, i.e. the trie's structure may
-     *                 not be modified, false otherwise
+     * @param node      The node, whose successor should be returned, as an instance of the type {@link Node}. The node
+     *                  may not be null
+     * @param sequence  The sequence, the successor corresponds to, as an instance of the generic type {@link
+     *                  SequenceType}. The sequence may neither be null, nor empty
+     * @param operation The operation, the method invocation is part of, as a value of the enum {@link Operation}. The
+     *                  operation may not be null
      * @return A pair, which contains the successor, which corresponds to the given sequence, as well as the suffix of
      * the sequence, depending on how far it has been processed, as an instance of the class {@link Pair} or null, if no
      * matching successor is available
@@ -600,7 +622,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType> imp
     @Nullable
     protected abstract Pair<Node<SequenceType, ValueType>, SequenceType> onGetSuccessor(
             @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence,
-            final boolean readOnly);
+            @NotNull final Operation operation);
 
     /**
      * The method, which is invoked on subclasses in order to add a successor to a specific node. Depending on the
@@ -650,7 +672,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType> imp
             SequenceType suffix = sequence;
 
             while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode, suffix, true);
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair =
+                        onGetSuccessor(currentNode, suffix, Operation.GET);
 
                 if (pair == null) {
                     return null;
@@ -772,7 +795,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType> imp
         SequenceType suffix = key;
 
         while (suffix != null && !suffix.isEmpty()) {
-            Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode, suffix, false);
+            Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode, suffix, Operation.PUT);
 
             if (pair == null) {
                 break;
@@ -831,7 +854,8 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType> imp
                 SequenceType suffix = sequence;
 
                 while (!suffix.isEmpty()) {
-                    Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode, suffix, false);
+                    Pair<Node<SequenceType, ValueType>, SequenceType> pair =
+                            onGetSuccessor(currentNode, suffix, Operation.REMOVE);
 
                     if (pair == null) {
                         return null;

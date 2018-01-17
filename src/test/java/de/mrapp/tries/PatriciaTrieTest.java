@@ -736,27 +736,72 @@ public class PatriciaTrieTest
 
     @Test
     public final void testRemoveIfKeyIsNotContainedAndIsPrefix() {
-        // TODO
+        testPut1();
+        String removed = trie.remove(convertToSequence("rom"));
+        assertNull(removed);
+        assertFalse(trie.isEmpty());
+        assertEquals(1, trie.size());
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "romane");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "romane");
+        verifyLeaf(successor, "romane");
     }
 
     @Test
     public final void testRemoveIfKeyIsNotContainedAndSharesPrefix() {
-        // TODO
+        testPut2();
+        String removed = trie.remove(convertToSequence("romanu"));
+        assertNull(removed);
+        assertFalse(trie.isEmpty());
+        assertEquals(2, trie.size());
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "roman");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "roman");
+        verifySuccessors(successor, "e", "us");
+        Node<StringSequence, String> successorE = getSuccessor(successor, "e");
+        verifyLeaf(successorE, "romane");
+        Node<StringSequence, String> successorUs = getSuccessor(successor, "us");
+        verifyLeaf(successorUs, "romanus");
     }
 
     @Test
     public final void testRemoveIfKeyIsNotContainedAndContainsOtherKeyAsPrefix() {
-        // TODO
+        testPut1();
+        String removed = trie.remove(convertToSequence("romanee"));
+        assertNull(removed);
+        assertFalse(trie.isEmpty());
+        assertEquals(1, trie.size());
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "romane");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "romane");
+        verifyLeaf(successor, "romane");
     }
 
     @Test
     public final void testRemoveIfKeyIsTheOnlyOne() {
-        // TODO
+        String string = "romane";
+        testPut1();
+        String removed = trie.remove(convertToSequence(string));
+        assertEquals(string, removed);
+        assertNull(trie.get(convertToSequence(string)));
+        assertNull(getRootNode(trie));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
     }
 
     @Test
     public final void testRemoveIfKeySharesPrefix() {
-        // TODO
+        testPut2();
+        String string = "romanus";
+        String removed = trie.remove(convertToSequence(string));
+        assertEquals(string, removed);
+        assertNull(trie.get(convertToSequence(string)));
+        assertEquals(1, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "romane");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "romane");
+        verifyLeaf(successor, string);
     }
 
     @Test

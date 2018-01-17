@@ -503,8 +503,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          * @return True, if the given key is included in the sub map, false otherwise
          */
         private boolean isInClosedRange(@Nullable final K key) {
-            return (fromStart || comparator.compare(key, fromKey) >= 0) && (toEnd || comparator.compare(toKey,
-                    key) >= 0);
+            return (fromStart || comparator.compare(key, fromKey) >= 0) &&
+                    (toEnd || comparator.compare(toKey, key) >= 0);
         }
 
         /**
@@ -527,8 +527,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          */
         @Nullable
         final Map.Entry<K, V> getLowestEntry() {
-            Map.Entry<K, V> entry = (fromStart ? trie.firstEntry() : (fromInclusive ? trie.ceilingEntry(
-                    fromKey) : trie.higherEntry(fromKey)));
+            Map.Entry<K, V> entry = (fromStart ? trie.firstEntry() :
+                    (fromInclusive ? trie.ceilingEntry(fromKey) : trie.higherEntry(fromKey)));
             return (entry == null || isTooHigh(entry.getKey())) ? null : entry;
         }
 
@@ -540,8 +540,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          */
         @Nullable
         final Map.Entry<K, V> getHighestEntry() {
-            Map.Entry<K, V> entry = (toEnd ? trie.lastEntry() : (toInclusive ? trie.floorEntry(toKey) : trie.lowerEntry(
-                    toKey)));
+            Map.Entry<K, V> entry =
+                    (toEnd ? trie.lastEntry() : (toInclusive ? trie.floorEntry(toKey) : trie.lowerEntry(toKey)));
             return (entry == null || isTooLow(entry.getKey())) ? null : entry;
         }
 
@@ -1631,7 +1631,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             SequenceType suffix = key;
 
             while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onGetSuccessor(currentNode, suffix, true);
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair =
+                        onGetSuccessor(currentNode, suffix, Operation.GET);
 
                 if (pair == null) {
                     return null;
@@ -1667,8 +1668,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     private Map.Entry<SequenceType, ValueType> createLowerEntry(@Nullable final SequenceType predecessorSequence,
                                                                 @NotNull final Node<SequenceType, ValueType> node,
                                                                 @NotNull final SequenceType key) {
-        SequenceType lowerKey = predecessorSequence != null ? SequenceUtil.subsequence(predecessorSequence, 0,
-                predecessorSequence.length() - key.length()) : null;
+        SequenceType lowerKey = predecessorSequence != null ?
+                SequenceUtil.subsequence(predecessorSequence, 0, predecessorSequence.length() - key.length()) : null;
         return new AbstractMap.SimpleImmutableEntry<>(SequenceUtil.isEmpty(lowerKey) ? null : lowerKey,
                 node.getValue());
     }
@@ -1693,10 +1694,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      */
     @Nullable
     private Map.Entry<SequenceType, ValueType> createLowerOrHigherEntry(@NotNull final SequenceType predecessorSequence,
-                                                                        @Nullable final Pair<Integer, SequenceType> indexPair,
-                                                                        @NotNull final Node<SequenceType, ValueType> node,
-                                                                        @NotNull final SequenceType key,
-                                                                        @NotNull final Function<Integer, Integer> indexFunction,
+                                                                        @Nullable
+                                                                        final Pair<Integer, SequenceType> indexPair,
+                                                                        @NotNull
+                                                                        final Node<SequenceType, ValueType> node,
+                                                                        @NotNull final SequenceType key, @NotNull
+                                                                        final Function<Integer, Integer> indexFunction,
                                                                         final boolean higher) {
         if (indexPair != null) {
             int index = indexFunction.apply(indexPair.first);
@@ -1704,8 +1707,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             if (index >= 0 && index < node.getSuccessorCount()) {
                 Node<SequenceType, ValueType> successor = node.getSuccessor(index);
                 SequenceType successorKey = node.getSuccessorKey(index);
-                SequenceType prefix = SequenceUtil.subsequence(predecessorSequence, 0,
-                        predecessorSequence.length() - key.length());
+                SequenceType prefix =
+                        SequenceUtil.subsequence(predecessorSequence, 0, predecessorSequence.length() - key.length());
                 prefix = SequenceUtil.concat(prefix, successorKey);
                 return firstOrLastEntry(successor, prefix, higher);
             }
@@ -1873,8 +1876,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                     indexPair = indexOf(pair.first, pair.second);
                 }
 
-                Map.Entry<SequenceType, ValueType> entry = createLowerOrHigherEntry(key, indexPair, pair.first,
-                        pair.second, index -> index - 1, false);
+                Map.Entry<SequenceType, ValueType> entry =
+                        createLowerOrHigherEntry(key, indexPair, pair.first, pair.second, index -> index - 1, false);
 
                 if (entry != null) {
                     return entry;
@@ -1902,8 +1905,9 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
                     if (pair.first.getSuccessorCount() > 1) {
                         Pair<Integer, SequenceType> indexPair = indexOf(pair.first, pair.second);
-                        Entry<SequenceType, ValueType> entry = createLowerOrHigherEntry(key, indexPair, pair.first,
-                                pair.second, index -> index + 1, true);
+                        Entry<SequenceType, ValueType> entry =
+                                createLowerOrHigherEntry(key, indexPair, pair.first, pair.second, index -> index + 1,
+                                        true);
 
                         if (entry != null) {
                             return entry;

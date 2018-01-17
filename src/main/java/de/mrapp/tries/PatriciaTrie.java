@@ -115,7 +115,7 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     @Override
     protected final Pair<Node<SequenceType, ValueType>, SequenceType> onGetSuccessor(
             @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence,
-            final boolean readOnly) {
+            @NotNull final Operation operation) {
         SequenceType firstElement = SequenceUtil.subsequence(sequence, 0, 1);
         int index = SequenceUtil.binarySearch(node.getSuccessorCount(), node::getSuccessorKey,
                 (o1, o2) -> ((Comparable<? super SequenceType>) SequenceUtil.subsequence(o1, 0, 1))
@@ -128,7 +128,7 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
             if (commonPrefix != null) {
                 Node<SequenceType, ValueType> successor = node.getSuccessor(index);
 
-                if (!readOnly) {
+                if (operation == Operation.PUT) {
                     SequenceType intermediateSuffix = getSuffix(successorKey, commonPrefix);
 
                     if (intermediateSuffix != null && !intermediateSuffix.isEmpty()) {
@@ -137,9 +137,15 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
                         intermediateNode.addSuccessor(intermediateSuffix, successor);
                         successor = intermediateNode;
                     }
-                }
 
-                return Pair.create(successor, getSuffix(sequence, commonPrefix));
+                    return Pair.create(successor, getSuffix(sequence, commonPrefix));
+                } else if (operation == Operation.REMOVE) {
+                    int commonPrefixLength = commonPrefix.length();
+                    return sequence.length() >= commonPrefixLength && commonPrefixLength == successorKey.length() ?
+                            Pair.create(successor, getSuffix(sequence, commonPrefix)) : null;
+                } else {
+                    return Pair.create(successor, getSuffix(sequence, commonPrefix));
+                }
             }
         }
 
@@ -163,7 +169,15 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     @Override
     protected final void onRemoveSuccessor(@NotNull final Node<SequenceType, ValueType> node,
                                            @NotNull final SequenceType sequence) {
-        // TODO
+        node.removeSuccessor(sequence);
+
+        if (node.getSuccessorCount() == 1) {
+            Node<SequenceType, ValueType> successor = node.getFirstSuccessor();
+            Node<SequenceType, ValueType> predecessor = node.getPredecessor();
+            SequenceType joinedKey = null; // TODO: We need to know the key between predecessor -> node
+            // predecessor.removeSuccessor(index);
+            predecessor.addSuccessor(joinedKey, successor);
+        }
     }
 
     @NotNull

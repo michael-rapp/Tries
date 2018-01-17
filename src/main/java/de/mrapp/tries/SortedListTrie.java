@@ -142,7 +142,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
     @Override
     protected final Pair<Node<SequenceType, ValueType>, SequenceType> onGetSuccessor(
             @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence,
-            final boolean readOnly) {
+            @NotNull final Operation operation) {
         SequenceType prefix = SequenceUtil.subsequence(sequence, 0, 1);
         Node<SequenceType, ValueType> successor = node.getSuccessor(prefix);
 
