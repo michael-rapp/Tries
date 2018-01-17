@@ -654,6 +654,18 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType> imp
                                               @NotNull final SequenceType sequence);
 
     /**
+     * The method, which is invoked on subclasses, when the value of a not was deleted. This happens, when a key, which
+     * corresponds to an inner node, has been removed. This method may be overridden by subclasses in order to adapt the
+     * structure of the trie.
+     *
+     * @param node The node, whose values was deleted, as an instance of the type {@link Node}. The node may not be
+     *             null
+     */
+    protected void onDeletedValue(@NotNull final Node<SequenceType, ValueType> node) {
+
+    }
+
+    /**
      * Traverses the trie in order to returns the node, which corresponds to a specific key.
      *
      * @param key The key, the node, which should be returned, corresponds to, as an instance of the class {@link
@@ -889,6 +901,7 @@ public abstract class AbstractTrie<SequenceType extends Sequence, ValueType> imp
                                     modificationCount++;
                                 }
 
+                                onDeletedValue(successor);
                                 return value.getValue();
                             }
 

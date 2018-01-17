@@ -43,6 +43,29 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
      */
     private static final long serialVersionUID = 3229102065205655196L;
 
+    // TODO: Comment
+    @Nullable
+    private SequenceType getSuffix(@NotNull final SequenceType sequence, @NotNull final SequenceType prefix) {
+        return prefix.length() < sequence.length() ? SequenceUtil.subsequence(sequence, prefix.length()) : null;
+    }
+
+    // TODO: Comment
+    private void removeIntermediateNode(@NotNull final Node<SequenceType, ValueType> node) {
+        if (node.getSuccessorCount() == 1 && !node.isValueSet()) {
+            Map.Entry<SequenceType, Node<SequenceType, ValueType>> entry = node.getPredecessor();
+
+            if (entry != null) {
+                SequenceType key = entry.getKey();
+                Node<SequenceType, ValueType> predecessor = entry.getValue();
+                SequenceType successorKey = node.getFirstSuccessorKey();
+                Node<SequenceType, ValueType> successor = node.getFirstSuccessor();
+                SequenceType joinedKey = SequenceUtil.concat(key, successorKey);
+                predecessor.removeSuccessor(key);
+                predecessor.addSuccessor(joinedKey, successor);
+            }
+        }
+    }
+
     /**
      * Creates a new Patricia trie.
      *
@@ -144,18 +167,14 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
                     return sequence.length() >= commonPrefixLength && commonPrefixLength == successorKey.length() ?
                             Pair.create(successor, getSuffix(sequence, commonPrefix)) : null;
                 } else {
-                    return Pair.create(successor, getSuffix(sequence, commonPrefix));
+                    int sequenceLength = sequence.length();
+                    return sequenceLength == commonPrefix.length() && successorKey.length() > sequenceLength ? null :
+                            Pair.create(successor, getSuffix(sequence, commonPrefix));
                 }
             }
         }
 
         return null;
-    }
-
-    // TODO: Comment
-    @Nullable
-    private SequenceType getSuffix(@NotNull final SequenceType sequence, @NotNull final SequenceType prefix) {
-        return prefix.length() < sequence.length() ? SequenceUtil.subsequence(sequence, prefix.length()) : null;
     }
 
     @NotNull
@@ -170,20 +189,12 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     protected final void onRemoveSuccessor(@NotNull final Node<SequenceType, ValueType> node,
                                            @NotNull final SequenceType sequence) {
         node.removeSuccessor(sequence);
+        removeIntermediateNode(node);
+    }
 
-        if (node.getSuccessorCount() == 1) {
-            Map.Entry<SequenceType, Node<SequenceType, ValueType>> entry = node.getPredecessor();
-
-            if (entry != null) {
-                SequenceType key = entry.getKey();
-                Node<SequenceType, ValueType> predecessor = entry.getValue();
-                SequenceType successorKey = node.getFirstSuccessorKey();
-                Node<SequenceType, ValueType> successor = node.getFirstSuccessor();
-                SequenceType joinedKey = SequenceUtil.concat(key, successorKey);
-                predecessor.removeSuccessor(key);
-                predecessor.addSuccessor(joinedKey, successor);
-            }
-        }
+    @Override
+    protected final void onDeletedValue(@NotNull final Node<SequenceType, ValueType> node) {
+        removeIntermediateNode(node);
     }
 
     @NotNull
