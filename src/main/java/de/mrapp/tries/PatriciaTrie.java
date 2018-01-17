@@ -172,11 +172,17 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
         node.removeSuccessor(sequence);
 
         if (node.getSuccessorCount() == 1) {
-            Node<SequenceType, ValueType> successor = node.getFirstSuccessor();
-            Node<SequenceType, ValueType> predecessor = node.getPredecessor();
-            SequenceType joinedKey = null; // TODO: We need to know the key between predecessor -> node
-            // predecessor.removeSuccessor(index);
-            predecessor.addSuccessor(joinedKey, successor);
+            Map.Entry<SequenceType, Node<SequenceType, ValueType>> entry = node.getPredecessor();
+
+            if (entry != null) {
+                SequenceType key = entry.getKey();
+                Node<SequenceType, ValueType> predecessor = entry.getValue();
+                SequenceType successorKey = node.getFirstSuccessorKey();
+                Node<SequenceType, ValueType> successor = node.getFirstSuccessor();
+                SequenceType joinedKey = SequenceUtil.concat(key, successorKey);
+                predecessor.removeSuccessor(key);
+                predecessor.addSuccessor(joinedKey, successor);
+            }
         }
     }
 

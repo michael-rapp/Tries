@@ -19,6 +19,9 @@ import de.mrapp.tries.Sequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.AbstractMap;
+import java.util.Map;
+
 import static de.mrapp.util.Condition.ensureAtLeast;
 import static de.mrapp.util.Condition.ensureNotNull;
 
@@ -30,8 +33,7 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public abstract class AbstractNode<KeyType extends Sequence, ValueType> implements
-        Node<KeyType, ValueType> {
+public abstract class AbstractNode<KeyType extends Sequence, ValueType> implements Node<KeyType, ValueType> {
 
     /**
      * The constant serial version UID.
@@ -51,15 +53,15 @@ public abstract class AbstractNode<KeyType extends Sequence, ValueType> implemen
     /**
      * The predecessor of the node.
      */
-    private Node<KeyType, ValueType> predecessor;
+    private Map.Entry<KeyType, Node<KeyType, ValueType>> predecessor;
 
     /**
      * Clones all successors of a specific node recursively and adds them to another node.
      *
-     * @param source The node, whose successors should be cloned, as an instance of the type {@link
-     *               Node}. The node may not be null
-     * @param target The node, the clones should be added to, as an instance of the type {@link
-     *               Node}. The node may not be null
+     * @param source The node, whose successors should be cloned, as an instance of the type {@link Node}. The node may
+     *               not be null
+     * @param target The node, the clones should be added to, as an instance of the type {@link Node}. The node may not
+     *               be null
      */
     protected final void cloneSuccessors(@NotNull final Node<KeyType, ValueType> source,
                                          @NotNull final Node<KeyType, ValueType> target) {
@@ -68,8 +70,8 @@ public abstract class AbstractNode<KeyType extends Sequence, ValueType> implemen
 
             if (successor != null) {
                 Node<KeyType, ValueType> clonedSuccessor = target.addSuccessor(keys);
-                clonedSuccessor.setNodeValue(
-                        successor.getNodeValue() != null ? successor.getNodeValue().clone() : null);
+                clonedSuccessor
+                        .setNodeValue(successor.getNodeValue() != null ? successor.getNodeValue().clone() : null);
                 cloneSuccessors(successor, clonedSuccessor);
             }
         }
@@ -78,25 +80,24 @@ public abstract class AbstractNode<KeyType extends Sequence, ValueType> implemen
     /**
      * The method, which is invoked on subclasses in order to add a specific successor to the node.
      *
-     * @param key       The key, which corresponds to the successor as an instance of the generic
-     *                  type {@link KeyType}. The key may not be null
-     * @param successor The successor, which should be added, as an instance of the type {@link
-     *                  Node} or null, if a new node should be created
-     * @return The node, which has been added as a successor, as an instance of the type {@link
-     * Node}. The node may not be null
+     * @param key       The key, which corresponds to the successor as an instance of the generic type {@link KeyType}.
+     *                  The key may not be null
+     * @param successor The successor, which should be added, as an instance of the type {@link Node} or null, if a new
+     *                  node should be created
+     * @return The node, which has been added as a successor, as an instance of the type {@link Node}. The node may not
+     * be null
      */
     @NotNull
-    protected abstract Node<KeyType, ValueType> onAddSuccessor(
-            @NotNull final KeyType key, @Nullable final Node<KeyType, ValueType> successor);
+    protected abstract Node<KeyType, ValueType> onAddSuccessor(@NotNull final KeyType key,
+                                                               @Nullable final Node<KeyType, ValueType> successor);
 
     /**
-     * The method, which is invoked on subclasses in order to remove a specific successor from the
-     * node.
+     * The method, which is invoked on subclasses in order to remove a specific successor from the node.
      *
-     * @param key The key, which corresponds to the successor, which should be removed, as an
-     *            instance of the generic type {@link KeyType}. The key may not be null
-     * @return The successor, which has been removed, as an instance of the type {@link Node} or
-     * null, if no successor corresponds to the given key
+     * @param key The key, which corresponds to the successor, which should be removed, as an instance of the generic
+     *            type {@link KeyType}. The key may not be null
+     * @return The successor, which has been removed, as an instance of the type {@link Node} or null, if no successor
+     * corresponds to the given key
      */
     @Nullable
     protected abstract Node<KeyType, ValueType> onRemoveSuccessor(@NotNull final KeyType key);
@@ -136,7 +137,7 @@ public abstract class AbstractNode<KeyType extends Sequence, ValueType> implemen
                                                        @Nullable final Node<KeyType, ValueType> successor) {
         ensureNotNull(key, "The key may not be null");
         Node<KeyType, ValueType> addedSuccessor = onAddSuccessor(key, successor);
-        addedSuccessor.setPredecessor(this);
+        addedSuccessor.setPredecessor(new AbstractMap.SimpleImmutableEntry<>(key, this));
         increaseSuccessorValueCount(addedSuccessor.getSuccessorValueCount());
         return addedSuccessor;
     }
@@ -163,7 +164,7 @@ public abstract class AbstractNode<KeyType extends Sequence, ValueType> implemen
         this.successorValueCount += by;
 
         if (predecessor != null) {
-            predecessor.increaseSuccessorValueCount(by);
+            predecessor.getValue().increaseSuccessorValueCount(by);
         }
     }
 
@@ -173,18 +174,18 @@ public abstract class AbstractNode<KeyType extends Sequence, ValueType> implemen
         this.successorValueCount -= by;
 
         if (predecessor != null) {
-            predecessor.decreaseSuccessorValueCount(by);
+            predecessor.getValue().decreaseSuccessorValueCount(by);
         }
     }
 
     @Nullable
     @Override
-    public final Node<KeyType, ValueType> getPredecessor() {
+    public final Map.Entry<KeyType, Node<KeyType, ValueType>> getPredecessor() {
         return predecessor;
     }
 
     @Override
-    public final void setPredecessor(@Nullable final Node<KeyType, ValueType> predecessor) {
+    public final void setPredecessor(@Nullable final Map.Entry<KeyType, Node<KeyType, ValueType>> predecessor) {
         this.predecessor = predecessor;
     }
 

@@ -19,22 +19,22 @@ import de.mrapp.tries.Sequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.AbstractMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
- * An implementation of the interface {@link Node}, which forwards read-only method calls to an
- * encapsulated node and throws {@link UnsupportedOperationException}s when calling a method, which
- * attempts to change the node's state.
+ * An implementation of the interface {@link Node}, which forwards read-only method calls to an encapsulated node and
+ * throws {@link UnsupportedOperationException}s when calling a method, which attempts to change the node's state.
  *
  * @param <KeyType>   The type of the sequences, which correspond to the node's successors
  * @param <ValueType> The type of the node's value
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class UnmodifiableNode<KeyType extends Sequence, ValueType> implements
-        Node<KeyType, ValueType> {
+public class UnmodifiableNode<KeyType extends Sequence, ValueType> implements Node<KeyType, ValueType> {
 
     /**
      * The constant serial version UID.
@@ -49,8 +49,8 @@ public class UnmodifiableNode<KeyType extends Sequence, ValueType> implements
     /**
      * Creates a new immutable node.
      *
-     * @param node The node, which should be encapsulated, as an instance of the type {@link Node}.
-     *             The node may not be null
+     * @param node The node, which should be encapsulated, as an instance of the type {@link Node}. The node may not be
+     *             null
      */
     public UnmodifiableNode(@NotNull final Node<KeyType, ValueType> node) {
         ensureNotNull(node, "The node may not be null");
@@ -128,13 +128,14 @@ public class UnmodifiableNode<KeyType extends Sequence, ValueType> implements
 
     @Nullable
     @Override
-    public final Node<KeyType, ValueType> getPredecessor() {
-        Node<KeyType, ValueType> predecessor = node.getPredecessor();
-        return predecessor != null ? new UnmodifiableNode<>(predecessor) : null;
+    public final Map.Entry<KeyType, Node<KeyType, ValueType>> getPredecessor() {
+        Map.Entry<KeyType, Node<KeyType, ValueType>> entry = node.getPredecessor();
+        return entry != null ?
+                new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), new UnmodifiableNode<>(entry.getValue())) : null;
     }
 
     @Override
-    public final void setPredecessor(@Nullable final Node<KeyType, ValueType> predecessor) {
+    public final void setPredecessor(@Nullable final Map.Entry<KeyType, Node<KeyType, ValueType>> predecessor) {
         throw new UnsupportedOperationException();
     }
 

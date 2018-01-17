@@ -18,11 +18,12 @@ import de.mrapp.tries.NodeValue;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
+import java.util.AbstractMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests the functionality of the class {@link HashNode}.
@@ -117,10 +118,12 @@ public class HashNodeTest {
     @Test
     public final void testSetPredecessor() {
         Node<StringSequence, String> predecessor = new HashNode<>();
+        Map.Entry<StringSequence, Node<StringSequence, String>> entry =
+                new AbstractMap.SimpleImmutableEntry<>(new StringSequence("foo"), predecessor);
         HashNode<StringSequence, String> node = new HashNode<>();
         node.increaseSuccessorValueCount(1);
-        node.setPredecessor(predecessor);
-        assertEquals(predecessor, node.getPredecessor());
+        node.setPredecessor(entry);
+        assertEquals(entry, node.getPredecessor());
     }
 
     @Test(expected = UnsupportedOperationException.class)

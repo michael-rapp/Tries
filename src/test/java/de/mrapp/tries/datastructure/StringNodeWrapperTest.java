@@ -22,7 +22,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.AbstractMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.*;
@@ -109,10 +111,16 @@ public class StringNodeWrapperTest {
 
     @Test
     public final void testGetPredecessor() {
+        StringSequence key = new StringSequence("foo");
         Node<StringSequence, String> predecessor = mock(Node.class);
-        when(node.getPredecessor()).thenReturn(predecessor);
-        assertTrue(nodeWrapper.getPredecessor() instanceof StringNodeWrapper);
-        assertEquals(predecessor.toString(), nodeWrapper.getPredecessor().toString());
+        Map.Entry<StringSequence, Node<StringSequence, String>> entry =
+                new AbstractMap.SimpleImmutableEntry<>(key, predecessor);
+        when(node.getPredecessor()).thenReturn(entry);
+        Map.Entry<String, Node<String, String>> returnedEntry = nodeWrapper.getPredecessor();
+        assertNotNull(returnedEntry);
+        assertEquals(key.toString(), returnedEntry.getKey());
+        assertTrue(returnedEntry.getValue() instanceof StringNodeWrapper);
+        assertEquals(predecessor.toString(), returnedEntry.getValue().toString());
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -124,8 +132,8 @@ public class StringNodeWrapperTest {
     public final void testIterator() {
         Iterator<StringSequence> iterator = mock(Iterator.class);
         when(iterator.hasNext()).thenReturn(true, true, true, false);
-        when(iterator.next()).thenReturn(new StringSequence("1"), new StringSequence("2"),
-                new StringSequence("3"), null);
+        when(iterator.next())
+                .thenReturn(new StringSequence("1"), new StringSequence("2"), new StringSequence("3"), null);
         when(node.iterator()).thenReturn(iterator);
         Iterator<String> stringIterator = nodeWrapper.iterator();
         assertTrue(stringIterator.hasNext());

@@ -19,15 +19,16 @@ import de.mrapp.tries.sequence.StringSequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.AbstractMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
- * An implementation of the interface {@link Node}, where predecessors correspond to keys of the
- * type {@link String}. It forwards read-only method calls to an encapsulated node by mapping {@link
- * String}s to {@link StringSequence}s and throws {@link UnsupportedOperationException}s when
- * calling a method, which attempts to change the node's state.
+ * An implementation of the interface {@link Node}, where predecessors correspond to keys of the type {@link String}. It
+ * forwards read-only method calls to an encapsulated node by mapping {@link String}s to {@link StringSequence}s and
+ * throws {@link UnsupportedOperationException}s when calling a method, which attempts to change the node's state.
  *
  * @param <ValueType> The type of the node's value
  * @author Michael Rapp
@@ -46,11 +47,11 @@ public class StringNodeWrapper<ValueType> implements Node<String, ValueType> {
     private final Node<StringSequence, ValueType> node;
 
     /**
-     * Creates a new implementation of the interface {@link Node}, where predecessors correspond to
-     * keys of the type {@link String}.
+     * Creates a new implementation of the interface {@link Node}, where predecessors correspond to keys of the type
+     * {@link String}.
      *
-     * @param node The node, which should be encapsulated, as an instance of the type {@link Node}.
-     *             The node may not be null
+     * @param node The node, which should be encapsulated, as an instance of the type {@link Node}. The node may not be
+     *             null
      */
     public StringNodeWrapper(@NotNull final Node<StringSequence, ValueType> node) {
         ensureNotNull(node, "The node may not be null");
@@ -111,13 +112,14 @@ public class StringNodeWrapper<ValueType> implements Node<String, ValueType> {
 
     @Nullable
     @Override
-    public final Node<String, ValueType> getPredecessor() {
-        Node<StringSequence, ValueType> predecessor = node.getPredecessor();
-        return predecessor != null ? new StringNodeWrapper<>(predecessor) : null;
+    public final Map.Entry<String, Node<String, ValueType>> getPredecessor() {
+        Map.Entry<StringSequence, Node<StringSequence, ValueType>> entry = node.getPredecessor();
+        return entry != null ? new AbstractMap.SimpleImmutableEntry<>(entry.getKey().toString(),
+                new StringNodeWrapper<>(entry.getValue())) : null;
     }
 
     @Override
-    public final void setPredecessor(@Nullable final Node<String, ValueType> predecessor) {
+    public final void setPredecessor(@Nullable final Map.Entry<String, Node<String, ValueType>> predecessor) {
         throw new UnsupportedOperationException();
     }
 

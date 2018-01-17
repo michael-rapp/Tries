@@ -22,9 +22,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.AbstractMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -134,10 +137,16 @@ public class UnmodifiableNodeTest {
 
     @Test
     public final void testGetPredecessor() {
+        StringSequence key = new StringSequence("foo");
         Node<StringSequence, String> predecessor = mock(Node.class);
-        when(node.getPredecessor()).thenReturn(predecessor);
-        assertTrue(unmodifiableNode.getPredecessor() instanceof UnmodifiableNode);
-        assertEquals(predecessor.hashCode(), unmodifiableNode.getPredecessor().hashCode());
+        Map.Entry<StringSequence, Node<StringSequence, String>> entry =
+                new AbstractMap.SimpleImmutableEntry<>(key, predecessor);
+        when(node.getPredecessor()).thenReturn(entry);
+        Map.Entry<StringSequence, Node<StringSequence, String>> returnedEntry = unmodifiableNode.getPredecessor();
+        assertNotNull(returnedEntry);
+        assertEquals(returnedEntry.getKey(), key);
+        assertTrue(returnedEntry.getValue() instanceof UnmodifiableNode);
+        assertEquals(predecessor.hashCode(), returnedEntry.getValue().hashCode());
     }
 
     @Test(expected = UnsupportedOperationException.class)

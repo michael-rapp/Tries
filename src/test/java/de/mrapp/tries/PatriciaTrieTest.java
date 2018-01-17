@@ -801,7 +801,7 @@ public class PatriciaTrieTest
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "romane");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "romane");
-        verifyLeaf(successor, string);
+        verifyLeaf(successor, "romane");
     }
 
     @Test

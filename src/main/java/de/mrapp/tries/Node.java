@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.RandomAccess;
 
 import static de.mrapp.util.Condition.ensureTrue;
@@ -264,17 +265,19 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
     /**
      * Returns the predecessor of the node.
      *
-     * @return The predecessor of the node as an instance of the type {@link Node} or null, if no predecessor is set
+     * @return An entry, which contains the predecessor of this node, as well as the key this node is referenced by in
+     * the predecessor, as an instance of the type {@link Map.Entry} or null, if no predecessor is set
      */
-    @Nullable Node<KeyType, ValueType> getPredecessor();
+    @Nullable Map.Entry<KeyType, Node<KeyType, ValueType>> getPredecessor();
 
     /**
      * Sets the predecessor of the node.
      *
-     * @param predecessor The predecessor, which should be set, as an instance of the type {@link Node} or null, if no
+     * @param predecessor An entry, which contains the predecessor, which should be set, as well as the key this node is
+     *                    referenced by in the predecessor, as an instance of the type {@link Map.Entry} or null, if no
      *                    predecessor should be set
      */
-    void setPredecessor(@Nullable final Node<KeyType, ValueType> predecessor);
+    void setPredecessor(@Nullable final Map.Entry<KeyType, Node<KeyType, ValueType>> predecessor);
 
     /**
      * Creates and returns a deep copy of the node and its successors.
