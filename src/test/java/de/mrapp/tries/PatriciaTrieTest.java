@@ -20,6 +20,7 @@ import org.junit.Test;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests the functionality of the class {@link PatriciaTrie}.
@@ -41,6 +42,42 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     @Override
     final Node<StringSequence, String> getRootNode(@NotNull final PatriciaTrie<StringSequence, String> trie) {
         return trie.getRootNode();
+    }
+
+    @Test
+    public void testConstructorWithComparatorParameter() {
+        Comparator<? super StringSequence> comparator = mock(Comparator.class);
+        PatriciaTrie<StringSequence, String> trie = new PatriciaTrie<>(comparator);
+        assertEquals(comparator, trie.comparator());
+    }
+
+    @Test
+    public void testConstructorWithMapParameter() {
+        String value1 = "foo";
+        String value2 = "bar";
+        Map<StringSequence, String> map = new HashMap<>();
+        map.put(new StringSequence(value1), value1);
+        map.put(new StringSequence(value2), value2);
+        PatriciaTrie<StringSequence, String> trie = new PatriciaTrie<>(map);
+        assertEquals(2, trie.size());
+        assertEquals(value1, trie.get(new StringSequence(value1)));
+        assertEquals(value2, trie.get(new StringSequence(value2)));
+    }
+
+    @Test
+    public void testConstructorWithComparatorAndMapParameter() {
+        String value1 = "foo";
+        String value2 = "bar";
+        Map<StringSequence, String> map = new HashMap<>();
+        map.put(new StringSequence(value1), value1);
+        map.put(new StringSequence(value2), value2);
+        Comparator<? super StringSequence> comparator =
+                (Comparator<StringSequence>) (o1, o2) -> o1.toString().compareTo(o2.toString());
+        PatriciaTrie<StringSequence, String> trie = new PatriciaTrie<>(comparator, map);
+        assertEquals(2, trie.size());
+        assertEquals(value1, trie.get(new StringSequence(value1)));
+        assertEquals(value2, trie.get(new StringSequence(value2)));
+        assertEquals(comparator, trie.comparator());
     }
 
     /**
