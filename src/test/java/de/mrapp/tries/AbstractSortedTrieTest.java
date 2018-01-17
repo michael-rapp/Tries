@@ -13,7 +13,6 @@
  */
 package de.mrapp.tries;
 
-import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
 import java.util.Map;
@@ -23,13 +22,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * An abstract base class for all tests, which test the functionality of a {@link SortedTrie}
- * implementation.
+ * An abstract base class for all tests, which test the functionality of a {@link SortedTrie} implementation.
  *
  * @author Michael Rapp
  */
-public abstract class AbstractSortedTrieTest<SequenceType extends Sequence, ValueType, TrieType extends SortedTrie<SequenceType, ValueType>> extends
-        AbstractTrieTest<SequenceType, ValueType, TrieType> {
+public abstract class AbstractSortedTrieTest<SequenceType extends Sequence, TrieType extends SortedTrie<SequenceType, String>>
+        extends AbstractTrieTest<SequenceType, TrieType> {
 
     @Test
     public final void testFirstEntryIfTrieIsEmpty() {
@@ -53,7 +51,7 @@ public abstract class AbstractSortedTrieTest<SequenceType extends Sequence, Valu
 
     @Test
     public final void testPollFirstEntryIfTrieIsEmpty() {
-        Map.Entry<SequenceType, ValueType> removed = trie.pollFirstEntry();
+        Map.Entry<SequenceType, String> removed = trie.pollFirstEntry();
         assertNull(removed);
         assertTrue(trie.isEmpty());
         assertNull(trie.getRootNode());
@@ -61,7 +59,7 @@ public abstract class AbstractSortedTrieTest<SequenceType extends Sequence, Valu
 
     @Test
     public final void testPollLastEntryIfTrieIsEmpty() {
-        Map.Entry<SequenceType, ValueType> removed = trie.pollLastEntry();
+        Map.Entry<SequenceType, String> removed = trie.pollLastEntry();
         assertNull(removed);
         assertTrue(trie.isEmpty());
         assertNull(trie.getRootNode());

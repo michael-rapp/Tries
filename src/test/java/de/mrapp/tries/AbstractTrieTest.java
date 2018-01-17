@@ -28,10 +28,9 @@ import static org.junit.Assert.*;
  * implementation.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
- * @param <ValueType>    The type of the values, which are stored by the trie
  * @author Michael Rapp
  */
-public abstract class AbstractTrieTest<SequenceType, ValueType, TrieType extends Map<SequenceType, ValueType>> {
+public abstract class AbstractTrieTest<SequenceType, TrieType extends Map<SequenceType, String>> {
 
     TrieType trie;
 
@@ -39,7 +38,7 @@ public abstract class AbstractTrieTest<SequenceType, ValueType, TrieType extends
 
     abstract SequenceType convertToSequence(@NotNull final String string);
 
-    abstract Node<SequenceType, ValueType> getRootNode(@NotNull final TrieType trie);
+    abstract Node<SequenceType, String> getRootNode(@NotNull final TrieType trie);
 
     final void verifyRootNode(@Nullable final Node<SequenceType, String> node) {
         verifyRootNode(node, null);
@@ -92,6 +91,32 @@ public abstract class AbstractTrieTest<SequenceType, ValueType, TrieType extends
     @Test(expected = IllegalArgumentException.class)
     public final void testPutAllThrowsExceptionIfMapIsNull() {
         trie.putAll(null);
+    }
+
+    @Test
+    public final void testRemoveEmptyKeyIfKeyIsTheOnlyOne() {
+        String string = "empty";
+        trie.put(convertToSequence(""), string);
+        String removed = trie.remove(convertToSequence(""));
+        assertEquals(string, removed);
+        assertNull(trie.get(convertToSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+        assertNull(getRootNode(trie));
+    }
+
+    @Test
+    public final void testRemoveNullKeyIfKeyIsTheOnlyOne() {
+        String string = "empty";
+        trie.put(convertToSequence(""), string);
+        String removed = trie.remove(null);
+        assertEquals(string, removed);
+        assertNull(trie.get(convertToSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+        assertNull(getRootNode(trie));
     }
 
 }

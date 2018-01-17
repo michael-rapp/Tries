@@ -14,9 +14,6 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.sequence.StringSequence;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
@@ -24,14 +21,14 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 /**
- * An abstract base class for all tests, which test a {@link Trie} implementation, which uses {@link
- * StringSequence}s as keys.
+ * An abstract base class for all tests, which test a {@link Trie} implementation, which uses {@link StringSequence}s as
+ * keys.
  *
  * @param <TrieType> The type of the tested trie implementation
  * @author Michael Rapp
  */
 public abstract class AbstractStringSequenceTrieTest<TrieType extends Trie<StringSequence, String>>
-        extends AbstractTrieTest<StringSequence, String, TrieType> {
+        extends AbstractTrieTest<StringSequence, TrieType> {
 
     /**
      * Adds "tea" to the trie.
@@ -463,24 +460,15 @@ public abstract class AbstractStringSequenceTrieTest<TrieType extends Trie<Strin
         testPutWithEmptyKey();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
         assertEquals(9, entrySet.size());
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("tea"), "tea")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("to"), "to")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("ted"), "ted")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("ten"), "ten")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("inn"), "inn")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("in"), "in")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("A"), (String) null)));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("B"), "tea")));
-        assertTrue(entrySet.contains(
-                new AbstractMap.SimpleImmutableEntry<>(null, "empty")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ten"), "ten")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("inn"), "inn")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("in"), "in")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("A"), (String) null)));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("B"), "tea")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(null, "empty")));
     }
 
     @Test
@@ -514,13 +502,10 @@ public abstract class AbstractStringSequenceTrieTest<TrieType extends Trie<Strin
     public final void testEntrySetIteratorRemove() {
         testPut3();
         Iterator<Map.Entry<StringSequence, String>> iterator = trie.entrySet().iterator();
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"),
-                iterator.next());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"),
-                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("tea"), "tea"), iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("ted"), "ted"), iterator.next());
         iterator.remove();
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"),
-                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("to"), "to"), iterator.next());
         assertEquals(2, trie.size());
         assertTrue(trie.containsKey(new StringSequence("tea")));
         assertFalse(trie.containsKey(new StringSequence("ted")));
@@ -531,8 +516,7 @@ public abstract class AbstractStringSequenceTrieTest<TrieType extends Trie<Strin
     public final void testEntrySetImmutable() {
         testPut6();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
-        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(
-                new StringSequence("foo"), "foo"));
+        entrySet.add(new AbstractMap.SimpleImmutableEntry<>(new StringSequence("foo"), "foo"));
     }
 
     @Test(expected = ConcurrentModificationException.class)
@@ -686,32 +670,6 @@ public abstract class AbstractStringSequenceTrieTest<TrieType extends Trie<Strin
         assertEquals(8, trie.size());
         assertFalse(trie.isEmpty());
         verifyRootNode(trie.getRootNode());
-    }
-
-    @Test
-    public final void testRemoveEmptyKeyIfKeyIsTheOnlyOne() {
-        String string = "empty";
-        trie.put(new StringSequence(""), string);
-        String removed = trie.remove(new StringSequence(""));
-        assertEquals(string, removed);
-        assertNull(trie.get(new StringSequence("")));
-        assertNull(trie.get(null));
-        assertEquals(0, trie.size());
-        assertTrue(trie.isEmpty());
-        assertNull(trie.getRootNode());
-    }
-
-    @Test
-    public final void testRemoveNullKeyIfKeyIsTheOnlyOne() {
-        String string = "empty";
-        trie.put(new StringSequence(""), string);
-        String removed = trie.remove(null);
-        assertEquals(string, removed);
-        assertNull(trie.get(new StringSequence("")));
-        assertNull(trie.get(null));
-        assertEquals(0, trie.size());
-        assertTrue(trie.isEmpty());
-        assertNull(trie.getRootNode());
     }
 
     @Test
