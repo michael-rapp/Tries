@@ -118,8 +118,8 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
             final boolean readOnly) {
         SequenceType firstElement = SequenceUtil.subsequence(sequence, 0, 1);
         int index = SequenceUtil.binarySearch(node.getSuccessorCount(), node::getSuccessorKey,
-                (o1, o2) -> ((Comparable<? super SequenceType>) SequenceUtil.subsequence(o1, 0, 1)).compareTo(
-                        SequenceUtil.subsequence(o2, 0, 1)), firstElement);
+                (o1, o2) -> ((Comparable<? super SequenceType>) SequenceUtil.subsequence(o1, 0, 1))
+                        .compareTo(SequenceUtil.subsequence(o2, 0, 1)), firstElement);
 
         if (index != -1) {
             SequenceType successorKey = node.getSuccessorKey(index);
