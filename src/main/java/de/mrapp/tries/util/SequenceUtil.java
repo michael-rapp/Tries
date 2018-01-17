@@ -182,6 +182,7 @@ public class SequenceUtil {
      * @return The longest common prefix of the given sequences as an instance of the generic type
      * {@link T} or null, if the sequences do not have a common prefix
      */
+    @Nullable
     public static <T extends Sequence> T getCommonPrefix(@NotNull final T sequence1,
                                                          @NotNull final T sequence2) {
         ensureNotNull(sequence1, "The first sequence may not be null");

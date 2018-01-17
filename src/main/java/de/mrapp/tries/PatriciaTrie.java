@@ -17,6 +17,7 @@ import de.mrapp.tries.datastructure.AbstractSortedTrie;
 import de.mrapp.tries.datastructure.SortedListNode;
 import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.Pair;
+import de.mrapp.util.datastructure.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +43,38 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
      * The constant serial version UID.
      */
     private static final long serialVersionUID = 3229102065205655196L;
+
+    /**
+     * Returns the index of a node's successor, which corresponds to a specific sequence.
+     *
+     * @param node     The node, whose successors should be checked, as an instance of the type {@link Node}. The node
+     *                 may not be null
+     * @param sequence The sequence, the successor, whose index should be returned, corresponds to, as an {@link
+     *                 Integer} value
+     * @return A triple, which contains the index of the successor, which corresponds to the given sequence, as well as
+     * the common prefix and suffix of the given sequence, as an instance of the class {@link Triple} or null, if no
+     * such successor is available for the given node
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    private Triple<Integer, SequenceType, SequenceType> indexOfInternal(
+            @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence) {
+        SequenceType firstElement = SequenceUtil.subsequence(sequence, 0, 1);
+        int index = SequenceUtil.binarySearch(node.getSuccessorCount(), node::getSuccessorKey,
+                (o1, o2) -> ((Comparable<? super SequenceType>) SequenceUtil.subsequence(o1, 0, 1))
+                        .compareTo(SequenceUtil.subsequence(o2, 0, 1)), firstElement);
+
+        if (index != -1) {
+            SequenceType successorKey = node.getSuccessorKey(index);
+            SequenceType commonPrefix = SequenceUtil.getCommonPrefix(sequence, successorKey);
+
+            if (commonPrefix != null) {
+                return Triple.create(index, commonPrefix, getSuffix(sequence, commonPrefix.length()));
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Returns the suffix of a specific sequence, given a specific prefix length. The length of the suffix is calculated
@@ -137,8 +170,8 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     @Override
     protected final Pair<Integer, SequenceType> indexOf(@NotNull final Node<SequenceType, ValueType> node,
                                                         @NotNull final SequenceType sequence) {
-        // TODO
-        return null;
+        Triple<Integer, SequenceType, SequenceType> triple = indexOfInternal(node, sequence);
+        return triple != null ? Pair.create(triple.first, triple.third) : null;
     }
 
     @NotNull
@@ -147,44 +180,39 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
         return new SortedListNode<>(comparator);
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
     @Override
     protected final Pair<Node<SequenceType, ValueType>, SequenceType> onGetSuccessor(
             @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence,
             @NotNull final Operation operation) {
-        SequenceType firstElement = SequenceUtil.subsequence(sequence, 0, 1);
-        int index = SequenceUtil.binarySearch(node.getSuccessorCount(), node::getSuccessorKey,
-                (o1, o2) -> ((Comparable<? super SequenceType>) SequenceUtil.subsequence(o1, 0, 1))
-                        .compareTo(SequenceUtil.subsequence(o2, 0, 1)), firstElement);
+        Triple<Integer, SequenceType, SequenceType> triple = indexOfInternal(node, sequence);
 
-        if (index != -1) {
+        if (triple != null) {
+            int index = triple.first;
+            SequenceType prefix = triple.second;
+            SequenceType suffix = triple.third;
             SequenceType successorKey = node.getSuccessorKey(index);
-            SequenceType commonPrefix = SequenceUtil.getCommonPrefix(sequence, successorKey);
+            Node<SequenceType, ValueType> successor = node.getSuccessor(index);
+            int prefixLength = prefix.length();
 
-            if (commonPrefix != null) {
-                Node<SequenceType, ValueType> successor = node.getSuccessor(index);
-                int commonPrefixLength = commonPrefix.length();
+            if (operation == Operation.PUT) {
+                SequenceType intermediateSuffix = getSuffix(successorKey, prefixLength);
 
-                if (operation == Operation.PUT) {
-                    SequenceType intermediateSuffix = getSuffix(successorKey, commonPrefixLength);
-
-                    if (intermediateSuffix != null && !intermediateSuffix.isEmpty()) {
-                        node.removeSuccessor(index);
-                        Node<SequenceType, ValueType> intermediateNode = node.addSuccessor(commonPrefix);
-                        intermediateNode.addSuccessor(intermediateSuffix, successor);
-                        successor = intermediateNode;
-                    }
-
-                    return Pair.create(successor, getSuffix(sequence, commonPrefixLength));
-                } else if (operation == Operation.REMOVE) {
-                    return sequence.length() >= commonPrefixLength && commonPrefixLength == successorKey.length() ?
-                            Pair.create(successor, getSuffix(sequence, commonPrefixLength)) : null;
-                } else {
-                    int sequenceLength = sequence.length();
-                    return sequenceLength == commonPrefixLength && successorKey.length() > sequenceLength ? null :
-                            Pair.create(successor, getSuffix(sequence, commonPrefixLength));
+                if (intermediateSuffix != null && !intermediateSuffix.isEmpty()) {
+                    node.removeSuccessor(index);
+                    Node<SequenceType, ValueType> intermediateNode = node.addSuccessor(prefix);
+                    intermediateNode.addSuccessor(intermediateSuffix, successor);
+                    successor = intermediateNode;
                 }
+
+                return Pair.create(successor, suffix);
+            } else if (operation == Operation.REMOVE) {
+                return sequence.length() >= prefixLength && prefixLength == successorKey.length() ?
+                        Pair.create(successor, suffix) : null;
+            } else {
+                int sequenceLength = sequence.length();
+                return sequenceLength == prefixLength && successorKey.length() > sequenceLength ? null :
+                        Pair.create(successor, suffix);
             }
         }
 
