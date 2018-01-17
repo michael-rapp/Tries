@@ -249,17 +249,60 @@ public class PatriciaTrieTest
     }
 
     /**
-     * Adds "romane", "romanus", romulus", "rubens", "ruber", "rubicon", "rubicundus" and "A" (mapped to null value) to
-     * the trie.
+     * Adds "romane", "romanus", romulus", "rubens", "ruber", "rubicon", "rubicundus", "rubicun" to the trie.
      */
     @Test
     public final void testPut8() {
         testPut7();
+        String string = "rubicun";
+        String previous = trie.put(convertToSequence(string), string);
+        assertNull(previous);
+        assertEquals(string, trie.get(convertToSequence(string)));
+        assertEquals(8, trie.size());
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "r");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
+        verifySuccessors(successor, "om", "ub");
+        Node<StringSequence, String> successorOm = getSuccessor(successor, "om");
+        verifySuccessors(successorOm, "an", "ulus");
+        Node<StringSequence, String> successorAn = getSuccessor(successorOm, "an");
+        verifySuccessors(successorAn, "e", "us");
+        Node<StringSequence, String> successorE = getSuccessor(successorAn, "e");
+        verifyLeaf(successorE, "romane");
+        Node<StringSequence, String> successorUs = getSuccessor(successorAn, "us");
+        verifyLeaf(successorUs, "romanus");
+        Node<StringSequence, String> successorUlus = getSuccessor(successorOm, "ulus");
+        verifyLeaf(successorUlus, "romulus");
+        Node<StringSequence, String> successorUb = getSuccessor(successor, "ub");
+        verifySuccessors(successorUb, "e", "ic");
+        Node<StringSequence, String> successorE2 = getSuccessor(successorUb, "e");
+        verifySuccessors(successorE2, "ns", "r");
+        Node<StringSequence, String> successorNs = getSuccessor(successorE2, "ns");
+        verifyLeaf(successorNs, "rubens");
+        Node<StringSequence, String> successorR = getSuccessor(successorE2, "r");
+        verifyLeaf(successorR, "ruber");
+        Node<StringSequence, String> successorIc = getSuccessor(successorUb, "ic");
+        verifySuccessors(successorIc, "on", "un");
+        Node<StringSequence, String> successorOn = getSuccessor(successorIc, "on");
+        verifyLeaf(successorOn, "rubicon");
+        Node<StringSequence, String> successorUn = getSuccessor(successorIc, "un");
+        verifySuccessors(successorUn, "dus");
+        Node<StringSequence, String> successorDus = getSuccessor(successorUn, "dus");
+        verifyLeaf(successorDus, "rubicundus");
+    }
+
+    /**
+     * Adds "romane", "romanus", romulus", "rubens", "ruber", "rubicon", "rubicundus" and "A" (mapped to null value) to
+     * the trie.
+     */
+    @Test
+    public final void testPut9() {
+        testPut8();
         String string = "A";
         String previous = trie.put(convertToSequence(string), null);
         assertNull(previous);
         assertNull(string, trie.get(convertToSequence(string)));
-        assertEquals(8, trie.size());
+        assertEquals(9, trie.size());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r", "A");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -283,24 +326,26 @@ public class PatriciaTrieTest
         Node<StringSequence, String> successorR = getSuccessor(successorE2, "r");
         verifyLeaf(successorR, "ruber");
         Node<StringSequence, String> successorIc = getSuccessor(successorUb, "ic");
-        verifySuccessors(successorIc, "on", "undus");
+        verifySuccessors(successorIc, "on", "un");
         Node<StringSequence, String> successorOn = getSuccessor(successorIc, "on");
         verifyLeaf(successorOn, "rubicon");
-        Node<StringSequence, String> successorUndus = getSuccessor(successorIc, "undus");
-        verifyLeaf(successorUndus, "rubicundus");
+        Node<StringSequence, String> successorUn = getSuccessor(successorIc, "un");
+        verifySuccessors(successorUn, "dus");
+        Node<StringSequence, String> successorDus = getSuccessor(successorUn, "dus");
+        verifyLeaf(successorDus, "rubicundus");
         Node<StringSequence, String> successorA = getSuccessor(getRootNode(trie), "A");
         verifyLeaf(successorA, null);
     }
 
     @Test
     public final void testPutWithDuplicateValue() {
-        testPut8();
+        testPut9();
         String string = "B";
         String duplicate = "romulus";
         String previous = trie.put(convertToSequence(string), duplicate);
         assertNull(previous);
         assertEquals(duplicate, trie.get(convertToSequence(string)));
-        assertEquals(9, trie.size());
+        assertEquals(10, trie.size());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r", "A", "B");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -324,11 +369,13 @@ public class PatriciaTrieTest
         Node<StringSequence, String> successorR = getSuccessor(successorE2, "r");
         verifyLeaf(successorR, "ruber");
         Node<StringSequence, String> successorIc = getSuccessor(successorUb, "ic");
-        verifySuccessors(successorIc, "on", "undus");
+        verifySuccessors(successorIc, "on", "un");
         Node<StringSequence, String> successorOn = getSuccessor(successorIc, "on");
         verifyLeaf(successorOn, "rubicon");
-        Node<StringSequence, String> successorUndus = getSuccessor(successorIc, "undus");
-        verifyLeaf(successorUndus, "rubicundus");
+        Node<StringSequence, String> successorUn = getSuccessor(successorIc, "un");
+        verifySuccessors(successorUn, "dus");
+        Node<StringSequence, String> successorDus = getSuccessor(successorUn, "dus");
+        verifyLeaf(successorDus, "rubicundus");
         Node<StringSequence, String> successorA = getSuccessor(getRootNode(trie), "A");
         verifyLeaf(successorA, null);
         Node<StringSequence, String> successorB = getSuccessor(getRootNode(trie), "B");
@@ -342,7 +389,7 @@ public class PatriciaTrieTest
         String previous = trie.put(convertToSequence(""), string);
         assertNull(previous);
         assertEquals(string, trie.get(convertToSequence("")));
-        assertEquals(10, trie.size());
+        assertEquals(11, trie.size());
         verifyRootNode(getRootNode(trie), string);
         verifySuccessors(getRootNode(trie), "r", "A", "B");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -366,11 +413,13 @@ public class PatriciaTrieTest
         Node<StringSequence, String> successorR = getSuccessor(successorE2, "r");
         verifyLeaf(successorR, "ruber");
         Node<StringSequence, String> successorIc = getSuccessor(successorUb, "ic");
-        verifySuccessors(successorIc, "on", "undus");
+        verifySuccessors(successorIc, "on", "un");
         Node<StringSequence, String> successorOn = getSuccessor(successorIc, "on");
         verifyLeaf(successorOn, "rubicon");
-        Node<StringSequence, String> successorUndus = getSuccessor(successorIc, "undus");
-        verifyLeaf(successorUndus, "rubicundus");
+        Node<StringSequence, String> successorUn = getSuccessor(successorIc, "un");
+        verifySuccessors(successorUn, "dus");
+        Node<StringSequence, String> successorDus = getSuccessor(successorUn, "dus");
+        verifyLeaf(successorDus, "rubicundus");
         Node<StringSequence, String> successorA = getSuccessor(getRootNode(trie), "A");
         verifyLeaf(successorA, null);
         Node<StringSequence, String> successorB = getSuccessor(getRootNode(trie), "B");
@@ -384,7 +433,7 @@ public class PatriciaTrieTest
         String previous = trie.put(null, string);
         assertEquals("empty", previous);
         assertEquals(string, trie.get(null));
-        assertEquals(10, trie.size());
+        assertEquals(11, trie.size());
         verifyRootNode(getRootNode(trie), string);
         verifySuccessors(getRootNode(trie), "r", "A", "B");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -408,11 +457,13 @@ public class PatriciaTrieTest
         Node<StringSequence, String> successorR = getSuccessor(successorE2, "r");
         verifyLeaf(successorR, "ruber");
         Node<StringSequence, String> successorIc = getSuccessor(successorUb, "ic");
-        verifySuccessors(successorIc, "on", "undus");
+        verifySuccessors(successorIc, "on", "un");
         Node<StringSequence, String> successorOn = getSuccessor(successorIc, "on");
         verifyLeaf(successorOn, "rubicon");
-        Node<StringSequence, String> successorUndus = getSuccessor(successorIc, "undus");
-        verifyLeaf(successorUndus, "rubicundus");
+        Node<StringSequence, String> successorUn = getSuccessor(successorIc, "un");
+        verifySuccessors(successorUn, "dus");
+        Node<StringSequence, String> successorDus = getSuccessor(successorUn, "dus");
+        verifyLeaf(successorDus, "rubicundus");
         Node<StringSequence, String> successorA = getSuccessor(getRootNode(trie), "A");
         verifyLeaf(successorA, null);
         Node<StringSequence, String> successorB = getSuccessor(getRootNode(trie), "B");
@@ -481,7 +532,7 @@ public class PatriciaTrieTest
     public final void testValues() {
         testPutWithEmptyKey();
         Collection<String> values = trie.values();
-        assertEquals(10, values.size());
+        assertEquals(11, values.size());
         assertTrue(values.contains("romane"));
         assertTrue(values.contains("romanus"));
         assertTrue(values.contains("romulus"));
@@ -489,6 +540,7 @@ public class PatriciaTrieTest
         assertTrue(values.contains("ruber"));
         assertTrue(values.contains("rubicon"));
         assertTrue(values.contains("rubicundus"));
+        assertTrue(values.contains("rubicun"));
         assertTrue(values.contains(null));
         assertTrue(values.contains("empty"));
     }
@@ -497,7 +549,7 @@ public class PatriciaTrieTest
     public final void testValuesIterator() {
         testPutWithEmptyKey();
         Collection<String> values = trie.values();
-        assertEquals(10, values.size());
+        assertEquals(11, values.size());
         Collection<String> actualValues = new ArrayList<>();
         actualValues.add("romane");
         actualValues.add("romanus");
@@ -507,11 +559,12 @@ public class PatriciaTrieTest
         actualValues.add("ruber");
         actualValues.add("rubicon");
         actualValues.add("rubicundus");
+        actualValues.add("rubicun");
         actualValues.add(null);
         actualValues.add("empty");
         Iterator<String> iterator = values.iterator();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 11; i++) {
             assertTrue(iterator.hasNext());
             String value = iterator.next();
             assertTrue(actualValues.contains(value));
@@ -554,7 +607,7 @@ public class PatriciaTrieTest
     @Test
     public final void testContainsValue() {
         testPutWithEmptyKey();
-        assertEquals(10, trie.size());
+        assertEquals(11, trie.size());
         assertTrue(trie.containsValue("romane"));
         assertTrue(trie.containsValue("romanus"));
         assertTrue(trie.containsValue("romulus"));
@@ -562,6 +615,7 @@ public class PatriciaTrieTest
         assertTrue(trie.containsValue("ruber"));
         assertTrue(trie.containsValue("rubicon"));
         assertTrue(trie.containsValue("rubicundus"));
+        assertTrue(trie.containsValue("rubicun"));
         assertTrue(trie.containsValue(null));
         assertTrue(trie.containsValue("empty"));
     }
@@ -570,7 +624,7 @@ public class PatriciaTrieTest
     public final void testKeySet() {
         testPutWithEmptyKey();
         Collection<StringSequence> keys = trie.keySet();
-        assertEquals(10, keys.size());
+        assertEquals(11, keys.size());
         assertTrue(keys.contains(convertToSequence("romane")));
         assertTrue(keys.contains(convertToSequence("romanus")));
         assertTrue(keys.contains(convertToSequence("romulus")));
@@ -578,6 +632,7 @@ public class PatriciaTrieTest
         assertTrue(keys.contains(convertToSequence("ruber")));
         assertTrue(keys.contains(convertToSequence("rubicon")));
         assertTrue(keys.contains(convertToSequence("rubicundus")));
+        assertTrue(keys.contains(convertToSequence("rubicun")));
         assertTrue(keys.contains(convertToSequence("A")));
         assertTrue(keys.contains(convertToSequence("B")));
         assertTrue(keys.contains(null));
@@ -594,7 +649,7 @@ public class PatriciaTrieTest
     public final void testKeySetIterator() {
         testPutWithEmptyKey();
         Collection<StringSequence> keys = trie.keySet();
-        assertEquals(10, keys.size());
+        assertEquals(11, keys.size());
         Iterator<StringSequence> iterator = keys.iterator();
         Collection<StringSequence> actualKeys = new ArrayList<>();
         actualKeys.add(convertToSequence("romane"));
@@ -604,11 +659,12 @@ public class PatriciaTrieTest
         actualKeys.add(convertToSequence("ruber"));
         actualKeys.add(convertToSequence("rubicon"));
         actualKeys.add(convertToSequence("rubicundus"));
+        actualKeys.add(convertToSequence("rubicun"));
         actualKeys.add(convertToSequence("A"));
         actualKeys.add(convertToSequence("B"));
         actualKeys.add(null);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 11; i++) {
             assertTrue(iterator.hasNext());
             StringSequence key = iterator.next();
             assertTrue(actualKeys.contains(key));
@@ -644,7 +700,7 @@ public class PatriciaTrieTest
     @Test
     public final void testContainsKey() {
         testPutWithEmptyKey();
-        assertEquals(10, trie.size());
+        assertEquals(11, trie.size());
         assertTrue(trie.containsKey(convertToSequence("romane")));
         assertTrue(trie.containsKey(convertToSequence("romanus")));
         assertTrue(trie.containsKey(convertToSequence("romulus")));
@@ -652,6 +708,7 @@ public class PatriciaTrieTest
         assertTrue(trie.containsKey(convertToSequence("ruber")));
         assertTrue(trie.containsKey(convertToSequence("rubicon")));
         assertTrue(trie.containsKey(convertToSequence("rubicundus")));
+        assertTrue(trie.containsKey(convertToSequence("rubicun")));
         assertTrue(trie.containsKey(convertToSequence("A")));
         assertTrue(trie.containsKey(convertToSequence("B")));
         assertTrue(trie.containsKey(convertToSequence("")));
@@ -662,7 +719,7 @@ public class PatriciaTrieTest
     public final void testEntrySet() {
         testPutWithEmptyKey();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
-        assertEquals(10, entrySet.size());
+        assertEquals(11, entrySet.size());
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane")));
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus")));
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus")));
@@ -671,6 +728,7 @@ public class PatriciaTrieTest
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon")));
         assertTrue(entrySet.contains(
                 new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus")));
+        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun")));
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), (String) null)));
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "romulus")));
         assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>((StringSequence) null, "empty")));
@@ -680,7 +738,7 @@ public class PatriciaTrieTest
     public final void testEntrySetIterator() {
         testPutWithEmptyKey();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
-        assertEquals(10, entrySet.size());
+        assertEquals(11, entrySet.size());
         Collection<Map.Entry<StringSequence, String>> actualEntries = new ArrayList<>();
         actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"));
         actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"));
@@ -689,12 +747,13 @@ public class PatriciaTrieTest
         actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"));
         actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"));
         actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"));
         actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), null));
         actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "romulus"));
         actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(null, "empty"));
         Iterator<Map.Entry<StringSequence, String>> iterator = entrySet.iterator();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 11; i++) {
             assertTrue(iterator.hasNext());
             Map.Entry<StringSequence, String> entry = iterator.next();
             assertTrue(actualEntries.contains(entry));
