@@ -31,11 +31,6 @@ public abstract class AbstractNonPatriciaSortedTrieTest<SequenceType, TrieType e
         extends AbstractNonPatriciaTrieTest<SequenceType, TrieType> {
 
     @Test
-    public final void testFloorEntryIfKeyIsNotContained() {
-        assertNull(trie.floorEntry(convertToSequence("foo")));
-    }
-
-    @Test
     public final void testFloorEntry() {
         testPut6();
         SequenceType key = convertToSequence("inn");
@@ -43,11 +38,6 @@ public abstract class AbstractNonPatriciaSortedTrieTest<SequenceType, TrieType e
         assertNotNull(entry);
         assertEquals(key, entry.getKey());
         assertEquals("inn", entry.getValue());
-    }
-
-    @Test
-    public final void testCeilingEntryIfKeyIsNotContained() {
-        assertNull(trie.ceilingEntry(convertToSequence("foo")));
     }
 
     @Test
@@ -112,15 +102,6 @@ public abstract class AbstractNonPatriciaSortedTrieTest<SequenceType, TrieType e
     }
 
     @Test
-    public final void testLastEntry3() {
-        trie.put(null, "empty");
-        Map.Entry<SequenceType, String> entry = trie.lastEntry();
-        assertNotNull(entry);
-        assertNull(entry.getKey());
-        assertEquals("empty", entry.getValue());
-    }
-
-    @Test
     public final void testLastKey1() {
         testPut6();
         SequenceType key = trie.lastKey();
@@ -133,13 +114,6 @@ public abstract class AbstractNonPatriciaSortedTrieTest<SequenceType, TrieType e
         trie.put(convertToSequence("too"), "too");
         SequenceType key = trie.lastKey();
         assertEquals(convertToSequence("too"), key);
-    }
-
-    @Test
-    public final void testLastKey3() {
-        trie.put(null, "empty");
-        SequenceType key = trie.lastKey();
-        assertNull(key);
     }
 
     @Test

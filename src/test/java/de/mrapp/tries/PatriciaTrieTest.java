@@ -1106,4 +1106,104 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
         assertFalse(trie1.equals(trie2));
     }
 
+    @Test
+    public final void testFloorEntry() {
+        testPut6();
+        StringSequence key = convertToSequence("romulus");
+        Map.Entry<StringSequence, String> entry = trie.floorEntry(key);
+        assertNotNull(entry);
+        assertEquals(key, entry.getKey());
+        assertEquals("romulus", entry.getValue());
+    }
+
+    @Test
+    public final void testCeilingEntry() {
+        testPut6();
+        StringSequence key = convertToSequence("romulus");
+        Map.Entry<StringSequence, String> entry = trie.ceilingEntry(key);
+        assertNotNull(entry);
+        assertEquals(key, entry.getKey());
+        assertEquals("romulus", entry.getValue());
+    }
+
+    @Test
+    public final void testFirstEntry1() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.firstEntry();
+        assertNotNull(entry);
+        assertEquals(convertToSequence("romane"), entry.getKey());
+        assertEquals("romane", entry.getValue());
+    }
+
+    @Test
+    public void testFirstEntry2() {
+        testPutWithEmptyKey();
+        Map.Entry<StringSequence, String> entry = trie.firstEntry();
+        assertNotNull(entry);
+        assertNull(entry.getKey());
+        assertEquals("empty", entry.getValue());
+    }
+
+    @Test
+    public final void testFirstKey1() {
+        testPut6();
+        StringSequence key = trie.firstKey();
+        assertEquals(convertToSequence("romane"), key);
+    }
+
+    @Test
+    public final void testFirstKey2() {
+        testPutWithEmptyKey();
+        StringSequence key = trie.firstKey();
+        assertNull(key);
+    }
+
+    @Test
+    public final void testLastEntry1() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.lastEntry();
+        assertNotNull(entry);
+        assertEquals(convertToSequence("rubicon"), entry.getKey());
+        assertEquals("rubicon", entry.getValue());
+    }
+
+    @Test
+    public final void testLastEntry2() {
+        testPut6();
+        trie.put(convertToSequence("x"), "x");
+        Map.Entry<StringSequence, String> entry = trie.lastEntry();
+        assertNotNull(entry);
+        assertEquals(convertToSequence("x"), entry.getKey());
+        assertEquals("x", entry.getValue());
+    }
+
+    @Test
+    public final void testLastKey1() {
+        testPut6();
+        StringSequence key = trie.lastKey();
+        assertEquals(convertToSequence("rubicon"), key);
+    }
+
+    @Test
+    public final void testLastKey2() {
+        testPut6();
+        trie.put(convertToSequence("x"), "x");
+        StringSequence key = trie.lastKey();
+        assertEquals(convertToSequence("x"), key);
+    }
+
+    @Test
+    public final void testPollFirstEntryIfKeyIsTheOnlyOne() {
+        testPut1();
+        String string = "romane";
+        Map.Entry<StringSequence, String> removed = trie.pollFirstEntry();
+        assertNotNull(removed);
+        assertEquals(convertToSequence(string), removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(convertToSequence(string)));
+        assertNull(getRootNode(trie));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+    }
+
 }

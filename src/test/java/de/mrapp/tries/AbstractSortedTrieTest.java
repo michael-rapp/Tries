@@ -13,13 +13,14 @@
  */
 package de.mrapp.tries;
 
+import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * An abstract base class for all tests, which test the functionality of a {@link SortedTrie} implementation.
@@ -63,6 +64,32 @@ public abstract class AbstractSortedTrieTest<SequenceType extends Sequence, Trie
         assertNull(removed);
         assertTrue(trie.isEmpty());
         assertNull(trie.getRootNode());
+    }
+
+    @Test
+    public final void testFloorEntryIfKeyIsNotContained() {
+        assertNull(trie.floorEntry(convertToSequence("foo")));
+    }
+
+    @Test
+    public final void testCeilingEntryIfKeyIsNotContained() {
+        assertNull(trie.ceilingEntry(convertToSequence("foo")));
+    }
+
+    @Test
+    public final void testLastEntryIfNullKeyIsTheOnlyOne() {
+        trie.put(null, "empty");
+        Map.Entry<SequenceType, String> entry = trie.lastEntry();
+        assertNotNull(entry);
+        assertNull(entry.getKey());
+        assertEquals("empty", entry.getValue());
+    }
+
+    @Test
+    public final void testLastKeyIfNullKeyIsTheOnlyOne() {
+        trie.put(null, "empty");
+        SequenceType key = trie.lastKey();
+        assertNull(key);
     }
 
 }
