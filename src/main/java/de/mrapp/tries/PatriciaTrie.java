@@ -58,7 +58,12 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
         return prefixLength < sequence.length() ? SequenceUtil.subsequence(sequence, prefixLength) : null;
     }
 
-    // TODO: Comment
+    /**
+     * Removes a specific intermediate node, if possible.
+     *
+     * @param node The intermediate node, which should be removed, as an instance of the type {@link Node}. The node may
+     *             to be null
+     */
     private void removeIntermediateNode(@NotNull final Node<SequenceType, ValueType> node) {
         if (node.getSuccessorCount() == 1 && !node.isValueSet()) {
             Map.Entry<SequenceType, Node<SequenceType, ValueType>> entry = node.getPredecessor();
