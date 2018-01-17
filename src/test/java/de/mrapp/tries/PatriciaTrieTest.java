@@ -911,7 +911,41 @@ public class PatriciaTrieTest
 
     @Test
     public final void testRemoveIfKeyContainsOtherKeyAsPrefix() {
-        // TODO
+        testPut8();
+        String string = "rubicundus";
+        String removed = trie.remove(convertToSequence(string));
+        assertEquals(string, removed);
+        assertNull(trie.get(convertToSequence(string)));
+        assertEquals(7, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "r");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
+        verifySuccessors(successor, "om", "ub");
+        Node<StringSequence, String> successorOm = getSuccessor(successor, "om");
+        verifySuccessors(successorOm, "an", "ulus");
+        Node<StringSequence, String> successorAn = getSuccessor(successorOm, "an");
+        verifySuccessors(successorAn, "e", "us");
+        Node<StringSequence, String> successorE = getSuccessor(successorAn, "e");
+        verifyLeaf(successorE, "romane");
+        Node<StringSequence, String> successorUs = getSuccessor(successorAn, "us");
+        verifyLeaf(successorUs, "romanus");
+        Node<StringSequence, String> successorUlus = getSuccessor(successorOm, "ulus");
+        verifyLeaf(successorUlus, "romulus");
+        Node<StringSequence, String> successorUb = getSuccessor(successor, "ub");
+        verifySuccessors(successorUb, "e", "ic");
+        Node<StringSequence, String> successorE2 = getSuccessor(successorUb, "e");
+        verifySuccessors(successorE2, "ns", "r");
+        Node<StringSequence, String> successorNs = getSuccessor(successorE2, "ns");
+        verifyLeaf(successorNs, "rubens");
+        Node<StringSequence, String> successorR = getSuccessor(successorE2, "r");
+        verifyLeaf(successorR, "ruber");
+        Node<StringSequence, String> successorIc = getSuccessor(successorUb, "ic");
+        verifySuccessors(successorIc, "on", "un");
+        Node<StringSequence, String> successorOn = getSuccessor(successorIc, "on");
+        verifyLeaf(successorOn, "rubicon");
+        Node<StringSequence, String> successorUn = getSuccessor(successorIc, "un");
+        verifyLeaf(successorUn, "rubicun");
     }
 
     @Test
