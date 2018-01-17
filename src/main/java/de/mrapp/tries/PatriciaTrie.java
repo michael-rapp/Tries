@@ -43,10 +43,19 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
      */
     private static final long serialVersionUID = 3229102065205655196L;
 
-    // TODO: Comment
+    /**
+     * Returns the suffix of a specific sequence, given a specific prefix length. The length of the suffix is calculated
+     * based on the length of the given sequence and the suffix length.
+     *
+     * @param sequence     The sequence, whose suffix should be returned, as an instance of the generic type {@link
+     *                     SequenceType}. The sequence may not be null
+     * @param prefixLength The length of the prefix as an {@link Integer} value.
+     * @return The suffix of the given sequence as an instance of the generic type {@link SequenceType} or null, if the
+     * given prefix length equals the length of the given sequence
+     */
     @Nullable
-    private SequenceType getSuffix(@NotNull final SequenceType sequence, @NotNull final SequenceType prefix) {
-        return prefix.length() < sequence.length() ? SequenceUtil.subsequence(sequence, prefix.length()) : null;
+    private SequenceType getSuffix(@NotNull final SequenceType sequence, final int prefixLength) {
+        return prefixLength < sequence.length() ? SequenceUtil.subsequence(sequence, prefixLength) : null;
     }
 
     // TODO: Comment
@@ -150,9 +159,10 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
 
             if (commonPrefix != null) {
                 Node<SequenceType, ValueType> successor = node.getSuccessor(index);
+                int commonPrefixLength = commonPrefix.length();
 
                 if (operation == Operation.PUT) {
-                    SequenceType intermediateSuffix = getSuffix(successorKey, commonPrefix);
+                    SequenceType intermediateSuffix = getSuffix(successorKey, commonPrefixLength);
 
                     if (intermediateSuffix != null && !intermediateSuffix.isEmpty()) {
                         node.removeSuccessor(index);
@@ -161,15 +171,14 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
                         successor = intermediateNode;
                     }
 
-                    return Pair.create(successor, getSuffix(sequence, commonPrefix));
+                    return Pair.create(successor, getSuffix(sequence, commonPrefixLength));
                 } else if (operation == Operation.REMOVE) {
-                    int commonPrefixLength = commonPrefix.length();
                     return sequence.length() >= commonPrefixLength && commonPrefixLength == successorKey.length() ?
-                            Pair.create(successor, getSuffix(sequence, commonPrefix)) : null;
+                            Pair.create(successor, getSuffix(sequence, commonPrefixLength)) : null;
                 } else {
                     int sequenceLength = sequence.length();
-                    return sequenceLength == commonPrefix.length() && successorKey.length() > sequenceLength ? null :
-                            Pair.create(successor, getSuffix(sequence, commonPrefix));
+                    return sequenceLength == commonPrefixLength && successorKey.length() > sequenceLength ? null :
+                            Pair.create(successor, getSuffix(sequence, commonPrefixLength));
                 }
             }
         }
