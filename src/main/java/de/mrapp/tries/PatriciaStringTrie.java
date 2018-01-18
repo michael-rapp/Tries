@@ -31,7 +31,7 @@ import java.util.Map;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class StringPatriciaTrie<ValueType> extends SortedStringTrieWrapper<ValueType> {
+public class PatriciaStringTrie<ValueType> extends SortedStringTrieWrapper<ValueType> {
 
     /**
      * The constant serial version UID.
@@ -43,7 +43,7 @@ public class StringPatriciaTrie<ValueType> extends SortedStringTrieWrapper<Value
      * successors of nodes. Subsequent nodes that only have a single successor are merged to a single node to reduce
      * space complexity. For comparing keys with each other, the natural ordering of the keys is used.
      */
-    public StringPatriciaTrie() {
+    public PatriciaStringTrie() {
         this((Comparator<? super String>) null);
     }
 
@@ -55,7 +55,7 @@ public class StringPatriciaTrie<ValueType> extends SortedStringTrieWrapper<Value
      * @param comparator The comparator, which should be used to compare keys with each other, as an instance of the
      *                   type {@link Comparator} or null, if the natural ordering of the keys should be used
      */
-    public StringPatriciaTrie(@Nullable final Comparator<? super String> comparator) {
+    public PatriciaStringTrie(@Nullable final Comparator<? super String> comparator) {
         super(new PatriciaTrie<>(
                 comparator != null ? new StringSequenceComparatorWrapper(comparator) : null));
     }
@@ -69,7 +69,7 @@ public class StringPatriciaTrie<ValueType> extends SortedStringTrieWrapper<Value
      * @param map The map, which contains the key-value pairs that should be added to the trie, as an instance of the
      *            type {@link Map}. The map may not be null
      */
-    public StringPatriciaTrie(@NotNull final Map<String, ValueType> map) {
+    public PatriciaStringTrie(@NotNull final Map<String, ValueType> map) {
         this(null, map);
     }
 
@@ -83,7 +83,7 @@ public class StringPatriciaTrie<ValueType> extends SortedStringTrieWrapper<Value
      * @param map        The map, which contains the key-value pairs that should be added to the trie, as an instance of
      *                   the type {@link Map}. The map may not be null
      */
-    public StringPatriciaTrie(@Nullable final Comparator<? super String> comparator,
+    public PatriciaStringTrie(@Nullable final Comparator<? super String> comparator,
                               @NotNull final Map<String, ValueType> map) {
         super(new PatriciaTrie<>(comparator != null ? new StringSequenceComparatorWrapper(comparator) : null));
         putAll(map);
@@ -91,7 +91,7 @@ public class StringPatriciaTrie<ValueType> extends SortedStringTrieWrapper<Value
 
     @Override
     public final String toString() {
-        return "StringPatriciaTrie " + entrySet().toString();
+        return "PatriciaStringTrie " + entrySet().toString();
     }
 
 }

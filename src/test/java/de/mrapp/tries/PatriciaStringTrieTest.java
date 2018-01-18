@@ -27,15 +27,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests the functionality of the class {@link StringPatriciaTrie}.
+ * Tests the functionality of the class {@link PatriciaStringTrie}.
  *
  * @author Michael Rapp
  */
-public class StringPatriciaTrieTest extends AbstractPatriciaTrieTest<String, StringPatriciaTrie<String>> {
+public class PatriciaStringTrieTest extends AbstractPatriciaTrieTest<String, PatriciaStringTrie<String>> {
 
     @Override
-    final StringPatriciaTrie<String> onCreateTrie() {
-        return new StringPatriciaTrie<>();
+    final PatriciaStringTrie<String> onCreateTrie() {
+        return new PatriciaStringTrie<>();
     }
 
     @Override
@@ -44,13 +44,13 @@ public class StringPatriciaTrieTest extends AbstractPatriciaTrieTest<String, Str
     }
 
     @Override
-    final Node<String, String> getRootNode(@NotNull final StringPatriciaTrie<String> trie) {
+    final Node<String, String> getRootNode(@NotNull final PatriciaStringTrie<String> trie) {
         return trie.getRootNode();
     }
 
     @Test
     public final void testDefaultConstructor() {
-        StringPatriciaTrie<String> trie = new StringPatriciaTrie<>();
+        PatriciaStringTrie<String> trie = new PatriciaStringTrie<>();
         assertNull(trie.comparator());
     }
 
@@ -61,7 +61,7 @@ public class StringPatriciaTrieTest extends AbstractPatriciaTrieTest<String, Str
         Map<String, String> map = new HashMap<>();
         map.put(value1, value1);
         map.put(value2, value2);
-        StringPatriciaTrie<String> trie = new StringPatriciaTrie<>(map);
+        PatriciaStringTrie<String> trie = new PatriciaStringTrie<>(map);
         assertEquals(2, trie.size());
         assertEquals(value1, trie.get(value1));
         assertEquals(value2, trie.get(value2));
@@ -70,7 +70,7 @@ public class StringPatriciaTrieTest extends AbstractPatriciaTrieTest<String, Str
     @Test
     public final void testConstructorWithComparatorParameter() {
         Comparator<? super String> comparator = mock(Comparator.class);
-        StringPatriciaTrie<String> trie = new StringPatriciaTrie<>(comparator);
+        PatriciaStringTrie<String> trie = new PatriciaStringTrie<>(comparator);
         assertNotNull(trie.comparator());
         when(comparator.compare("a", "b")).thenReturn(-1);
         assertEquals(-1, trie.comparator().compare("a", "b"));
@@ -84,7 +84,7 @@ public class StringPatriciaTrieTest extends AbstractPatriciaTrieTest<String, Str
         map.put(value1, value1);
         map.put(value2, value2);
         Comparator<? super String> comparator = (Comparator<String>) (o1, o2) -> o1.compareTo(o2);
-        StringPatriciaTrie<String> trie = new StringPatriciaTrie<>(comparator, map);
+        PatriciaStringTrie<String> trie = new PatriciaStringTrie<>(comparator, map);
         assertEquals(2, trie.size());
         assertEquals(value1, trie.get(value1));
         assertEquals(value2, trie.get(value2));
@@ -95,10 +95,10 @@ public class StringPatriciaTrieTest extends AbstractPatriciaTrieTest<String, Str
 
     @Test
     public final void testToString() {
-        StringPatriciaTrie<String> trie = new StringPatriciaTrie<>();
+        PatriciaStringTrie<String> trie = new PatriciaStringTrie<>();
         trie.put("key1", "value1");
         trie.put("key2", "value2");
-        assertEquals("StringPatriciaTrie [key1=value1, key2=value2]", trie.toString());
+        assertEquals("PatriciaStringTrie [key1=value1, key2=value2]", trie.toString());
     }
 
 }
