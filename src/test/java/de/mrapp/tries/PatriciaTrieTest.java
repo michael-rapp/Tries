@@ -27,7 +27,8 @@ import static org.mockito.Mockito.mock;
  *
  * @author Michael Rapp
  */
-public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, PatriciaTrie<StringSequence, String>> {
+public class PatriciaTrieTest extends
+        AbstractSortedTrieTest<StringSequence, PatriciaTrie<StringSequence, String>> {
 
     @Override
     final PatriciaTrie<StringSequence, String> onCreateTrie() {
@@ -40,7 +41,8 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     }
 
     @Override
-    final Node<StringSequence, String> getRootNode(@NotNull final PatriciaTrie<StringSequence, String> trie) {
+    final Node<StringSequence, String> getRootNode(
+            @NotNull final PatriciaTrie<StringSequence, String> trie) {
         return trie.getRootNode();
     }
 
@@ -127,16 +129,39 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     }
 
     /**
-     * Adds "romane", "romanus" and "romulus" to the trie.
+     * Adds "romane", "romanus" and "rom" to the trie.
      */
     @Test
     public final void testPut3() {
         testPut2();
-        String string = "romulus";
+        String string = "rom";
         String previous = trie.put(convertToSequence(string), string);
         assertNull(previous);
         assertEquals(string, trie.get(convertToSequence(string)));
         assertEquals(3, trie.size());
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "rom");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "rom");
+        verifySuccessors(successor, "an");
+        Node<StringSequence, String> successorAn = getSuccessor(successor, "an");
+        verifySuccessors(successorAn, "e", "us");
+        Node<StringSequence, String> successorE = getSuccessor(successorAn, "e");
+        verifyLeaf(successorE, "romane");
+        Node<StringSequence, String> successorUs = getSuccessor(successorAn, "us");
+        verifyLeaf(successorUs, "romanus");
+    }
+
+    /**
+     * Adds "romane", "romanus", "rom" and "romulus" to the trie.
+     */
+    @Test
+    public final void testPut4() {
+        testPut3();
+        String string = "romulus";
+        String previous = trie.put(convertToSequence(string), string);
+        assertNull(previous);
+        assertEquals(string, trie.get(convertToSequence(string)));
+        assertEquals(4, trie.size());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "rom");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "rom");
@@ -152,16 +177,16 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     }
 
     /**
-     * Adds "romane", "romanus", "romulus" and "rubens" to the trie.
+     * Adds "romane", "romanus", "rom", "romulus" and "rubens" to the trie.
      */
     @Test
-    public final void testPut4() {
-        testPut3();
+    public final void testPut5() {
+        testPut4();
         String string = "rubens";
         String previous = trie.put(convertToSequence(string), string);
         assertNull(previous);
         assertEquals(string, trie.get(convertToSequence(string)));
-        assertEquals(4, trie.size());
+        assertEquals(5, trie.size());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -181,16 +206,16 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     }
 
     /**
-     * Adds "romane", "romanus", romulus", "rubens" and "ruber" to the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens" and "ruber" to the trie.
      */
     @Test
-    public final void testPut5() {
-        testPut4();
+    public final void testPut6() {
+        testPut5();
         String string = "ruber";
         String previous = trie.put(convertToSequence(string), string);
         assertNull(previous);
         assertEquals(string, trie.get(convertToSequence(string)));
-        assertEquals(5, trie.size());
+        assertEquals(6, trie.size());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -214,16 +239,16 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     }
 
     /**
-     * Adds "romane", "romanus", romulus", "rubens", "ruber" and "rubicon" to the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber" and "rubicon" to the trie.
      */
     @Test
-    public final void testPut6() {
-        testPut5();
+    public final void testPut7() {
+        testPut6();
         String string = "rubicon";
         String previous = trie.put(convertToSequence(string), string);
         assertNull(previous);
         assertEquals(string, trie.get(convertToSequence(string)));
-        assertEquals(6, trie.size());
+        assertEquals(7, trie.size());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -251,16 +276,17 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     }
 
     /**
-     * Adds "romane", "romanus", romulus", "rubens", "ruber", "rubicon" and "rubicundus" to the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon" and "rubicundus" to
+     * the trie.
      */
     @Test
-    public final void testPut7() {
-        testPut6();
+    public final void testPut8() {
+        testPut7();
         String string = "rubicundus";
         String previous = trie.put(convertToSequence(string), string);
         assertNull(previous);
         assertEquals(string, trie.get(convertToSequence(string)));
-        assertEquals(7, trie.size());
+        assertEquals(8, trie.size());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -292,16 +318,17 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     }
 
     /**
-     * Adds "romane", "romanus", romulus", "rubens", "ruber", "rubicon", "rubicundus", "rubicun" to the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon", "rubicundus",
+     * "rubicun" to the trie.
      */
     @Test
-    public final void testPut8() {
-        testPut7();
+    public final void testPut9() {
+        testPut8();
         String string = "rubicun";
         String previous = trie.put(convertToSequence(string), string);
         assertNull(previous);
         assertEquals(string, trie.get(convertToSequence(string)));
-        assertEquals(8, trie.size());
+        assertEquals(9, trie.size());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -335,17 +362,17 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     }
 
     /**
-     * Adds "romane", "romanus", romulus", "rubens", "ruber", "rubicon", "rubicundus" and "A" (mapped to null value) to
-     * the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon", "rubicundus" and
+     * "A" (mapped to null value) to the trie.
      */
     @Test
-    public final void testPut9() {
-        testPut8();
+    public final void testPut10() {
+        testPut9();
         String string = "A";
         String previous = trie.put(convertToSequence(string), null);
         assertNull(previous);
         assertNull(string, trie.get(convertToSequence(string)));
-        assertEquals(9, trie.size());
+        assertEquals(10, trie.size());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r", "A");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -382,13 +409,13 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
 
     @Test
     public final void testPutWithDuplicateValue() {
-        testPut9();
+        testPut10();
         String string = "B";
         String duplicate = "romulus";
         String previous = trie.put(convertToSequence(string), duplicate);
         assertNull(previous);
         assertEquals(duplicate, trie.get(convertToSequence(string)));
-        assertEquals(10, trie.size());
+        assertEquals(11, trie.size());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r", "A", "B");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -432,7 +459,7 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
         String previous = trie.put(convertToSequence(""), string);
         assertNull(previous);
         assertEquals(string, trie.get(convertToSequence("")));
-        assertEquals(11, trie.size());
+        assertEquals(12, trie.size());
         verifyRootNode(getRootNode(trie), string);
         verifySuccessors(getRootNode(trie), "r", "A", "B");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -476,7 +503,7 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
         String previous = trie.put(null, string);
         assertEquals("empty", previous);
         assertEquals(string, trie.get(null));
-        assertEquals(11, trie.size());
+        assertEquals(12, trie.size());
         verifyRootNode(getRootNode(trie), string);
         verifySuccessors(getRootNode(trie), "r", "A", "B");
         Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
@@ -575,9 +602,10 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     public final void testValues() {
         testPutWithEmptyKey();
         Collection<String> values = trie.values();
-        assertEquals(11, values.size());
+        assertEquals(12, values.size());
         assertTrue(values.contains("romane"));
         assertTrue(values.contains("romanus"));
+        assertTrue(values.contains("rom"));
         assertTrue(values.contains("romulus"));
         assertTrue(values.contains("rubens"));
         assertTrue(values.contains("ruber"));
@@ -592,10 +620,11 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     public final void testValuesIterator() {
         testPutWithEmptyKey();
         Collection<String> values = trie.values();
-        assertEquals(11, values.size());
+        assertEquals(12, values.size());
         Collection<String> actualValues = new ArrayList<>();
         actualValues.add("romane");
         actualValues.add("romanus");
+        actualValues.add("rom");
         actualValues.add("romulus");
         actualValues.add("romulus");
         actualValues.add("rubens");
@@ -607,7 +636,7 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
         actualValues.add("empty");
         Iterator<String> iterator = values.iterator();
 
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < values.size(); i++) {
             assertTrue(iterator.hasNext());
             String value = iterator.next();
             assertTrue(actualValues.contains(value));
@@ -621,14 +650,14 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     public final void testValuesIteratorRemove() {
         testPut3();
         Iterator<String> iterator = trie.values().iterator();
+        assertEquals("rom", iterator.next());
         assertEquals("romane", iterator.next());
-        assertEquals("romanus", iterator.next());
         iterator.remove();
-        assertEquals("romulus", iterator.next());
+        assertEquals("romanus", iterator.next());
         assertEquals(2, trie.size());
-        assertTrue(trie.containsKey(convertToSequence("romane")));
-        assertFalse(trie.containsKey(convertToSequence("romanus")));
-        assertTrue(trie.containsKey(convertToSequence("romulus")));
+        assertTrue(trie.containsKey(convertToSequence("rom")));
+        assertFalse(trie.containsKey(convertToSequence("romane")));
+        assertTrue(trie.containsKey(convertToSequence("romanus")));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -650,9 +679,10 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     @Test
     public final void testContainsValue() {
         testPutWithEmptyKey();
-        assertEquals(11, trie.size());
+        assertEquals(12, trie.size());
         assertTrue(trie.containsValue("romane"));
         assertTrue(trie.containsValue("romanus"));
+        assertTrue(trie.containsValue("rom"));
         assertTrue(trie.containsValue("romulus"));
         assertTrue(trie.containsValue("rubens"));
         assertTrue(trie.containsValue("ruber"));
@@ -667,9 +697,10 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     public final void testKeySet() {
         testPutWithEmptyKey();
         Collection<StringSequence> keys = trie.keySet();
-        assertEquals(11, keys.size());
+        assertEquals(12, keys.size());
         assertTrue(keys.contains(convertToSequence("romane")));
         assertTrue(keys.contains(convertToSequence("romanus")));
+        assertTrue(keys.contains(convertToSequence("rom")));
         assertTrue(keys.contains(convertToSequence("romulus")));
         assertTrue(keys.contains(convertToSequence("rubens")));
         assertTrue(keys.contains(convertToSequence("ruber")));
@@ -692,11 +723,12 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     public final void testKeySetIterator() {
         testPutWithEmptyKey();
         Collection<StringSequence> keys = trie.keySet();
-        assertEquals(11, keys.size());
+        assertEquals(12, keys.size());
         Iterator<StringSequence> iterator = keys.iterator();
         Collection<StringSequence> actualKeys = new ArrayList<>();
         actualKeys.add(convertToSequence("romane"));
         actualKeys.add(convertToSequence("romanus"));
+        actualKeys.add(convertToSequence("rom"));
         actualKeys.add(convertToSequence("romulus"));
         actualKeys.add(convertToSequence("rubens"));
         actualKeys.add(convertToSequence("ruber"));
@@ -707,7 +739,7 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
         actualKeys.add(convertToSequence("B"));
         actualKeys.add(null);
 
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < keys.size(); i++) {
             assertTrue(iterator.hasNext());
             StringSequence key = iterator.next();
             assertTrue(actualKeys.contains(key));
@@ -721,14 +753,14 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     public final void testKeySetIteratorRemove() {
         testPut3();
         Iterator<StringSequence> iterator = trie.keySet().iterator();
+        assertEquals(convertToSequence("rom"), iterator.next());
         assertEquals(convertToSequence("romane"), iterator.next());
-        assertEquals(convertToSequence("romanus"), iterator.next());
         iterator.remove();
-        assertEquals(convertToSequence("romulus"), iterator.next());
+        assertEquals(convertToSequence("romanus"), iterator.next());
         assertEquals(2, trie.size());
-        assertTrue(trie.containsKey(convertToSequence("romane")));
-        assertFalse(trie.containsKey(convertToSequence("romanus")));
-        assertTrue(trie.containsKey(convertToSequence("romulus")));
+        assertTrue(trie.containsKey(convertToSequence("rom")));
+        assertFalse(trie.containsKey(convertToSequence("romane")));
+        assertTrue(trie.containsKey(convertToSequence("romanus")));
     }
 
     @Test(expected = ConcurrentModificationException.class)
@@ -743,9 +775,10 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     @Test
     public final void testContainsKey() {
         testPutWithEmptyKey();
-        assertEquals(11, trie.size());
+        assertEquals(12, trie.size());
         assertTrue(trie.containsKey(convertToSequence("romane")));
         assertTrue(trie.containsKey(convertToSequence("romanus")));
+        assertTrue(trie.containsKey(convertToSequence("rom")));
         assertTrue(trie.containsKey(convertToSequence("romulus")));
         assertTrue(trie.containsKey(convertToSequence("rubens")));
         assertTrue(trie.containsKey(convertToSequence("ruber")));
@@ -762,41 +795,65 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     public final void testEntrySet() {
         testPutWithEmptyKey();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
-        assertEquals(11, entrySet.size());
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon")));
+        assertEquals(12, entrySet.size());
         assertTrue(entrySet.contains(
-                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), (String) null)));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "romulus")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>((StringSequence) null, "empty")));
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rom"), "rom")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"),
+                        "rubicundus")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), (String) null)));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "romulus")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>((StringSequence) null, "empty")));
     }
 
     @Test
     public final void testEntrySetIterator() {
         testPutWithEmptyKey();
         Set<Map.Entry<StringSequence, String>> entrySet = trie.entrySet();
-        assertEquals(11, entrySet.size());
+        assertEquals(12, entrySet.size());
         Collection<Map.Entry<StringSequence, String>> actualEntries = new ArrayList<>();
-        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"));
-        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"));
-        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"));
-        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens"));
-        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"));
-        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"));
-        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus"));
-        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"));
+        actualEntries
+                .add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"),
+                "romanus"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rom"),
+                "rom"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"),
+                "romulus"));
+        actualEntries
+                .add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens"));
+        actualEntries
+                .add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"),
+                "rubicon"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"),
+                "rubicundus"));
+        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"),
+                "rubicun"));
         actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), null));
-        actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "romulus"));
+        actualEntries
+                .add(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "romulus"));
         actualEntries.add(new AbstractMap.SimpleImmutableEntry<>(null, "empty"));
         Iterator<Map.Entry<StringSequence, String>> iterator = entrySet.iterator();
 
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < entrySet.size(); i++) {
             assertTrue(iterator.hasNext());
             Map.Entry<StringSequence, String> entry = iterator.next();
             assertTrue(actualEntries.contains(entry));
@@ -810,14 +867,19 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
     public final void testEntrySetIteratorRemove() {
         testPut3();
         Iterator<Map.Entry<StringSequence, String>> iterator = trie.entrySet().iterator();
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"), iterator.next());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"), iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rom"), "rom"),
+                iterator.next());
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"),
+                iterator.next());
         iterator.remove();
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"), iterator.next());
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+                iterator.next());
         assertEquals(2, trie.size());
-        assertTrue(trie.containsKey(convertToSequence("romane")));
-        assertFalse(trie.containsKey(convertToSequence("romanus")));
-        assertTrue(trie.containsKey(convertToSequence("romulus")));
+        assertTrue(trie.containsKey(convertToSequence("rom")));
+        assertFalse(trie.containsKey(convertToSequence("romane")));
+        assertTrue(trie.containsKey(convertToSequence("romanus")));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -908,12 +970,12 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
 
     @Test
     public final void testRemoveIfKeyIsPrefix() {
-        testPut8();
+        testPut9();
         String string = "rubicun";
         String removed = trie.remove(convertToSequence("rubicun"));
         assertEquals(string, removed);
         assertNull(trie.get(convertToSequence(string)));
-        assertEquals(7, trie.size());
+        assertEquals(8, trie.size());
         assertFalse(trie.isEmpty());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r");
@@ -947,12 +1009,12 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
 
     @Test
     public final void testRemoveIfKeyContainsOtherKeyAsPrefix() {
-        testPut8();
+        testPut9();
         String string = "rubicundus";
         String removed = trie.remove(convertToSequence(string));
         assertEquals(string, removed);
         assertNull(trie.get(convertToSequence(string)));
-        assertEquals(7, trie.size());
+        assertEquals(8, trie.size());
         assertFalse(trie.isEmpty());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r");
@@ -992,7 +1054,7 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
         assertEquals(string, removed);
         assertNull(trie.get(convertToSequence("")));
         assertNull(trie.get(null));
-        assertEquals(10, trie.size());
+        assertEquals(11, trie.size());
         assertFalse(trie.isEmpty());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r", "A", "B");
@@ -1038,7 +1100,7 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
         assertEquals(string, removed);
         assertNull(trie.get(null));
         assertNull(trie.get(convertToSequence("")));
-        assertEquals(10, trie.size());
+        assertEquals(11, trie.size());
         assertFalse(trie.isEmpty());
         verifyRootNode(getRootNode(trie));
         verifySuccessors(getRootNode(trie), "r", "A", "B");
@@ -1108,7 +1170,7 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
 
     @Test
     public final void testFloorEntry() {
-        testPut6();
+        testPut7();
         StringSequence key = convertToSequence("romulus");
         Map.Entry<StringSequence, String> entry = trie.floorEntry(key);
         assertNotNull(entry);
@@ -1118,7 +1180,7 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
 
     @Test
     public final void testCeilingEntry() {
-        testPut6();
+        testPut7();
         StringSequence key = convertToSequence("romulus");
         Map.Entry<StringSequence, String> entry = trie.ceilingEntry(key);
         assertNotNull(entry);
@@ -1128,11 +1190,11 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
 
     @Test
     public final void testFirstEntry1() {
-        testPut6();
+        testPut7();
         Map.Entry<StringSequence, String> entry = trie.firstEntry();
         assertNotNull(entry);
-        assertEquals(convertToSequence("romane"), entry.getKey());
-        assertEquals("romane", entry.getValue());
+        assertEquals(convertToSequence("rom"), entry.getKey());
+        assertEquals("rom", entry.getValue());
     }
 
     @Test
@@ -1146,9 +1208,9 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
 
     @Test
     public final void testFirstKey1() {
-        testPut6();
+        testPut7();
         StringSequence key = trie.firstKey();
-        assertEquals(convertToSequence("romane"), key);
+        assertEquals(convertToSequence("rom"), key);
     }
 
     @Test
@@ -1160,7 +1222,7 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
 
     @Test
     public final void testLastEntry1() {
-        testPut6();
+        testPut7();
         Map.Entry<StringSequence, String> entry = trie.lastEntry();
         assertNotNull(entry);
         assertEquals(convertToSequence("rubicon"), entry.getKey());
@@ -1169,7 +1231,7 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
 
     @Test
     public final void testLastEntry2() {
-        testPut6();
+        testPut7();
         trie.put(convertToSequence("x"), "x");
         Map.Entry<StringSequence, String> entry = trie.lastEntry();
         assertNotNull(entry);
@@ -1179,14 +1241,14 @@ public class PatriciaTrieTest extends AbstractSortedTrieTest<StringSequence, Pat
 
     @Test
     public final void testLastKey1() {
-        testPut6();
+        testPut7();
         StringSequence key = trie.lastKey();
         assertEquals(convertToSequence("rubicon"), key);
     }
 
     @Test
     public final void testLastKey2() {
-        testPut6();
+        testPut7();
         trie.put(convertToSequence("x"), "x");
         StringSequence key = trie.lastKey();
         assertEquals(convertToSequence("x"), key);
