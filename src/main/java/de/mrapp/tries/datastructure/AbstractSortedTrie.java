@@ -1577,7 +1577,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                 SequenceType suffixToRemove = null;
                 SequenceType sequence = null;
 
-                while (currentNode != null && !currentNode.isValueSet()) {
+                while (currentNode != null && (!currentNode.isValueSet() || (!first && currentNode.hasSuccessors()))) {
                     SequenceType key = first ? currentNode.getFirstSuccessorKey() : currentNode.getLastSuccessorKey();
 
                     if (currentNode.getSuccessorCount() > 1 || currentNode.getValue() != null) {

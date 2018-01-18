@@ -181,11 +181,12 @@ public abstract class AbstractNonPatriciaSortedTrieTest<SequenceType, TrieType e
     }
 
     @Test
-    public final void testPollLastEntryIfKeyIsPrefix() {
+    public final void testPollLastEntryIfOtherKeyIsPrefix() {
         testPut6();
-        trie.put(convertToSequence("too"), "too");
-        String string = "to";
+        String string = "too";
+        trie.put(convertToSequence(string), string);
         Map.Entry<SequenceType, String> removed = trie.pollLastEntry();
+        System.out.println(removed);
         assertNotNull(removed);
         assertEquals(convertToSequence(string), removed.getKey());
         assertEquals(string, removed.getValue());
@@ -197,9 +198,7 @@ public abstract class AbstractNonPatriciaSortedTrieTest<SequenceType, TrieType e
         Node<SequenceType, String> successor = getSuccessor(getRootNode(trie), "t");
         verifySuccessors(successor, "e", "o");
         successor = getSuccessor(successor, "o");
-        verifySuccessors(successor, "o");
-        successor = getSuccessor(successor, "o");
-        verifyLeaf(successor, "too");
+        verifyLeaf(successor, "to");
     }
 
     @Test
