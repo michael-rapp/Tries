@@ -85,34 +85,4 @@ public class PatriciaTrieTest extends AbstractPatriciaTrieTest<StringSequence, P
 
     // TODO: test subTrie method
 
-    @Test
-    public final void testHashCode() {
-        PatriciaTrie<StringSequence, String> trie1 = new PatriciaTrie<>();
-        PatriciaTrie<StringSequence, String> trie2 = new PatriciaTrie<>();
-        assertEquals(trie1.hashCode(), trie1.hashCode());
-        assertEquals(trie1.hashCode(), trie2.hashCode());
-        trie1.put(convertToSequence("foo"), "value");
-        assertNotEquals(trie1.hashCode(), trie2.hashCode());
-        trie2.put(convertToSequence("foo"), "value");
-        assertEquals(trie1.hashCode(), trie2.hashCode());
-        trie1.put(convertToSequence("fob"), "value2");
-        assertNotEquals(trie1.hashCode(), trie2.hashCode());
-    }
-
-    @Test
-    public final void testEquals() {
-        PatriciaTrie<StringSequence, String> trie1 = new PatriciaTrie<>();
-        PatriciaTrie<StringSequence, String> trie2 = new PatriciaTrie<>();
-        assertFalse(trie1.equals(null));
-        assertFalse(trie1.equals(new Object()));
-        assertTrue(trie1.equals(trie1));
-        assertTrue(trie1.equals(trie2));
-        trie1.put(convertToSequence("foo"), "value");
-        assertFalse(trie1.equals(trie2));
-        trie2.put(convertToSequence("foo"), "value");
-        assertTrue(trie1.equals(trie2));
-        trie1.put(convertToSequence("fob"), "value2");
-        assertFalse(trie1.equals(trie2));
-    }
-
 }

@@ -119,4 +119,34 @@ public abstract class AbstractTrieTest<SequenceType, TrieType extends Map<Sequen
         assertNull(getRootNode(trie));
     }
 
+    @Test
+    public final void testHashCode() {
+        TrieType trie1 = onCreateTrie();
+        TrieType trie2 = onCreateTrie();
+        assertEquals(trie1.hashCode(), trie1.hashCode());
+        assertEquals(trie1.hashCode(), trie2.hashCode());
+        trie1.put(convertToSequence("foo"), "value");
+        assertNotEquals(trie1.hashCode(), trie2.hashCode());
+        trie2.put(convertToSequence("foo"), "value");
+        assertEquals(trie1.hashCode(), trie2.hashCode());
+        trie1.put(convertToSequence("fob"), "value2");
+        assertNotEquals(trie1.hashCode(), trie2.hashCode());
+    }
+
+    @Test
+    public final void testEquals() {
+        TrieType trie1 = onCreateTrie();
+        TrieType trie2 = onCreateTrie();
+        assertFalse(trie1.equals(null));
+        assertFalse(trie1.equals(new Object()));
+        assertTrue(trie1.equals(trie1));
+        assertTrue(trie1.equals(trie2));
+        trie1.put(convertToSequence("foo"), "value");
+        assertFalse(trie1.equals(trie2));
+        trie2.put(convertToSequence("foo"), "value");
+        assertTrue(trie1.equals(trie2));
+        trie1.put(convertToSequence("fob"), "value2");
+        assertFalse(trie1.equals(trie2));
+    }
+
 }
