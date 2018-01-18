@@ -1566,4 +1566,28 @@ public class PatriciaTrieTest extends
         assertNull(subMap.lowerKey(convertToSequence("romane")));
     }
 
+    @Test
+    public final void testSubMapRemove() {
+        testPut3();
+        NavigableMap<StringSequence, String> subMap = trie
+                .subMap(convertToSequence("rom"), true, convertToSequence("romanus"), true);
+        assertEquals(3, subMap.size());
+        Iterator<Map.Entry<StringSequence, String>> iterator = subMap.entrySet().iterator();
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rom"), "rom"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"),
+                iterator.next());
+        iterator.remove();
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+                iterator.next());
+        assertFalse(iterator.hasNext());
+        assertEquals(2, trie.size());
+        assertTrue(trie.containsKey(convertToSequence("rom")));
+        assertFalse(trie.containsKey(convertToSequence("romane")));
+        assertTrue(trie.containsKey(convertToSequence("romanus")));
+    }
+
 }
