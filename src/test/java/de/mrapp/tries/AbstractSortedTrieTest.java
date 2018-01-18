@@ -22,7 +22,8 @@ import java.util.NoSuchElementException;
 import static org.junit.Assert.*;
 
 /**
- * An abstract base class for all tests, which test the functionality of a {@link SortedTrie} implementation.
+ * An abstract base class for all tests, which test the functionality of a {@link SortedTrie}
+ * implementation.
  *
  * @author Michael Rapp
  */

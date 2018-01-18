@@ -20,7 +20,8 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 /**
- * An abstract base class for all tests, which test a {@link Trie} implementation, which is not a Patricia trie.
+ * An abstract base class for all tests, which test a {@link Trie} implementation, which is not a
+ * Patricia trie.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <TrieType>     The type of the tested trie implementation
@@ -458,15 +459,24 @@ public abstract class AbstractNonPatriciaTrieTest<SequenceType, TrieType extends
         testPutWithEmptyKey();
         Set<Map.Entry<SequenceType, String>> entrySet = trie.entrySet();
         assertEquals(9, entrySet.size());
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("tea"), "tea")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("to"), "to")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ted"), "ted")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ten"), "ten")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("inn"), "inn")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("in"), "in")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), (String) null)));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "tea")));
-        assertTrue(entrySet.contains(new AbstractMap.SimpleImmutableEntry<>((SequenceType) null, "empty")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("tea"), "tea")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("to"), "to")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ted"), "ted")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ten"), "ten")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("inn"), "inn")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("in"), "in")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), (String) null)));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "tea")));
+        assertTrue(entrySet.contains(
+                new AbstractMap.SimpleImmutableEntry<>((SequenceType) null, "empty")));
     }
 
     @Test
@@ -500,10 +510,13 @@ public abstract class AbstractNonPatriciaTrieTest<SequenceType, TrieType extends
     public final void testEntrySetIteratorRemove() {
         testPut3();
         Iterator<Map.Entry<SequenceType, String>> iterator = trie.entrySet().iterator();
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("tea"), "tea"), iterator.next());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ted"), "ted"), iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("tea"), "tea"),
+                iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ted"), "ted"),
+                iterator.next());
         iterator.remove();
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("to"), "to"), iterator.next());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("to"), "to"),
+                iterator.next());
         assertEquals(2, trie.size());
         assertTrue(trie.containsKey(convertToSequence("tea")));
         assertFalse(trie.containsKey(convertToSequence("ted")));

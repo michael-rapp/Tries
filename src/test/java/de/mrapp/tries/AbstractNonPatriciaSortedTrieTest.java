@@ -20,8 +20,8 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 /**
- * An abstract base class for all tests, which test a {@link SortedTrie} implementation, which uses {@link
- * SequenceType}s as keys.
+ * An abstract base class for all tests, which test a {@link SortedTrie} implementation, which uses
+ * {@link SequenceType}s as keys.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <TrieType>     The type of the tested trie implementation

@@ -29,7 +29,8 @@ import static org.mockito.Mockito.mock;
  *
  * @author Michael Rapp
  */
-public class PatriciaTrieTest extends AbstractPatriciaTrieTest<StringSequence, PatriciaTrie<StringSequence, String>> {
+public class PatriciaTrieTest extends
+        AbstractPatriciaTrieTest<StringSequence, PatriciaTrie<StringSequence, String>> {
 
     @Override
     final PatriciaTrie<StringSequence, String> onCreateTrie() {

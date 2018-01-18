@@ -237,7 +237,8 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
     }
 
     /**
-     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon" and "rubicundus" to the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon" and "rubicundus" to
+     * the trie.
      */
     @Test
     public final void testPut8() {
@@ -278,7 +279,8 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
     }
 
     /**
-     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon", "rubicundus", "rubicun" to the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon", "rubicundus",
+     * "rubicun" to the trie.
      */
     @Test
     public final void testPut9() {
@@ -321,8 +323,8 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
     }
 
     /**
-     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon", "rubicundus" and "A" (mapped to null
-     * value) to the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon", "rubicundus" and
+     * "A" (mapped to null value) to the trie.
      */
     @Test
     public final void testPut10() {
@@ -1441,10 +1443,12 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"),
                 iterator.next());
         assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens"),
@@ -1468,10 +1472,12 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"),
                 iterator.next());
         assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens"),
@@ -1480,14 +1486,17 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
                 iterator.next());
         assertFalse(iterator.hasNext());
         assertEquals(convertToSequence("romane"), subMap.firstKey());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
                 subMap.lastEntry());
         assertEquals(convertToSequence("rubicon"), subMap.lastKey());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
                 subMap.higherEntry(convertToSequence("romane")));
         assertEquals(convertToSequence("romanus"), subMap.higherKey(convertToSequence("romane")));
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"),
@@ -1512,7 +1521,8 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
                 iterator.next());
         iterator.remove();
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
                 iterator.next());
         assertFalse(iterator.hasNext());
         assertEquals(2, trie.size());
@@ -1550,7 +1560,8 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
     @Test
     public final void testHeadMap2() {
         testPutWithEmptyKey();
-        NavigableMap<SequenceType, String> headMap = trie.headMap(convertToSequence("romanus"), true);
+        NavigableMap<SequenceType, String> headMap = trie
+                .headMap(convertToSequence("romanus"), true);
         assertEquals(6, headMap.size());
         Iterator<Map.Entry<SequenceType, String>> iterator = headMap.entrySet().iterator();
         assertTrue(iterator.hasNext());
@@ -1569,12 +1580,14 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
                 iterator.next());
         assertFalse(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(null, "empty"), headMap.firstEntry());
         assertNull(headMap.firstKey());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
                 headMap.lastEntry());
         assertEquals(convertToSequence("romanus"), headMap.lastKey());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), null),
@@ -1590,7 +1603,8 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
     @Test
     public final void testHeadMapRemove() {
         testPut3();
-        NavigableMap<SequenceType, String> subMap = trie.headMap(convertToSequence("romanus"), true);
+        NavigableMap<SequenceType, String> subMap = trie
+                .headMap(convertToSequence("romanus"), true);
         assertEquals(3, subMap.size());
         Iterator<Map.Entry<SequenceType, String>> iterator = subMap.entrySet().iterator();
         assertTrue(iterator.hasNext());
@@ -1601,7 +1615,8 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
                 iterator.next());
         iterator.remove();
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
                 iterator.next());
         assertFalse(iterator.hasNext());
         assertEquals(2, trie.size());
@@ -1617,7 +1632,8 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
         assertEquals(6, tailMap.size());
         Iterator<Map.Entry<SequenceType, String>> iterator = tailMap.entrySet().iterator();
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"),
                 iterator.next());
         assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens"),
@@ -1626,13 +1642,16 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"),
+                        "rubicundus"),
                 iterator.next());
         assertFalse(iterator.hasNext());
         assertEquals(convertToSequence("romulus"), tailMap.firstKey());
@@ -1653,27 +1672,33 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"),
+                        "rubicundus"),
                 iterator.next());
         assertFalse(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens"),
                 tailMap.firstEntry());
         assertEquals(convertToSequence("rubens"), tailMap.firstKey());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"),
+                        "rubicundus"),
                 tailMap.lastEntry());
         assertEquals(convertToSequence("rubicundus"), tailMap.lastKey());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"),
                 tailMap.higherEntry(convertToSequence("rubens")));
         assertEquals(convertToSequence("ruber"), tailMap.higherKey(convertToSequence("rubens")));
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"),
                 tailMap.lowerEntry(convertToSequence("rubicundus")));
-        assertEquals(convertToSequence("rubicun"), tailMap.lowerKey(convertToSequence("rubicundus")));
+        assertEquals(convertToSequence("rubicun"),
+                tailMap.lowerKey(convertToSequence("rubicundus")));
         assertNull(tailMap.lowerEntry(convertToSequence("rubens")));
         assertNull(tailMap.lowerKey(convertToSequence("rubens")));
     }
@@ -1692,7 +1717,8 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
                 iterator.next());
         iterator.remove();
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
                 iterator.next());
         assertFalse(iterator.hasNext());
         assertEquals(2, trie.size());
@@ -1708,13 +1734,16 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
         assertEquals(trie.size(), map.size());
         Iterator<Map.Entry<SequenceType, String>> iterator = map.entrySet().iterator();
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"),
+                        "rubicundus"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
                 iterator.next());
         assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"),
@@ -1723,10 +1752,12 @@ public abstract class AbstractPatriciaTrieTest<SequenceType, TrieType extends Na
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"),
                 iterator.next());
         assertTrue(iterator.hasNext());
-        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+        assertEquals(
+                new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
                 iterator.next());
         assertTrue(iterator.hasNext());
         assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"),

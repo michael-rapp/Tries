@@ -31,7 +31,8 @@ import static org.mockito.Mockito.when;
  *
  * @author Michael Rapp
  */
-public class PatriciaStringTrieTest extends AbstractPatriciaTrieTest<String, PatriciaStringTrie<String>> {
+public class PatriciaStringTrieTest extends
+        AbstractPatriciaTrieTest<String, PatriciaStringTrie<String>> {
 
     @Override
     final PatriciaStringTrie<String> onCreateTrie() {

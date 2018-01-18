@@ -142,7 +142,8 @@ public class UnmodifiableNodeTest {
         Map.Entry<StringSequence, Node<StringSequence, String>> entry =
                 new AbstractMap.SimpleImmutableEntry<>(key, predecessor);
         when(node.getPredecessor()).thenReturn(entry);
-        Map.Entry<StringSequence, Node<StringSequence, String>> returnedEntry = unmodifiableNode.getPredecessor();
+        Map.Entry<StringSequence, Node<StringSequence, String>> returnedEntry = unmodifiableNode
+                .getPredecessor();
         assertNotNull(returnedEntry);
         assertEquals(returnedEntry.getKey(), key);
         assertTrue(returnedEntry.getValue() instanceof UnmodifiableNode);

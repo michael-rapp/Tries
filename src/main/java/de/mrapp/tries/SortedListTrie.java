@@ -25,10 +25,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * A sorted trie, which stores the successors of nodes in sorted lists. The edges between nodes always correspond to
- * exactly one element of a sequence. Therefore, even if a subsequence of length n is not shared between multiple keys,
- * the trie contains n nodes to store that subsequence. Successors are looked up using binary search, resulting in
- * logarithmic complexity. Although this is worse than the constant complexity provided by a {@link HashTrie}, this trie
+ * A sorted trie, which stores the successors of nodes in sorted lists. The edges between nodes
+ * always correspond to exactly one element of a sequence. Therefore, even if a subsequence of
+ * length n is not shared between multiple keys, the trie contains n nodes to store that
+ * subsequence. Successors are looked up using binary search, resulting in logarithmic complexity.
+ * Although this is worse than the constant complexity provided by a {@link HashTrie}, this trie
  * implementation should be preferred, if the order of keys is relevant.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
@@ -47,10 +48,11 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
     /**
      * Creates a new sorted trie, which stores the successors of nodes in sorted lists.
      *
-     * @param rootNode   The root node of the trie as an instance of the type {@link Node} or null, if the trie should
-     *                   be empty
-     * @param comparator The comparator, which should be used to compare keys with each other, as an instance of the
-     *                   type {@link Comparator} or null, if the natural ordering of the keys should be used
+     * @param rootNode   The root node of the trie as an instance of the type {@link Node} or null,
+     *                   if the trie should be empty
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
      */
     private SortedListTrie(@Nullable final Node<SequenceType, ValueType> rootNode,
                            @Nullable final Comparator<? super SequenceType> comparator) {
@@ -58,19 +60,20 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
     }
 
     /**
-     * Creates a new empty, sorted trie, which stores the successors of nodes in sorted lists. For comparing keys with
-     * each other, the natural ordering of the keys is used.
+     * Creates a new empty, sorted trie, which stores the successors of nodes in sorted lists. For
+     * comparing keys with each other, the natural ordering of the keys is used.
      */
     public SortedListTrie() {
         super(null);
     }
 
     /**
-     * Creates a new sorted trie, which stores the successors of nodes in sorted lists and contains all key-value pairs
-     * that are contained by a map. For comparing keys with each other, the natural ordering of the keys is used.
+     * Creates a new sorted trie, which stores the successors of nodes in sorted lists and contains
+     * all key-value pairs that are contained by a map. For comparing keys with each other, the
+     * natural ordering of the keys is used.
      *
-     * @param map The map, which contains the key-value pairs that should be added to the trie, as an instance of the
-     *            type {@link Map}. The map may not be null
+     * @param map The map, which contains the key-value pairs that should be added to the trie, as
+     *            an instance of the type {@link Map}. The map may not be null
      */
     public SortedListTrie(@NotNull final Map<SequenceType, ValueType> map) {
         super(null, map);
@@ -80,21 +83,23 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
     /**
      * Creates a new empty, sorted trie, which stores the successors of nodes in sorted lists.
      *
-     * @param comparator The comparator, which should be used to compare keys with each other, as an instance of the
-     *                   type {@link Comparator} or null, if the natural ordering of the keys should be used
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
      */
     public SortedListTrie(@Nullable final Comparator<? super SequenceType> comparator) {
         super(comparator);
     }
 
     /**
-     * Creates a new sorted trie, which stores the successors of nodes in sorted lists and contains all key-value pairs
-     * that are contained by a map.
+     * Creates a new sorted trie, which stores the successors of nodes in sorted lists and contains
+     * all key-value pairs that are contained by a map.
      *
-     * @param comparator The comparator, which should be used to compare keys with each other, as an instance of the
-     *                   type {@link Comparator} or null, if the natural ordering of the keys should be used
-     * @param map        The map, which contains the key-value pairs that should be added to the trie, as an instance of
-     *                   the type {@link Map}. The map may not be null
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
+     * @param map        The map, which contains the key-value pairs that should be added to the
+     *                   trie, as an instance of the type {@link Map}. The map may not be null
      */
     public SortedListTrie(@Nullable final Comparator<? super SequenceType> comparator,
                           @NotNull final Map<SequenceType, ValueType> map) {
@@ -103,7 +108,8 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
 
     @NotNull
     @Override
-    public final SortedListTrie<SequenceType, ValueType> subTrie(@NotNull final SequenceType sequence) {
+    public final SortedListTrie<SequenceType, ValueType> subTrie(
+            @NotNull final SequenceType sequence) {
         Node<SequenceType, ValueType> node = getNode(sequence);
 
         if (node != null) {
@@ -112,7 +118,8 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
             SequenceType suffix = sequence;
 
             while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onAddSuccessor(currentNode, suffix);
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair = onAddSuccessor(currentNode,
+                        suffix);
                 Node<SequenceType, ValueType> successor = pair.first;
                 suffix = pair.second;
                 currentNode = successor;
@@ -157,7 +164,8 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
     @NotNull
     @Override
     protected final Pair<Node<SequenceType, ValueType>, SequenceType> onAddSuccessor(
-            @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence) {
+            @NotNull final Node<SequenceType, ValueType> node,
+            @NotNull final SequenceType sequence) {
         SequenceType prefix = SequenceUtil.subsequence(sequence, 0, 1);
         Node<SequenceType, ValueType> successor = node.addSuccessor(prefix);
         SequenceType suffix = SequenceUtil.subsequence(sequence, 1);
@@ -172,8 +180,9 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
 
     @Nullable
     @Override
-    protected final Pair<Integer, SequenceType> indexOf(@NotNull final Node<SequenceType, ValueType> node,
-                                                        @NotNull final SequenceType sequence) {
+    protected final Pair<Integer, SequenceType> indexOf(
+            @NotNull final Node<SequenceType, ValueType> node,
+            @NotNull final SequenceType sequence) {
         SequenceType prefix = SequenceUtil.subsequence(sequence, 0, 1);
         int index = node.indexOf(prefix);
 

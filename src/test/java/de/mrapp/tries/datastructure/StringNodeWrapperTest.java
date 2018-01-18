@@ -133,7 +133,8 @@ public class StringNodeWrapperTest {
         Iterator<StringSequence> iterator = mock(Iterator.class);
         when(iterator.hasNext()).thenReturn(true, true, true, false);
         when(iterator.next())
-                .thenReturn(new StringSequence("1"), new StringSequence("2"), new StringSequence("3"), null);
+                .thenReturn(new StringSequence("1"), new StringSequence("2"),
+                        new StringSequence("3"), null);
         when(node.iterator()).thenReturn(iterator);
         Iterator<String> stringIterator = nodeWrapper.iterator();
         assertTrue(stringIterator.hasNext());

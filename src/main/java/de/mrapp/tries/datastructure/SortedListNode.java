@@ -35,7 +35,8 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class SortedListNode<KeyType extends Sequence, ValueType> extends AbstractNode<KeyType, ValueType>
+public class SortedListNode<KeyType extends Sequence, ValueType> extends
+        AbstractNode<KeyType, ValueType>
         implements RandomAccess {
 
     /**
@@ -44,7 +45,8 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends Abstrac
      * @param <K> The type of the key, the successor corresponds to
      * @param <V> The type of the successor's value
      */
-    private static class Edge<K extends Sequence, V> implements Serializable, Comparable<Edge<K, V>> {
+    private static class Edge<K extends Sequence, V> implements Serializable,
+            Comparable<Edge<K, V>> {
 
         /**
          * The constant serial version UID.
@@ -69,12 +71,13 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends Abstrac
         /**
          * Creates a new directed edge, which references the successor of a node.
          *
-         * @param key        The key, the successor corresponds to, as a value of the generic type {@link }. The key may
-         *                   not be null
-         * @param successor  The successor as an instance of the type {@link Node}. The successor may not be null
-         * @param comparator The comparator, which should be used to compare the keys of edges with each other, as an
-         *                   instance of the type {@link Comparator} or null, if the natural order of the keys should be
-         *                   used
+         * @param key        The key, the successor corresponds to, as a value of the generic type
+         *                   {@link }. The key may not be null
+         * @param successor  The successor as an instance of the type {@link Node}. The successor
+         *                   may not be null
+         * @param comparator The comparator, which should be used to compare the keys of edges with
+         *                   each other, as an instance of the type {@link Comparator} or null, if
+         *                   the natural order of the keys should be used
          */
         Edge(@NotNull final K key, @NotNull final Node<K, V> successor,
              @Nullable final Comparator<? super K> comparator) {
@@ -130,17 +133,17 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends Abstrac
     private final SortedArrayList<Edge<KeyType, ValueType>> successors;
 
     /**
-     * The comparator, which is used to compare the successors of the node to each other, or null, if the natural order
-     * of the successors' keys is used.
+     * The comparator, which is used to compare the successors of the node to each other, or null,
+     * if the natural order of the successors' keys is used.
      */
     private final Comparator<? super KeyType> comparator;
 
     /**
      * Creates a new node of a trie, which stores its successors in a sorted list.
      *
-     * @param comparator The comparator, which should be used to compare the successors to each other, as an instance of
-     *                   the type {@link Comparator} or null, if the natural order of the successors' keys should be
-     *                   used
+     * @param comparator The comparator, which should be used to compare the successors to each
+     *                   other, as an instance of the type {@link Comparator} or null, if the
+     *                   natural order of the successors' keys should be used
      */
     public SortedListNode(@Nullable final Comparator<? super KeyType> comparator) {
         this.successors = new SortedArrayList<>();
@@ -151,7 +154,8 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends Abstrac
     @Override
     protected final Node<KeyType, ValueType> onAddSuccessor(@NotNull final KeyType key,
                                                             @Nullable final Node<KeyType, ValueType> successor) {
-        Node<KeyType, ValueType> successorToAdd = successor == null ? new SortedListNode<>(comparator) : successor;
+        Node<KeyType, ValueType> successorToAdd =
+                successor == null ? new SortedListNode<>(comparator) : successor;
         successors.add(new Edge<>(key, successorToAdd, comparator));
         return successorToAdd;
     }
@@ -203,7 +207,9 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends Abstrac
 
     @Override
     public final int indexOf(@NotNull final KeyType key) {
-        return SequenceUtil.binarySearch(getSuccessorCount(), index -> successors.get(index).key, comparator, key);
+        return SequenceUtil
+                .binarySearch(getSuccessorCount(), index -> successors.get(index).key, comparator,
+                        key);
     }
 
     @Override
@@ -245,7 +251,8 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends Abstrac
 
     @Override
     public final String toString() {
-        return "Node{" + "value=" + (getNodeValue() != null ? getNodeValue().getValue() : "null") + ", successors=" + successors + '}';
+        return "Node{" + "value=" + (getNodeValue() != null ? getNodeValue().getValue() : "null") +
+                ", successors=" + successors + '}';
     }
 
     @Override
