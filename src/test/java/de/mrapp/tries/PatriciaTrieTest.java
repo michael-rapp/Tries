@@ -1268,4 +1268,56 @@ public class PatriciaTrieTest extends
         assertTrue(trie.isEmpty());
     }
 
+    @Test
+    public final void testPollFirstEntryIfKeyIsPrefix() {
+        testPut7();
+        String string = "rom";
+        Map.Entry<StringSequence, String> removed = trie.pollFirstEntry();
+        assertNotNull(removed);
+        assertEquals(convertToSequence(string), removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(convertToSequence(string)));
+        assertEquals(6, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(getRootNode(trie));
+        verifySuccessors(getRootNode(trie), "r");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
+        verifySuccessors(successor, "om", "ub");
+        Node<StringSequence, String> successorOm = getSuccessor(successor, "om");
+        verifySuccessors(successorOm, "an", "ulus");
+        Node<StringSequence, String> successorAn = getSuccessor(successorOm, "an");
+        verifySuccessors(successorAn, "e", "us");
+        Node<StringSequence, String> successorE = getSuccessor(successorAn, "e");
+        verifyLeaf(successorE, "romane");
+        Node<StringSequence, String> successorUs = getSuccessor(successorAn, "us");
+        verifyLeaf(successorUs, "romanus");
+        Node<StringSequence, String> successorUlus = getSuccessor(successorOm, "ulus");
+        verifyLeaf(successorUlus, "romulus");
+        Node<StringSequence, String> successorUb = getSuccessor(successor, "ub");
+        verifySuccessors(successorUb, "e", "icon");
+        Node<StringSequence, String> successorE2 = getSuccessor(successorUb, "e");
+        verifySuccessors(successorE2, "ns", "r");
+        Node<StringSequence, String> successorNs = getSuccessor(successorE2, "ns");
+        verifyLeaf(successorNs, "rubens");
+        Node<StringSequence, String> successorR = getSuccessor(successorE2, "r");
+        verifyLeaf(successorR, "ruber");
+        Node<StringSequence, String> successorIcon = getSuccessor(successorUb, "icon");
+        verifyLeaf(successorIcon, "rubicon");
+    }
+
+    @Test
+    public final void testPollFirstEntryIfKeyIsEmpty() {
+        testPutWithEmptyKey();
+        String string = "empty";
+        Map.Entry<StringSequence, String> removed = trie.pollFirstEntry();
+        assertNotNull(removed);
+        assertNull(removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(convertToSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(11, trie.size());
+        assertFalse(trie.isEmpty());
+        verifyRootNode(getRootNode(trie));
+    }
+
 }
