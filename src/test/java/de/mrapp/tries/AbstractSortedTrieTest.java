@@ -111,4 +111,15 @@ public abstract class AbstractSortedTrieTest<SequenceType extends Sequence, Trie
         assertNull(entry);
     }
 
+    @Test
+    public final void testHigherEntryIfKeyIsNotContained() {
+        Map.Entry<SequenceType, String> entry = trie.higherEntry(convertToSequence("foo"));
+        assertNull(entry);
+    }
+
+    @Test
+    public final void testHigherKeyIfKeyIsNotContained() {
+        assertNull(trie.higherKey(convertToSequence("foo")));
+    }
+
 }

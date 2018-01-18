@@ -1452,4 +1452,51 @@ public class PatriciaTrieTest extends
         assertNull(lowerKey);
     }
 
+    @Test
+    public final void testHigherEntryIfHigherKeySharesPrefix() {
+        testPut7();
+        Map.Entry<StringSequence, String> entry = trie.higherEntry(convertToSequence("rom"));
+        assertNotNull(entry);
+        assertEquals(convertToSequence("romane"), entry.getKey());
+        assertEquals("romane", entry.getValue());
+    }
+
+    @Test
+    public final void testHigherEntryIfHigherKeySharesPredecessor() {
+        testPut6();
+        Map.Entry<StringSequence, String> entry = trie.higherEntry(convertToSequence("romane"));
+        assertNotNull(entry);
+        assertEquals(convertToSequence("romanus"), entry.getKey());
+        assertEquals("romanus", entry.getValue());
+    }
+
+    @Test
+    public final void testHigherEntryIfHigherKeyIsNotAvailable() {
+        testPut7();
+        Map.Entry<StringSequence, String> entry = trie.higherEntry(convertToSequence("rubicon"));
+        assertNull(entry);
+    }
+
+    @Test
+    public final void testHigherKeyIfHigherKeySharesPrefix() {
+        testPut7();
+        String string = "rubiconX";
+        trie.put(convertToSequence(string), string);
+        StringSequence key = trie.higherKey(convertToSequence("rubicon"));
+        assertEquals(convertToSequence(string), key);
+    }
+
+    @Test
+    public final void testHigherKeyIfHigherKeySharesPredecessor() {
+        testPut7();
+        StringSequence key = trie.higherKey(convertToSequence("romane"));
+        assertEquals(convertToSequence("romanus"), key);
+    }
+
+    @Test
+    public final void testHigherKeyIfHigherKeyIsNotAvailable() {
+        testPut7();
+        assertNull(trie.higherKey(convertToSequence("rubicon")));
+    }
+
 }
