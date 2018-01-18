@@ -1820,4 +1820,41 @@ public class PatriciaTrieTest extends
         assertEquals(trie.lowerKey(trie.lastKey()), map.higherKey(map.firstKey()));
     }
 
+    @Test
+    public final void testNavigableKeySet() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.navigableKeySet();
+        assertEquals(12, keySet.size());
+        Iterator<StringSequence> iterator = keySet.iterator();
+        assertTrue(iterator.hasNext());
+        assertNull(iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("A"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("B"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rom"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romane"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romanus"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romulus"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubens"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("ruber"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicon"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicun"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicundus"), iterator.next());
+        assertFalse(iterator.hasNext());
+        assertNull(keySet.first());
+        assertEquals(convertToSequence("rubicundus"), keySet.last());
+        assertEquals(convertToSequence("A"), keySet.higher(null));
+        assertEquals(convertToSequence("rubicun"), keySet.lower(convertToSequence("rubicundus")));
+    }
+
 }
