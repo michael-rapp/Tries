@@ -67,7 +67,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
 
     /**
      * Creates a new sorted trie, which stores the successors of nodes in sorted lists and contains all key-value pairs
-     * that are contained by a map.
+     * that are contained by a map. For comparing keys with each other, the natural ordering of the keys is used.
      *
      * @param map The map, which contains the key-value pairs that should be added to the trie, as an instance of the
      *            type {@link Map}. The map may not be null

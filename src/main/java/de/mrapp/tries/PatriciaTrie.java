@@ -134,7 +134,8 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     }
 
     /**
-     * Creates a new Patricia trie, which contains all key-value pairs that are contained by a map.
+     * Creates a new Patricia trie, which contains all key-value pairs that are contained by a map. For comparing keys
+     * with each other, the natural ordering of the keys is used.
      *
      * @param map The map, which contains the key-value pairs that should be added to the trie, as an instance of the
      *            type {@link Map}. The map may not be null
