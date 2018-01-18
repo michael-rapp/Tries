@@ -83,6 +83,8 @@ public class PatriciaTrieTest extends AbstractPatriciaTrieTest<StringSequence, P
         assertEquals(comparator, trie.comparator());
     }
 
+    // TODO: test subTrie method
+
     @Test
     public final void testHashCode() {
         PatriciaTrie<StringSequence, String> trie1 = new PatriciaTrie<>();

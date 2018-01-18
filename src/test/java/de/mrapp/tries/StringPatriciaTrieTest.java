@@ -61,6 +61,8 @@ public class StringPatriciaTrieTest extends AbstractPatriciaTrieTest<String, Str
         assertEquals(-1, trie.comparator().compare("a", "b"));
     }
 
+    // TODO: Test subTrie method
+
     @Test
     public final void testToString() {
         StringPatriciaTrie<String> trie = new StringPatriciaTrie<>();
