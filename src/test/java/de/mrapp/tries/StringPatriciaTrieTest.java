@@ -17,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -53,12 +55,40 @@ public class StringPatriciaTrieTest extends AbstractPatriciaTrieTest<String, Str
     }
 
     @Test
+    public void testConstructorWithMapParameter() {
+        String value1 = "foo";
+        String value2 = "bar";
+        Map<String, String> map = new HashMap<>();
+        map.put(value1, value1);
+        map.put(value2, value2);
+        StringPatriciaTrie<String> trie = new StringPatriciaTrie<>(map);
+        assertEquals(2, trie.size());
+        assertEquals(value1, trie.get(value1));
+        assertEquals(value2, trie.get(value2));
+    }
+
+    @Test
     public final void testConstructorWithComparatorParameter() {
         Comparator<? super String> comparator = mock(Comparator.class);
         StringPatriciaTrie<String> trie = new StringPatriciaTrie<>(comparator);
         assertNotNull(trie.comparator());
         when(comparator.compare("a", "b")).thenReturn(-1);
         assertEquals(-1, trie.comparator().compare("a", "b"));
+    }
+
+    @Test
+    public void testConstructorWithComparatorAndMapParameter() {
+        String value1 = "foo";
+        String value2 = "bar";
+        Map<String, String> map = new HashMap<>();
+        map.put(value1, value1);
+        map.put(value2, value2);
+        Comparator<? super String> comparator = (Comparator<String>) (o1, o2) -> o1.compareTo(o2);
+        StringPatriciaTrie<String> trie = new StringPatriciaTrie<>(comparator, map);
+        assertEquals(2, trie.size());
+        assertEquals(value1, trie.get(value1));
+        assertEquals(value2, trie.get(value2));
+        assertNotNull(trie.comparator());
     }
 
     // TODO: Test subTrie method

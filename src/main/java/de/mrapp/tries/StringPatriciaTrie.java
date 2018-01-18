@@ -14,9 +14,11 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.SortedStringTrieWrapper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.Map;
 
 /**
  * A sorted trie, which stores the successors of nodes in sorted lists. It is the pendant of the class {@link
@@ -42,7 +44,7 @@ public class StringPatriciaTrie<ValueType> extends SortedStringTrieWrapper<Value
      * space complexity. For comparing keys with each other, the natural ordering of the keys is used.
      */
     public StringPatriciaTrie() {
-        super(new PatriciaTrie<>());
+        this((Comparator<? super String>) null);
     }
 
     /**
@@ -56,6 +58,35 @@ public class StringPatriciaTrie<ValueType> extends SortedStringTrieWrapper<Value
     public StringPatriciaTrie(@Nullable final Comparator<? super String> comparator) {
         super(new PatriciaTrie<>(
                 comparator != null ? new StringSequenceComparatorWrapper(comparator) : null));
+    }
+
+    /**
+     * Creates a new sorted trie for storing character sequences, which uses sorted lists for storing the successors of
+     * nodes and contains all key-value pairs that are contained by a map. Subsequent nodes that only have a single
+     * successor are merged to a single node to reduce space complexity. For comparing keys with each other, the natural
+     * ordering of the keys is used.
+     *
+     * @param map The map, which contains the key-value pairs that should be added to the trie, as an instance of the
+     *            type {@link Map}. The map may not be null
+     */
+    public StringPatriciaTrie(@NotNull final Map<String, ValueType> map) {
+        this(null, map);
+    }
+
+    /**
+     * Creates a new sorted trie for storing character sequences, which uses sorted lists for storing the successors of
+     * nodes and contains all key-value pairs that are contained by a map. Subsequent nodes that only have a single
+     * successor are merged to a single node to reduce space complexity.
+     *
+     * @param comparator The comparator, which should be used to compare keys with each other, as an instance of the
+     *                   type {@link Comparator} or null, if the natural ordering of the keys should be used
+     * @param map        The map, which contains the key-value pairs that should be added to the trie, as an instance of
+     *                   the type {@link Map}. The map may not be null
+     */
+    public StringPatriciaTrie(@Nullable final Comparator<? super String> comparator,
+                              @NotNull final Map<String, ValueType> map) {
+        super(new PatriciaTrie<>(comparator != null ? new StringSequenceComparatorWrapper(comparator) : null));
+        putAll(map);
     }
 
     @Override
