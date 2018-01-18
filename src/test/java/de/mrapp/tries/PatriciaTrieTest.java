@@ -1320,4 +1320,18 @@ public class PatriciaTrieTest extends
         verifyRootNode(getRootNode(trie));
     }
 
+    @Test
+    public final void testPollLastEntryIfKeyIsTheOnlyOne() {
+        testPut1();
+        String string = "romane";
+        Map.Entry<StringSequence, String> removed = trie.pollLastEntry();
+        assertNotNull(removed);
+        assertEquals(convertToSequence(string), removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(convertToSequence(string)));
+        assertNull(getRootNode(trie));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+    }
+
 }
