@@ -13,6 +13,7 @@
  */
 package de.mrapp.tries;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Comparator;
@@ -24,28 +25,37 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests the functionality of the class {@link StringSortedListTrie}.
+ * Tests the functionality of the class {@link StringPatriciaTrie}.
  *
  * @author Michael Rapp
  */
-public class StringSortedListTrieTest extends
-        AbstractStringNonPatriciaSortedTrieTest<StringSortedListTrie<String>> {
+public class StringPatriciaTrieTest extends AbstractPatriciaTrieTest<String, StringPatriciaTrie<String>> {
 
     @Override
-    final StringSortedListTrie<String> onCreateTrie() {
-        return new StringSortedListTrie<>();
+    final StringPatriciaTrie<String> onCreateTrie() {
+        return new StringPatriciaTrie<>();
+    }
+
+    @Override
+    final String convertToSequence(@NotNull final String string) {
+        return string;
+    }
+
+    @Override
+    final Node<String, String> getRootNode(@NotNull final StringPatriciaTrie<String> trie) {
+        return trie.getRootNode();
     }
 
     @Test
     public final void testDefaultConstructor() {
-        StringSortedListTrie<String> trie = new StringSortedListTrie<>();
+        StringPatriciaTrie<String> trie = new StringPatriciaTrie<>();
         assertNull(trie.comparator());
     }
 
     @Test
     public final void testConstructorWithComparatorParameter() {
         Comparator<? super String> comparator = mock(Comparator.class);
-        StringSortedListTrie<String> trie = new StringSortedListTrie<>(comparator);
+        StringPatriciaTrie<String> trie = new StringPatriciaTrie<>(comparator);
         assertNotNull(trie.comparator());
         when(comparator.compare("a", "b")).thenReturn(-1);
         assertEquals(-1, trie.comparator().compare("a", "b"));
@@ -53,10 +63,10 @@ public class StringSortedListTrieTest extends
 
     @Test
     public final void testToString() {
-        StringSortedListTrie<String> trie = new StringSortedListTrie<>();
+        StringPatriciaTrie<String> trie = new StringPatriciaTrie<>();
         trie.put("key1", "value1");
         trie.put("key2", "value2");
-        assertEquals("StringSortedListTrie [key1=value1, key2=value2]", trie.toString());
+        assertEquals("StringPatriciaTrie [key1=value1, key2=value2]", trie.toString());
     }
 
 }

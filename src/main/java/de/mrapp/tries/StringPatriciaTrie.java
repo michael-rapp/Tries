@@ -20,44 +20,47 @@ import java.util.Comparator;
 
 /**
  * A sorted trie, which stores the successors of nodes in sorted lists. It is the pendant of the class {@link
- * SortedListTrie} for using character sequences as keys. This trie implementation has the same properties as a {@link
- * SortedListTrie}. It should be preferred when using character sequences, because it offers a less complex API.
+ * PatriciaTrie} for using character sequences as keys. In contrast to a {@link StringSortedListTrie}, the edges between
+ * nodes do not always correspond to a single element of a sequence. Instead, subsequent nodes that only have a single
+ * successor are merged to a single node to reduce space complexity. This trie implementation has the same properties as
+ * a {@link PatriciaTrie}. It should be preferred when using character sequences, because it offers a less complex API.
  *
  * @param <ValueType> The type of the values, which are stored by the trie
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class StringSortedListTrie<ValueType> extends SortedStringTrieWrapper<ValueType> {
+public class StringPatriciaTrie<ValueType> extends SortedStringTrieWrapper<ValueType> {
 
     /**
      * The constant serial version UID.
      */
-    private static final long serialVersionUID = -7644211622938905272L;
+    private static final long serialVersionUID = -8815428420083659153L;
 
     /**
      * Creates a new empty, sorted trie for storing character sequences, which uses sorted lists for storing the
-     * successors of nodes. For comparing keys with each other, the natural ordering of the keys is used.
+     * successors of nodes. Subsequent nodes that only have a single successor are merged to a single node to reduce
+     * space complexity. For comparing keys with each other, the natural ordering of the keys is used.
      */
-    public StringSortedListTrie() {
-        super(new SortedListTrie<>());
+    public StringPatriciaTrie() {
+        super(new PatriciaTrie<>());
     }
 
-
     /**
      * Creates a new empty, sorted trie for storing character sequences, which uses sorted lists for storing the
-     * successors of nodes.
+     * successors of nodes. Subsequent nodes that only have a single successor are merged to a single node to reduce
+     * space complexity.
      *
      * @param comparator The comparator, which should be used to compare keys with each other, as an instance of the
      *                   type {@link Comparator} or null, if the natural ordering of the keys should be used
      */
-    public StringSortedListTrie(@Nullable final Comparator<? super String> comparator) {
-        super(new SortedListTrie<>(
+    public StringPatriciaTrie(@Nullable final Comparator<? super String> comparator) {
+        super(new PatriciaTrie<>(
                 comparator != null ? new StringSequenceComparatorWrapper(comparator) : null));
     }
 
     @Override
     public final String toString() {
-        return "StringSortedListTrie " + entrySet().toString();
+        return "StringPatriciaTrie " + entrySet().toString();
     }
 
 }

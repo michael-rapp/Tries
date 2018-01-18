@@ -16,6 +16,7 @@ package de.mrapp.tries;
 import org.junit.Test;
 
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
@@ -25,7 +26,7 @@ import static org.junit.Assert.*;
  *
  * @author Michael Rapp
  */
-public abstract class AbstractSortedTrieTest<SequenceType extends Sequence, TrieType extends SortedTrie<SequenceType, String>>
+public abstract class AbstractSortedTrieTest<SequenceType, TrieType extends NavigableMap<SequenceType, String>>
         extends AbstractTrieTest<SequenceType, TrieType> {
 
     @Test
@@ -46,22 +47,6 @@ public abstract class AbstractSortedTrieTest<SequenceType extends Sequence, Trie
     @Test(expected = NoSuchElementException.class)
     public final void testLastKeyIfTrieIsNull() {
         trie.lastKey();
-    }
-
-    @Test
-    public final void testPollFirstEntryIfTrieIsEmpty() {
-        Map.Entry<SequenceType, String> removed = trie.pollFirstEntry();
-        assertNull(removed);
-        assertTrue(trie.isEmpty());
-        assertNull(trie.getRootNode());
-    }
-
-    @Test
-    public final void testPollLastEntryIfTrieIsEmpty() {
-        Map.Entry<SequenceType, String> removed = trie.pollLastEntry();
-        assertNull(removed);
-        assertTrue(trie.isEmpty());
-        assertNull(trie.getRootNode());
     }
 
     @Test
