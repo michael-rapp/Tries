@@ -1861,7 +1861,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                 Pair<Integer, SequenceType> indexPair = null;
 
                 if (pair.first.isValueSet()) {
-                    if (pair.first != rootNode || pair.first.getSuccessorCount() <= 1) {
+                    if (pair.first.getSuccessorCount() <= 1) {
                         return createLowerEntry(key, pair.first, pair.second);
                     } else {
                         indexPair = indexOf(pair.first, pair.second);
