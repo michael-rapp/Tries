@@ -13,14 +13,12 @@
  */
 package de.mrapp.tries;
 
-import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * An abstract base class for all tests, which test the functionality of a {@link SortedTrie} implementation.
@@ -105,6 +103,12 @@ public abstract class AbstractSortedTrieTest<SequenceType extends Sequence, Trie
         assertEquals(0, trie.size());
         assertTrue(trie.isEmpty());
         assertNull(getRootNode(trie));
+    }
+
+    @Test
+    public final void testLowerEntryIfKeyIsNotContained() {
+        Map.Entry<SequenceType, String> entry = trie.lowerEntry(convertToSequence("foo"));
+        assertNull(entry);
     }
 
 }

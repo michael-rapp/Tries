@@ -276,8 +276,7 @@ public class PatriciaTrieTest extends
     }
 
     /**
-     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon" and "rubicundus" to
-     * the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon" and "rubicundus" to the trie.
      */
     @Test
     public final void testPut8() {
@@ -318,8 +317,7 @@ public class PatriciaTrieTest extends
     }
 
     /**
-     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon", "rubicundus",
-     * "rubicun" to the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon", "rubicundus", "rubicun" to the trie.
      */
     @Test
     public final void testPut9() {
@@ -362,8 +360,8 @@ public class PatriciaTrieTest extends
     }
 
     /**
-     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon", "rubicundus" and
-     * "A" (mapped to null value) to the trie.
+     * Adds "romane", "romanus", "rom", "romulus", "rubens", "ruber", "rubicon", "rubicundus" and "A" (mapped to null
+     * value) to the trie.
      */
     @Test
     public final void testPut10() {
@@ -1370,6 +1368,88 @@ public class PatriciaTrieTest extends
         verifyLeaf(successorR, "ruber");
         Node<StringSequence, String> successorIcon = getSuccessor(successorUb, "icon");
         verifyLeaf(successorIcon, "rubicon");
+    }
+
+    @Test
+    public final void testLowerEntryIfLowerKeyIsPrefix() {
+        testPut7();
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(convertToSequence("romane"));
+        assertNotNull(entry);
+        assertEquals(convertToSequence("rom"), entry.getKey());
+        assertEquals("rom", entry.getValue());
+    }
+
+    @Test
+    public final void testLowerEntryIfLowerKeySharesPredecessor() {
+        testPut7();
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(convertToSequence("romanus"));
+        assertNotNull(entry);
+        assertEquals(convertToSequence("romane"), entry.getKey());
+        assertEquals("romane", entry.getValue());
+    }
+
+    @Test
+    public final void testLowerEntryIfLowerKeySharesPrefix() {
+        testPutWithEmptyKey();
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(convertToSequence("romulus"));
+        assertNotNull(entry);
+        assertEquals(convertToSequence("romanus"), entry.getKey());
+        assertEquals("romanus", entry.getValue());
+    }
+
+    @Test
+    public final void testLowerEntryIfLowerKeyIsNotAvailable() {
+        testPut7();
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(convertToSequence("A"));
+        assertNull(entry);
+    }
+
+    @Test
+    public final void testLowerEntryIfLowerKeyIsEmpty() {
+        testPutWithEmptyKey();
+        Map.Entry<StringSequence, String> entry = trie.lowerEntry(convertToSequence("A"));
+        assertNotNull(entry);
+        assertNull(entry.getKey());
+        assertEquals("empty", entry.getValue());
+    }
+
+    @Test
+    public final void testLowerKeyIfKeyIsNotContained() {
+        assertNull(trie.lowerKey(convertToSequence("foo")));
+    }
+
+    @Test
+    public final void testLowerKeyIfLowerKeyIsPrefix() {
+        testPut6();
+        StringSequence lowerKey = trie.lowerKey(convertToSequence("romane"));
+        assertEquals(convertToSequence("rom"), lowerKey);
+    }
+
+    @Test
+    public final void testLowerKeyIfLowerKeySharesPredecessor() {
+        testPut6();
+        StringSequence lowerKey = trie.lowerKey(convertToSequence("romanus"));
+        assertEquals(convertToSequence("romane"), lowerKey);
+    }
+
+    @Test
+    public final void testLowerKeyIfLowerKeySharesPrefix() {
+        testPutWithEmptyKey();
+        StringSequence lowerKey = trie.lowerKey(convertToSequence("romulus"));
+        assertEquals(convertToSequence("romanus"), lowerKey);
+    }
+
+    @Test
+    public final void testLowerKeyIfLowerKeyIsNotAvailable() {
+        testPut7();
+        assertNull(trie.lowerKey(convertToSequence("A")));
+    }
+
+    @Test
+    public final void testLowerKeyIfLowerKeyIsEmpty() {
+        testPutWithEmptyKey();
+        StringSequence lowerKey = trie.lowerKey(convertToSequence("A"));
+        assertNull(lowerKey);
     }
 
 }
