@@ -311,6 +311,15 @@ public abstract class AbstractNonPatriciaSortedTrieTest<SequenceType, TrieType e
     }
 
     @Test
+    public final void testLowerEntryIfLowerKeySharesPrefixWithKey() {
+        testPutWithEmptyKey();
+        Map.Entry<SequenceType, String> entry = trie.lowerEntry(convertToSequence("ted"));
+        assertNotNull(entry);
+        assertEquals(convertToSequence("tea"), entry.getKey());
+        assertEquals("tea", entry.getValue());
+    }
+
+    @Test
     public final void testLowerEntryIfLowerKeyIsNotAvailable() {
         testPut6();
         Map.Entry<SequenceType, String> entry = trie.lowerEntry(convertToSequence("A"));
@@ -350,6 +359,13 @@ public abstract class AbstractNonPatriciaSortedTrieTest<SequenceType, TrieType e
         testPutWithEmptyKey();
         SequenceType lowerKey = trie.lowerKey(convertToSequence("tea"));
         assertEquals(convertToSequence("inn"), lowerKey);
+    }
+
+    @Test
+    public final void testLowerKeyIfLowerKeySharesPrefixWithKey() {
+        testPutWithEmptyKey();
+        SequenceType lowerKey = trie.lowerKey(convertToSequence("ted"));
+        assertEquals(convertToSequence("tea"), lowerKey);
     }
 
     @Test
