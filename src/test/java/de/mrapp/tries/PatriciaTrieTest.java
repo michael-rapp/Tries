@@ -1770,4 +1770,54 @@ public class PatriciaTrieTest extends
         assertTrue(trie.containsKey(convertToSequence("romanus")));
     }
 
+    @Test
+    public final void testDescendingMap() {
+        testPutWithEmptyKey();
+        NavigableMap<StringSequence, String> map = trie.descendingMap();
+        assertEquals(trie.size(), map.size());
+        Iterator<Map.Entry<StringSequence, String>> iterator = map.entrySet().iterator();
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicundus"), "rubicundus"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicun"), "rubicun"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubicon"), "rubicon"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("ruber"), "ruber"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rubens"), "rubens"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romulus"), "romulus"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romanus"), "romanus"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("romane"), "romane"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("rom"), "rom"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("B"), "romulus"),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(convertToSequence("A"), null),
+                iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<>(null, "empty"),
+                iterator.next());
+        assertFalse(iterator.hasNext());
+        trie.forEach((key, value) -> assertEquals(value, map.get(key)));
+        assertEquals(trie.firstKey(), map.lastKey());
+        assertEquals(trie.higherKey(trie.firstKey()), map.lowerKey(map.lastKey()));
+        assertEquals(trie.lastKey(), map.firstKey());
+        assertEquals(trie.lowerKey(trie.lastKey()), map.higherKey(map.firstKey()));
+    }
+
 }
