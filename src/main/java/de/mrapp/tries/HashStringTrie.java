@@ -25,7 +25,7 @@ import de.mrapp.tries.datastructure.StringTrieWrapper;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class StringHashTrie<ValueType> extends StringTrieWrapper<ValueType> {
+public class HashStringTrie<ValueType> extends StringTrieWrapper<ValueType> {
 
     /**
      * The constant serial version UID.
@@ -36,13 +36,13 @@ public class StringHashTrie<ValueType> extends StringTrieWrapper<ValueType> {
      * Creates a new empty, unsorted trie for storing character sequences, which uses hash maps for
      * storing the successors of nodes.
      */
-    public StringHashTrie() {
+    public HashStringTrie() {
         super(new HashTrie<>());
     }
 
     @Override
     public final String toString() {
-        return "StringHashTrie " + entrySet().toString();
+        return "HashStringTrie " + entrySet().toString();
     }
 
 }

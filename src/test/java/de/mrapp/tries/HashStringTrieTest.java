@@ -18,21 +18,21 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests the functionality of the class {@link StringHashTrie}.
+ * Tests the functionality of the class {@link HashStringTrie}.
  *
  * @author Michael Rapp
  */
-public class StringHashTrieTest extends AbstractStringNonPatriciaTrieTest<StringHashTrie<String>> {
+public class HashStringTrieTest extends AbstractStringNonPatriciaTrieTest<HashStringTrie<String>> {
 
     @Override
-    StringHashTrie<String> onCreateTrie() {
-        return new StringHashTrie<>();
+    HashStringTrie<String> onCreateTrie() {
+        return new HashStringTrie<>();
     }
 
     @Test
     public final void testToString() {
         testPut3();
-        assertEquals("StringHashTrie [tea=tea, ted=ted, to=to]", trie.toString());
+        assertEquals("HashStringTrie [tea=tea, ted=ted, to=to]", trie.toString());
     }
 
 }
