@@ -29,7 +29,7 @@ import java.util.Map;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class StringSortedListTrie<ValueType> extends SortedStringTrieWrapper<ValueType> {
+public class SortedListStringTrie<ValueType> extends SortedStringTrieWrapper<ValueType> {
 
     /**
      * The constant serial version UID.
@@ -40,7 +40,7 @@ public class StringSortedListTrie<ValueType> extends SortedStringTrieWrapper<Val
      * Creates a new empty, sorted trie for storing character sequences, which uses sorted lists for storing the
      * successors of nodes. For comparing keys with each other, the natural ordering of the keys is used.
      */
-    public StringSortedListTrie() {
+    public SortedListStringTrie() {
         this((Comparator<? super String>) null);
     }
 
@@ -52,7 +52,7 @@ public class StringSortedListTrie<ValueType> extends SortedStringTrieWrapper<Val
      * @param comparator The comparator, which should be used to compare keys with each other, as an instance of the
      *                   type {@link Comparator} or null, if the natural ordering of the keys should be used
      */
-    public StringSortedListTrie(@Nullable final Comparator<? super String> comparator) {
+    public SortedListStringTrie(@Nullable final Comparator<? super String> comparator) {
         super(new SortedListTrie<>(
                 comparator != null ? new StringSequenceComparatorWrapper(comparator) : null));
     }
@@ -65,7 +65,7 @@ public class StringSortedListTrie<ValueType> extends SortedStringTrieWrapper<Val
      * @param map The map, which contains the key-value pairs that should be added to the trie, as an instance of the
      *            type {@link Map}. The map may not be null
      */
-    public StringSortedListTrie(@NotNull final Map<String, ValueType> map) {
+    public SortedListStringTrie(@NotNull final Map<String, ValueType> map) {
         this(null, map);
     }
 
@@ -78,7 +78,7 @@ public class StringSortedListTrie<ValueType> extends SortedStringTrieWrapper<Val
      * @param map        The map, which contains the key-value pairs that should be added to the trie, as an instance of
      *                   the type {@link Map}. The map may not be null
      */
-    public StringSortedListTrie(@Nullable final Comparator<? super String> comparator,
+    public SortedListStringTrie(@Nullable final Comparator<? super String> comparator,
                                 @NotNull final Map<String, ValueType> map) {
         super(new SortedListTrie<>(comparator != null ? new StringSequenceComparatorWrapper(comparator) : null));
         putAll(map);
@@ -86,7 +86,7 @@ public class StringSortedListTrie<ValueType> extends SortedStringTrieWrapper<Val
 
     @Override
     public final String toString() {
-        return "StringSortedListTrie " + entrySet().toString();
+        return "SortedListStringTrie " + entrySet().toString();
     }
 
 }

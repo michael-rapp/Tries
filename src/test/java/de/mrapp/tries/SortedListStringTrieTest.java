@@ -26,21 +26,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests the functionality of the class {@link StringSortedListTrie}.
+ * Tests the functionality of the class {@link SortedListStringTrie}.
  *
  * @author Michael Rapp
  */
-public class StringSortedListTrieTest extends
-        AbstractStringNonPatriciaSortedTrieTest<StringSortedListTrie<String>> {
+public class SortedListStringTrieTest extends
+        AbstractStringNonPatriciaSortedTrieTest<SortedListStringTrie<String>> {
 
     @Override
-    final StringSortedListTrie<String> onCreateTrie() {
-        return new StringSortedListTrie<>();
+    final SortedListStringTrie<String> onCreateTrie() {
+        return new SortedListStringTrie<>();
     }
 
     @Test
     public final void testDefaultConstructor() {
-        StringSortedListTrie<String> trie = new StringSortedListTrie<>();
+        SortedListStringTrie<String> trie = new SortedListStringTrie<>();
         assertNull(trie.comparator());
     }
 
@@ -51,7 +51,7 @@ public class StringSortedListTrieTest extends
         Map<String, String> map = new HashMap<>();
         map.put(value1, value1);
         map.put(value2, value2);
-        SortedStringTrie<String> trie = new StringSortedListTrie<>(map);
+        SortedStringTrie<String> trie = new SortedListStringTrie<>(map);
         assertEquals(2, trie.size());
         assertEquals(value1, trie.get(value1));
         assertEquals(value2, trie.get(value2));
@@ -60,7 +60,7 @@ public class StringSortedListTrieTest extends
     @Test
     public final void testConstructorWithComparatorParameter() {
         Comparator<? super String> comparator = mock(Comparator.class);
-        StringSortedListTrie<String> trie = new StringSortedListTrie<>(comparator);
+        SortedListStringTrie<String> trie = new SortedListStringTrie<>(comparator);
         assertNotNull(trie.comparator());
         when(comparator.compare("a", "b")).thenReturn(-1);
         assertEquals(-1, trie.comparator().compare("a", "b"));
@@ -74,7 +74,7 @@ public class StringSortedListTrieTest extends
         map.put(value1, value1);
         map.put(value2, value2);
         Comparator<? super String> comparator = (Comparator<String>) (o1, o2) -> o1.compareTo(o2);
-        SortedStringTrie<String> trie = new StringSortedListTrie<>(comparator, map);
+        SortedStringTrie<String> trie = new SortedListStringTrie<>(comparator, map);
         assertEquals(2, trie.size());
         assertEquals(value1, trie.get(value1));
         assertEquals(value2, trie.get(value2));
@@ -83,10 +83,10 @@ public class StringSortedListTrieTest extends
 
     @Test
     public final void testToString() {
-        StringSortedListTrie<String> trie = new StringSortedListTrie<>();
+        SortedListStringTrie<String> trie = new SortedListStringTrie<>();
         trie.put("key1", "value1");
         trie.put("key2", "value2");
-        assertEquals("StringSortedListTrie [key1=value1, key2=value2]", trie.toString());
+        assertEquals("SortedListStringTrie [key1=value1, key2=value2]", trie.toString());
     }
 
 }

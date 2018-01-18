@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * A sorted trie, which stores the successors of nodes in sorted lists. It is the pendant of the class {@link
- * PatriciaTrie} for using character sequences as keys. In contrast to a {@link StringSortedListTrie}, the edges between
+ * PatriciaTrie} for using character sequences as keys. In contrast to a {@link SortedListStringTrie}, the edges between
  * nodes do not always correspond to a single element of a sequence. Instead, subsequent nodes that only have a single
  * successor are merged to a single node to reduce space complexity. This trie implementation has the same properties as
  * a {@link PatriciaTrie}. It should be preferred when using character sequences, because it offers a less complex API.
