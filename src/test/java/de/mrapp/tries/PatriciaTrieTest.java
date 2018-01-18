@@ -1857,4 +1857,178 @@ public class PatriciaTrieTest extends
         assertEquals(convertToSequence("rubicun"), keySet.lower(convertToSequence("rubicundus")));
     }
 
+    @Test
+    public final void testNavigableKeySetDescendingIterator() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.navigableKeySet();
+        assertEquals(12, keySet.size());
+        Iterator<StringSequence> iterator = keySet.descendingIterator();
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicundus"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicun"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicon"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("ruber"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubens"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romulus"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romanus"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romane"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rom"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("B"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("A"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertNull(iterator.next());
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public final void testNavigableKeySetSpliterator() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.navigableKeySet();
+        assertEquals(12, keySet.size());
+        Spliterator<StringSequence> spliterator = keySet.spliterator();
+        Collection<StringSequence> keys = new LinkedList<>();
+        spliterator.forEachRemaining(keys::add);
+        Iterator<StringSequence> iterator = keys.iterator();
+        assertNull(iterator.next());
+        assertEquals(convertToSequence("A"), iterator.next());
+        assertEquals(convertToSequence("B"), iterator.next());
+        assertEquals(convertToSequence("rom"), iterator.next());
+        assertEquals(convertToSequence("romane"), iterator.next());
+        assertEquals(convertToSequence("romanus"), iterator.next());
+        assertEquals(convertToSequence("romulus"), iterator.next());
+        assertEquals(convertToSequence("rubens"), iterator.next());
+        assertEquals(convertToSequence("ruber"), iterator.next());
+        assertEquals(convertToSequence("rubicon"), iterator.next());
+        assertEquals(convertToSequence("rubicun"), iterator.next());
+        assertEquals(convertToSequence("rubicundus"), iterator.next());
+    }
+
+    @Test
+    public final void testDescendingNavigableKeySet() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.descendingKeySet();
+        assertEquals(12, keySet.size());
+        Iterator<StringSequence> iterator = keySet.iterator();
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicundus"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicun"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicon"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("ruber"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubens"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romulus"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romanus"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romane"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rom"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("B"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("A"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(null, iterator.next());
+        assertFalse(iterator.hasNext());
+        assertEquals(convertToSequence("rubicundus"), keySet.first());
+        assertNull(keySet.last());
+        assertEquals(convertToSequence("rubicun"), keySet.higher(convertToSequence("rubicundus")));
+        assertEquals(convertToSequence("A"), keySet.lower(null));
+    }
+
+    @Test
+    public final void testDescendingNavigableKeySetDescendingIterator() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.descendingKeySet();
+        assertEquals(12, keySet.size());
+        Iterator<StringSequence> iterator = keySet.descendingIterator();
+        assertTrue(iterator.hasNext());
+        assertNull(iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("A"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("B"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rom"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romane"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romanus"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("romulus"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubens"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("ruber"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicon"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicun"), iterator.next());
+        assertTrue(iterator.hasNext());
+        assertEquals(convertToSequence("rubicundus"), iterator.next());
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public final void testNavigableKeySetOfTailMapSpliterator() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.tailMap(null, true).navigableKeySet();
+        assertEquals(12, keySet.size());
+        Spliterator<StringSequence> spliterator = keySet.spliterator();
+        Collection<StringSequence> keys = new LinkedList<>();
+        spliterator.forEachRemaining(keys::add);
+        Iterator<StringSequence> iterator = keys.iterator();
+        assertNull(iterator.next());
+        assertEquals(convertToSequence("A"), iterator.next());
+        assertEquals(convertToSequence("B"), iterator.next());
+        assertEquals(convertToSequence("rom"), iterator.next());
+        assertEquals(convertToSequence("romane"), iterator.next());
+        assertEquals(convertToSequence("romanus"), iterator.next());
+        assertEquals(convertToSequence("romulus"), iterator.next());
+        assertEquals(convertToSequence("rubens"), iterator.next());
+        assertEquals(convertToSequence("ruber"), iterator.next());
+        assertEquals(convertToSequence("rubicon"), iterator.next());
+        assertEquals(convertToSequence("rubicun"), iterator.next());
+        assertEquals(convertToSequence("rubicundus"), iterator.next());
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public final void testDescendingNavigableKeySetSpliterator() {
+        testPutWithEmptyKey();
+        NavigableSet<StringSequence> keySet = trie.descendingKeySet();
+        assertEquals(12, keySet.size());
+        Spliterator<StringSequence> spliterator = keySet.spliterator();
+        Collection<StringSequence> keys = new LinkedList<>();
+        spliterator.forEachRemaining(keys::add);
+        Iterator<StringSequence> iterator = keys.iterator();
+        assertEquals(convertToSequence("rubicundus"), iterator.next());
+        assertEquals(convertToSequence("rubicun"), iterator.next());
+        assertEquals(convertToSequence("rubicon"), iterator.next());
+        assertEquals(convertToSequence("ruber"), iterator.next());
+        assertEquals(convertToSequence("rubens"), iterator.next());
+        assertEquals(convertToSequence("romulus"), iterator.next());
+        assertEquals(convertToSequence("romanus"), iterator.next());
+        assertEquals(convertToSequence("romane"), iterator.next());
+        assertEquals(convertToSequence("rom"), iterator.next());
+        assertEquals(convertToSequence("B"), iterator.next());
+        assertEquals(convertToSequence("A"), iterator.next());
+        assertNull(iterator.next());
+        assertFalse(iterator.hasNext());
+    }
+
 }
