@@ -20,8 +20,8 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 /**
- * An abstract base class for all tests, which test a {@link SortedTrie} implementation, which uses
- * {@link SequenceType}s as keys.
+ * An abstract base class for all tests, which test a {@link SortedTrie} implementation, which uses {@link
+ * SequenceType}s as keys.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <TrieType>     The type of the tested trie implementation
@@ -29,6 +29,68 @@ import static org.junit.Assert.*;
  */
 public abstract class AbstractNonPatriciaSortedTrieTest<SequenceType, TrieType extends NavigableMap<SequenceType, String>>
         extends AbstractNonPatriciaTrieTest<SequenceType, TrieType> {
+
+    @Test
+    public final void testFirstEntryIfTrieIsEmpty() {
+        assertNull(trie.firstEntry());
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public final void testFirstKeyIfTrieIsEmpty() {
+        trie.firstKey();
+    }
+
+    @Test
+    public final void testLastEntryIfTrieIsEmpty() {
+        assertNull(trie.lastEntry());
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public final void testLastKeyIfTrieIsNull() {
+        trie.lastKey();
+    }
+
+    @Test
+    public final void testPollFirstEntryIfTrieIsEmpty() {
+        Map.Entry<SequenceType, String> removed = trie.pollFirstEntry();
+        assertNull(removed);
+        assertTrue(trie.isEmpty());
+        assertNull(getRootNode(trie));
+    }
+
+    @Test
+    public final void testPollLastEntryIfTrieIsEmpty() {
+        Map.Entry<SequenceType, String> removed = trie.pollLastEntry();
+        assertNull(removed);
+        assertTrue(trie.isEmpty());
+        assertNull(getRootNode(trie));
+    }
+
+    @Test
+    public final void testFloorEntryIfKeyIsNotContained() {
+        assertNull(trie.floorEntry(convertToSequence("foo")));
+    }
+
+    @Test
+    public final void testCeilingEntryIfKeyIsNotContained() {
+        assertNull(trie.ceilingEntry(convertToSequence("foo")));
+    }
+
+    @Test
+    public final void testLastEntryIfNullKeyIsTheOnlyOne() {
+        trie.put(null, "empty");
+        Map.Entry<SequenceType, String> entry = trie.lastEntry();
+        assertNotNull(entry);
+        assertNull(entry.getKey());
+        assertEquals("empty", entry.getValue());
+    }
+
+    @Test
+    public final void testLastKeyIfNullKeyIsTheOnlyOne() {
+        trie.put(null, "empty");
+        SequenceType key = trie.lastKey();
+        assertNull(key);
+    }
 
     @Test
     public final void testFloorEntry() {

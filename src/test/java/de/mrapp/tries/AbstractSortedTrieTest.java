@@ -92,4 +92,19 @@ public abstract class AbstractSortedTrieTest<SequenceType extends Sequence, Trie
         assertNull(key);
     }
 
+    @Test
+    public final void testPollLastEntryIfKeyIsEmpty() {
+        String string = "empty";
+        trie.put(convertToSequence(""), string);
+        Map.Entry<SequenceType, String> removed = trie.pollLastEntry();
+        assertNotNull(removed);
+        assertNull(removed.getKey());
+        assertEquals(string, removed.getValue());
+        assertNull(trie.get(convertToSequence("")));
+        assertNull(trie.get(null));
+        assertEquals(0, trie.size());
+        assertTrue(trie.isEmpty());
+        assertNull(getRootNode(trie));
+    }
+
 }
