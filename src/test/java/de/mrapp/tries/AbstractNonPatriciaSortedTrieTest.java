@@ -186,7 +186,6 @@ public abstract class AbstractNonPatriciaSortedTrieTest<SequenceType, TrieType e
         String string = "too";
         trie.put(convertToSequence(string), string);
         Map.Entry<SequenceType, String> removed = trie.pollLastEntry();
-        System.out.println(removed);
         assertNotNull(removed);
         assertEquals(convertToSequence(string), removed.getKey());
         assertEquals(string, removed.getValue());
