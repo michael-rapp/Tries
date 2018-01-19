@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Tests the functionality of the class {@link HashTrie}.
@@ -45,6 +46,49 @@ public class HashTrieTest extends
         assertEquals(2, trie.size());
         assertEquals(value1, trie.get(new StringSequence(value1)));
         assertEquals(value2, trie.get(new StringSequence(value2)));
+    }
+
+
+    @Test
+    public final void testSubTrie1() {
+        testPutWithNullKey();
+        Trie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("t"));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(4, subTrie.size());
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "t");
+        Node<StringSequence, String> tSuccessor = getSuccessor(subTrie.getRootNode(), "t");
+        verifySuccessors(tSuccessor, "e", "o");
+        Node<StringSequence, String> eSuccessor = getSuccessor(tSuccessor, "e");
+        verifySuccessors(eSuccessor, "a", "d", "n");
+        Node<StringSequence, String> leaf = getSuccessor(eSuccessor, "a");
+        verifyLeaf(leaf, "tea");
+        leaf = getSuccessor(eSuccessor, "d");
+        verifyLeaf(leaf, "ted");
+        leaf = getSuccessor(eSuccessor, "n");
+        verifyLeaf(leaf, "ten");
+        Node<StringSequence, String> oSuccessor = getSuccessor(tSuccessor, "o");
+        verifyLeaf(oSuccessor, "to");
+    }
+
+    @Test
+    public final void testSubTrie2() {
+        testPutWithNullKey();
+        Trie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("te"));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(3, subTrie.size());
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "t");
+        Node<StringSequence, String> tSuccessor = getSuccessor(subTrie.getRootNode(), "t");
+        verifySuccessors(tSuccessor, "e");
+        Node<StringSequence, String> eSuccessor = getSuccessor(tSuccessor, "e");
+        verifySuccessors(eSuccessor, "a", "d", "n");
+        Node<StringSequence, String> leaf = getSuccessor(eSuccessor, "a");
+        verifyLeaf(leaf, "tea");
+        leaf = getSuccessor(eSuccessor, "d");
+        verifyLeaf(leaf, "ted");
+        leaf = getSuccessor(eSuccessor, "n");
+        verifyLeaf(leaf, "ten");
     }
 
     @Test

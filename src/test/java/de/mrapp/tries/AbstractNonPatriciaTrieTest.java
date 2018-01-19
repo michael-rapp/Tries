@@ -13,6 +13,7 @@
  */
 package de.mrapp.tries;
 
+import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
 import java.util.*;

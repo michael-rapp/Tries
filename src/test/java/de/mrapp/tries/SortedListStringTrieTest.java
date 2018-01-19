@@ -20,8 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,8 +29,8 @@ import static org.mockito.Mockito.when;
  *
  * @author Michael Rapp
  */
-public class SortedListStringTrieTest extends
-        AbstractStringNonPatriciaSortedTrieTest<SortedListStringTrie<String>> {
+public class SortedListStringTrieTest
+        extends AbstractStringNonPatriciaSortedTrieTest<SortedListStringTrie<String>> {
 
     @Override
     final SortedListStringTrie<String> onCreateTrie() {
@@ -79,6 +78,48 @@ public class SortedListStringTrieTest extends
         assertEquals(value1, trie.get(value1));
         assertEquals(value2, trie.get(value2));
         assertNotNull(trie.comparator());
+    }
+
+    @Test
+    public final void testSubTrie1() {
+        testPutWithNullKey();
+        SortedStringTrie<String> subTrie = trie.subTrie("t");
+        assertFalse(subTrie.isEmpty());
+        assertEquals(4, subTrie.size());
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "t");
+        Node<String, String> tSuccessor = getSuccessor(subTrie.getRootNode(), "t");
+        verifySuccessors(tSuccessor, "e", "o");
+        Node<String, String> eSuccessor = getSuccessor(tSuccessor, "e");
+        verifySuccessors(eSuccessor, "a", "d", "n");
+        Node<String, String> leaf = getSuccessor(eSuccessor, "a");
+        verifyLeaf(leaf, "tea");
+        leaf = getSuccessor(eSuccessor, "d");
+        verifyLeaf(leaf, "ted");
+        leaf = getSuccessor(eSuccessor, "n");
+        verifyLeaf(leaf, "ten");
+        Node<String, String> oSuccessor = getSuccessor(tSuccessor, "o");
+        verifyLeaf(oSuccessor, "to");
+    }
+
+    @Test
+    public final void testSubTrie2() {
+        testPutWithNullKey();
+        SortedStringTrie<String> subTrie = trie.subTrie("te");
+        assertFalse(subTrie.isEmpty());
+        assertEquals(3, subTrie.size());
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "t");
+        Node<String, String> tSuccessor = getSuccessor(subTrie.getRootNode(), "t");
+        verifySuccessors(tSuccessor, "e");
+        Node<String, String> eSuccessor = getSuccessor(tSuccessor, "e");
+        verifySuccessors(eSuccessor, "a", "d", "n");
+        Node<String, String> leaf = getSuccessor(eSuccessor, "a");
+        verifyLeaf(leaf, "tea");
+        leaf = getSuccessor(eSuccessor, "d");
+        verifyLeaf(leaf, "ted");
+        leaf = getSuccessor(eSuccessor, "n");
+        verifyLeaf(leaf, "ten");
     }
 
     @Test
