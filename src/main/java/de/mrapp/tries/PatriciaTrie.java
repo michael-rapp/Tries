@@ -14,10 +14,9 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.AbstractSortedTrie;
+import de.mrapp.tries.datastructure.PatriciaStructure;
 import de.mrapp.tries.datastructure.SortedListNode;
-import de.mrapp.tries.util.SequenceUtil;
-import de.mrapp.util.datastructure.Pair;
-import de.mrapp.util.datastructure.Triple;
+import de.mrapp.tries.datastructure.SortedStructure;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,78 +43,6 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
      * The constant serial version UID.
      */
     private static final long serialVersionUID = 3229102065205655196L;
-
-    /**
-     * Returns the index of a node's successor, which corresponds to a specific sequence.
-     *
-     * @param node     The node, whose successors should be checked, as an instance of the type
-     *                 {@link Node}. The node may not be null
-     * @param sequence The sequence, the successor, whose index should be returned, corresponds to,
-     *                 as an {@link Integer} value
-     * @return A triple, which contains the index of the successor, which corresponds to the given
-     * sequence, as well as the common prefix and suffix of the given sequence, as an instance of
-     * the class {@link Triple} or null, if no such successor is available for the given node
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    private Triple<Integer, SequenceType, SequenceType> indexOfInternal(
-            @NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType sequence) {
-        SequenceType firstElement = SequenceUtil.subsequence(sequence, 0, 1);
-        int index = SequenceUtil.binarySearch(node.getSuccessorCount(), node::getSuccessorKey,
-                (o1, o2) -> ((Comparable<? super SequenceType>) SequenceUtil.subsequence(o1, 0, 1))
-                        .compareTo(SequenceUtil.subsequence(o2, 0, 1)), firstElement);
-
-        if (index != -1) {
-            SequenceType successorKey = node.getSuccessorKey(index);
-            SequenceType commonPrefix = SequenceUtil.getCommonPrefix(sequence, successorKey);
-
-            if (commonPrefix != null) {
-                return Triple
-                        .create(index, commonPrefix, getSuffix(sequence, commonPrefix.length()));
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns the suffix of a specific sequence, given a specific prefix length. The length of the
-     * suffix is calculated based on the length of the given sequence and the suffix length.
-     *
-     * @param sequence     The sequence, whose suffix should be returned, as an instance of the
-     *                     generic type {@link SequenceType}. The sequence may not be null
-     * @param prefixLength The length of the prefix as an {@link Integer} value.
-     * @return The suffix of the given sequence as an instance of the generic type {@link
-     * SequenceType} or null, if the given prefix length equals the length of the given sequence
-     */
-    @Nullable
-    private SequenceType getSuffix(@NotNull final SequenceType sequence, final int prefixLength) {
-        return prefixLength < sequence.length() ? SequenceUtil.subsequence(sequence, prefixLength) :
-                null;
-    }
-
-    /**
-     * Removes a specific intermediate node, if possible.
-     *
-     * @param node The intermediate node, which should be removed, as an instance of the type {@link
-     *             Node}. The node may to be null
-     */
-    private void removeIntermediateNode(@NotNull final Node<SequenceType, ValueType> node) {
-        if (node.getSuccessorCount() == 1 && !node.isValueSet()) {
-            Map.Entry<SequenceType, Node<SequenceType, ValueType>> entry = node.getPredecessor();
-
-            if (entry != null) {
-                SequenceType key = entry.getKey();
-                Node<SequenceType, ValueType> predecessor = entry.getValue();
-                SequenceType successorKey = node.getFirstSuccessorKey();
-                Node<SequenceType, ValueType> successor = node.getFirstSuccessor();
-                SequenceType joinedKey = SequenceUtil.concat(key, successorKey);
-                predecessor.removeSuccessor(key);
-                predecessor.addSuccessor(joinedKey, successor);
-            }
-        }
-    }
 
     /**
      * Creates a new Patricia trie.
@@ -174,80 +101,16 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
         super(comparator, map);
     }
 
-    @Nullable
-    @Override
-    protected final Pair<Integer, SequenceType> indexOf(
-            @NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType sequence) {
-        Triple<Integer, SequenceType, SequenceType> triple = indexOfInternal(node, sequence);
-        return triple != null ? Pair.create(triple.first, triple.third) : null;
-    }
-
     @NotNull
     @Override
     protected final Node<SequenceType, ValueType> createRootNode() {
         return new SortedListNode<>(comparator);
     }
 
-    @Nullable
-    @Override
-    protected final Pair<Node<SequenceType, ValueType>, SequenceType> onGetSuccessor(
-            @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType sequence,
-            @NotNull final Operation operation) {
-        Triple<Integer, SequenceType, SequenceType> triple = indexOfInternal(node, sequence);
-
-        if (triple != null) {
-            int index = triple.first;
-            SequenceType prefix = triple.second;
-            SequenceType suffix = triple.third;
-            SequenceType successorKey = node.getSuccessorKey(index);
-            Node<SequenceType, ValueType> successor = node.getSuccessor(index);
-            int prefixLength = prefix.length();
-
-            if (operation == Operation.PUT) {
-                SequenceType intermediateSuffix = getSuffix(successorKey, prefixLength);
-
-                if (intermediateSuffix != null && !intermediateSuffix.isEmpty()) {
-                    node.removeSuccessor(index);
-                    Node<SequenceType, ValueType> intermediateNode = node.addSuccessor(prefix);
-                    intermediateNode.addSuccessor(intermediateSuffix, successor);
-                    successor = intermediateNode;
-                }
-
-                return Pair.create(successor, suffix);
-            } else if (operation == Operation.REMOVE) {
-                return sequence.length() >= prefixLength && prefixLength == successorKey.length() ?
-                        Pair.create(successor, suffix) : null;
-            } else {
-                int sequenceLength = sequence.length();
-                return sequenceLength == prefixLength && successorKey.length() > sequenceLength ?
-                        null :
-                        Pair.create(successor, suffix);
-            }
-        }
-
-        return null;
-    }
-
     @NotNull
     @Override
-    protected final Pair<Node<SequenceType, ValueType>, SequenceType> onAddSuccessor(
-            @NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType sequence) {
-        Node<SequenceType, ValueType> successor = node.addSuccessor(sequence);
-        return Pair.create(successor, null);
-    }
-
-    @Override
-    protected final void onRemoveSuccessor(@NotNull final Node<SequenceType, ValueType> node,
-                                           @NotNull final SequenceType sequence) {
-        node.removeSuccessor(sequence);
-        removeIntermediateNode(node);
-    }
-
-    @Override
-    protected final void onDeletedValue(@NotNull final Node<SequenceType, ValueType> node) {
-        removeIntermediateNode(node);
+    protected final SortedStructure<SequenceType, ValueType> createStructure() {
+        return new PatriciaStructure<>();
     }
 
     @NotNull

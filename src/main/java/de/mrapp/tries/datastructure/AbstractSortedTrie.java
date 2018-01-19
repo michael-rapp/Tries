@@ -31,9 +31,9 @@ import static de.mrapp.util.Condition.*;
 
 /**
  * An abstract base class for all sorted tries, whose nodes are ordered by their keys. It implements
- * the methods of the interface {@link NavigableMap}. In addition to the abstract methods of the
- * parent class {@link AbstractTrie}, subclasses must implement the method {@link #indexOf(Node,
- * Sequence)}}, depending on the trie's structure.
+ * the methods of the interface {@link NavigableMap}. Subclasses must provide an implementation of
+ * the interface {@link SortedStructure}, which adjusts the structure of the trie, when retrieving,
+ * inserting or removing keys.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by the trie
@@ -41,17 +41,16 @@ import static de.mrapp.util.Condition.*;
  * @since 1.0.0
  */
 public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueType>
-        extends AbstractTrie<SequenceType, ValueType> implements
-        SortedTrie<SequenceType, ValueType> {
+        extends AbstractTrie<SortedStructure<SequenceType, ValueType>, SequenceType, ValueType>
+        implements SortedTrie<SequenceType, ValueType> {
 
     /**
      * A key set of a sorted trie as returned by the method {@link SortedTrie#navigableKeySet()}.
      *
      * @param <K> The type of the sequences, which are used as the trie's keys
      */
-    private static final class NavigableKeySet<K extends Sequence> extends
-            AbstractKeySet<K, NavigableMap<K, ?>>
-            implements NavigableSet<K> {
+    private static final class NavigableKeySet<K extends Sequence>
+            extends AbstractKeySet<K, NavigableMap<K, ?>> implements NavigableSet<K> {
 
         /**
          * Creates a new key set of a sorted trie.
@@ -150,8 +149,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public NavigableSet<K> subSet(final K fromElement, final boolean fromInclusive,
-                                      final K toElement,
-                                      final boolean toInclusive) {
+                                      final K toElement, final boolean toInclusive) {
             return new NavigableKeySet<>(
                     backingMap.subMap(fromElement, fromInclusive, toElement, toInclusive));
         }
@@ -563,9 +561,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          */
         @Nullable
         final Map.Entry<K, V> getHighestEntry() {
-            Map.Entry<K, V> entry =
-                    (toEnd ? trie.lastEntry() :
-                            (toInclusive ? trie.floorEntry(toKey) : trie.lowerEntry(toKey)));
+            Map.Entry<K, V> entry = (toEnd ? trie.lastEntry() :
+                    (toInclusive ? trie.floorEntry(toKey) : trie.lowerEntry(toKey)));
             return (entry == null || isTooLow(entry.getKey())) ? null : entry;
         }
 
@@ -762,9 +759,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *                      otherwise
          */
         AbstractSubMap(@NotNull final AbstractSortedTrie<K, V> trie, final boolean fromStart,
-                       @Nullable final K fromKey,
-                       final boolean fromInclusive, final boolean toEnd, @Nullable final K toKey,
-                       final boolean toInclusive) {
+                       @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
+                       @Nullable final K toKey, final boolean toInclusive) {
             ensureNotNull(trie, "The trie may not be null");
             this.trie = trie;
             this.comparator = SequenceUtil.comparator(trie.comparator);
@@ -994,8 +990,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public NavigableMap<K, V> subMap(final K fromKey, final boolean fromInclusive,
-                                         final K toKey,
-                                         final boolean toInclusive) {
+                                         final K toKey, final boolean toInclusive) {
             ensureTrue(isInRange(fromKey, fromInclusive), "fromKey out of range");
             ensureTrue(isInRange(toKey, toInclusive), "toKey out of range");
             return new AscendingSubMap<>(trie, false, fromKey, fromInclusive, false, toKey,
@@ -1087,8 +1082,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class DescendingSubMap<K extends Sequence, V> extends
-            AbstractSubMap<K, V> {
+    private static final class DescendingSubMap<K extends Sequence, V>
+            extends AbstractSubMap<K, V> {
 
         /**
          * The sub set, which backs the sub map.
@@ -1136,8 +1131,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          */
         DescendingSubMap(@NotNull final AbstractSortedTrie<K, V> trie, final boolean fromStart,
                          @Nullable final K fromKey, final boolean fromInclusive,
-                         final boolean toEnd,
-                         @Nullable final K toKey, final boolean toInclusive) {
+                         final boolean toEnd, @Nullable final K toKey, final boolean toInclusive) {
             super(trie, fromStart, fromKey, fromInclusive, toEnd, toKey, toInclusive);
             this.reverseComparator =
                     trie.comparator() != null ? Collections.reverseOrder(trie.comparator()) : null;
@@ -1150,8 +1144,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public NavigableMap<K, V> subMap(final K fromKey, final boolean fromInclusive,
-                                         final K toKey,
-                                         final boolean toInclusive) {
+                                         final K toKey, final boolean toInclusive) {
             ensureTrue(isInRange(fromKey, fromInclusive), "fromKey out of range");
             ensureTrue(isInRange(toKey, toInclusive), "fromKey out of range");
             return new DescendingSubMap<>(trie, false, toKey, toInclusive, false, fromKey,
@@ -1242,8 +1235,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class AscendingKeyIterator<K extends Sequence, V> extends
-            AbstractEntryIterator<K, V, K> {
+    private static final class AscendingKeyIterator<K extends Sequence, V>
+            extends AbstractEntryIterator<K, V, K> {
 
         /**
          * Creates a new iterator, which allows to iterate the keys of the a trie in ascending
@@ -1278,8 +1271,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class DescendingKeyIterator<K extends Sequence, V> extends
-            AbstractEntryIterator<K, V, K> {
+    private static final class DescendingKeyIterator<K extends Sequence, V>
+            extends AbstractEntryIterator<K, V, K> {
 
         /**
          * Creates a new iterator, which allows to iterate the keys of the a trie in descending
@@ -1369,8 +1362,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class SpliteratorWrapper<K extends Sequence, V> extends
-            AbstractKeySpliterator<K, V> {
+    private static final class SpliteratorWrapper<K extends Sequence, V>
+            extends AbstractKeySpliterator<K, V> {
 
         /**
          * The encapsulated iterator.
@@ -1411,8 +1404,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      */
-    private abstract static class AbstractKeySpliterator<K extends Sequence, V> implements
-            Spliterator<K> {
+    private abstract static class AbstractKeySpliterator<K extends Sequence, V>
+            implements Spliterator<K> {
 
         /**
          * The trie, which is traversed by the spliterator.
@@ -1473,9 +1466,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class AscendingKeySpliterator<K extends Sequence, V> extends
-            AbstractKeySpliterator<K, V>
-            implements Spliterator<K> {
+    private static final class AscendingKeySpliterator<K extends Sequence, V>
+            extends AbstractKeySpliterator<K, V> implements Spliterator<K> {
 
         /**
          * The next entry to be returned.
@@ -1523,9 +1515,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * @param <K> The type of the sequences, which are used as the trie's keys
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class DescendingKeySpliterator<K extends Sequence, V> extends
-            AbstractKeySpliterator<K, V>
-            implements Spliterator<K> {
+    private static final class DescendingKeySpliterator<K extends Sequence, V>
+            extends AbstractKeySpliterator<K, V> implements Spliterator<K> {
 
         /**
          * The next entry to be returned.
@@ -1609,8 +1600,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      */
     @Nullable
     private Entry<SequenceType, ValueType> firstOrLastEntry(
-            @Nullable final Node<SequenceType, ValueType> node,
-            @Nullable final SequenceType key, final boolean first) {
+            @Nullable final Node<SequenceType, ValueType> node, @Nullable final SequenceType key,
+            final boolean first) {
         Node<SequenceType, ValueType> currentNode = node;
         SequenceType sequence = key;
 
@@ -1684,7 +1675,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                         clear();
                     } else {
                         if (suffixToRemove != null) {
-                            onRemoveSuccessor(lastRetainedNode, suffixToRemove);
+                            structure.onRemoveSuccessor(lastRetainedNode, suffixToRemove);
                         }
 
                         modificationCount++;
@@ -1716,7 +1707,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
             while (suffix != null && !suffix.isEmpty()) {
                 Pair<Node<SequenceType, ValueType>, SequenceType> pair =
-                        onGetSuccessor(currentNode, suffix, Operation.GET);
+                        structure.onGetSuccessor(currentNode, suffix, Structure.Operation.GET);
 
                 if (pair == null) {
                     return null;
@@ -1754,14 +1745,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @NotNull
     private Map.Entry<SequenceType, ValueType> createLowerEntry(
             @Nullable final SequenceType predecessorSequence,
-            @NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType key) {
-        SequenceType lowerKey = predecessorSequence != null ?
-                SequenceUtil.subsequence(predecessorSequence, 0,
-                        predecessorSequence.length() - key.length()) : null;
+            @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType key) {
+        SequenceType lowerKey = predecessorSequence != null ? SequenceUtil
+                .subsequence(predecessorSequence, 0, predecessorSequence.length() - key.length()) :
+                null;
         return new AbstractMap.SimpleImmutableEntry<>(
-                SequenceUtil.isEmpty(lowerKey) ? null : lowerKey,
-                node.getValue());
+                SequenceUtil.isEmpty(lowerKey) ? null : lowerKey, node.getValue());
     }
 
     /**
@@ -1772,7 +1761,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      *                            The
      * @param indexPair           A pair, which contains the index, the given node is stored at in
      *                            its predecessor, as an instance of the class {@link Pair}. See
-     *                            {@link #indexOf(Node, Sequence)}
+     *                            {@link SortedStructure#indexOf(Node, Sequence)}
      * @param node                The node to start at, as an instance of the type {@link Node}. The
      *                            node may not be null
      * @param key                 The key, which is used by the predecessor to reference the given
@@ -1790,19 +1779,16 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     private Map.Entry<SequenceType, ValueType> createLowerOrHigherEntry(
             @NotNull final SequenceType predecessorSequence,
             @Nullable final Pair<Integer, SequenceType> indexPair,
-            @NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType key,
-            @NotNull final Function<Integer, Integer> indexFunction,
-            final boolean higher) {
+            @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType key,
+            @NotNull final Function<Integer, Integer> indexFunction, final boolean higher) {
         if (indexPair != null) {
             int index = indexFunction.apply(indexPair.first);
 
             if (index >= 0 && index < node.getSuccessorCount()) {
                 Node<SequenceType, ValueType> successor = node.getSuccessor(index);
                 SequenceType successorKey = node.getSuccessorKey(index);
-                SequenceType prefix =
-                        SequenceUtil.subsequence(predecessorSequence, 0,
-                                predecessorSequence.length() - key.length());
+                SequenceType prefix = SequenceUtil.subsequence(predecessorSequence, 0,
+                        predecessorSequence.length() - key.length());
                 prefix = SequenceUtil.concat(prefix, successorKey);
                 return firstOrLastEntry(successor, prefix, higher);
             }
@@ -1854,22 +1840,6 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     final Spliterator<SequenceType> descendingKeySpliterator() {
         return new DescendingKeySpliterator<>(this);
     }
-
-    /**
-     * The method, which is invoked on subclasses in order to identify the index of a node's
-     * successor, which corresponds to a specific sequence.
-     *
-     * @param node     The node, whose successors should be checked, as an instance of the type
-     *                 {@link Node}. The node may not be null
-     * @param sequence The sequence, the successor, whose index should be returned, corresponds to,
-     *                 as an {@link Integer} value
-     * @return The index of the successor, which corresponds to the given sequence, as an {@link
-     * Integer} value or -1, if no such successor is available for the given node
-     */
-    @Nullable
-    protected abstract Pair<Integer, SequenceType> indexOf(
-            @NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType sequence);
 
     /**
      * Creates a new sorted trie.
@@ -1962,7 +1932,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                     if (pair.first.getSuccessorCount() <= 1) {
                         return createLowerEntry(key, pair.first, pair.second);
                     } else {
-                        indexPair = indexOf(pair.first, pair.second);
+                        indexPair = structure.indexOf(pair.first, pair.second);
 
                         if (indexPair != null && indexPair.first == 0) {
                             return createLowerEntry(key, pair.first, pair.second);
@@ -1971,7 +1941,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                 }
 
                 if (indexPair == null && pair.first.getSuccessorCount() > 1) {
-                    indexPair = indexOf(pair.first, pair.second);
+                    indexPair = structure.indexOf(pair.first, pair.second);
                 }
 
                 Map.Entry<SequenceType, ValueType> entry =
@@ -2003,11 +1973,11 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                     Pair<Node<SequenceType, ValueType>, SequenceType> pair = stack.pop();
 
                     if (pair.first.getSuccessorCount() > 1) {
-                        Pair<Integer, SequenceType> indexPair = indexOf(pair.first, pair.second);
+                        Pair<Integer, SequenceType> indexPair =
+                                structure.indexOf(pair.first, pair.second);
                         Entry<SequenceType, ValueType> entry =
                                 createLowerOrHigherEntry(key, indexPair, pair.first, pair.second,
-                                        index -> index + 1,
-                                        true);
+                                        index -> index + 1, true);
 
                         if (entry != null) {
                             return entry;
