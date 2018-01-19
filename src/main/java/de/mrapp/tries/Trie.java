@@ -57,6 +57,9 @@ public interface Trie<SequenceType extends Sequence, ValueType>
      * necessarily be a key, which is contained by the trie, but can also be a suffix). If the given
      * sequence is not contained by the trie, a {@link java.util.NoSuchElementException} will be
      * thrown.
+     * <p>
+     * The nodes of the returned trie are deep copies of those of the original trie. Therefore the
+     * returned trie is fully functional and can be modified without affecting the original trie.
      *
      * @param sequence The sequence as an instance of the generic type {@link SequenceType}. The
      *                 sequence may not be null
