@@ -38,8 +38,8 @@ import java.util.Map;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public interface Trie<SequenceType extends Sequence, ValueType> extends
-        Map<SequenceType, ValueType>, Serializable {
+public interface Trie<SequenceType extends Sequence, ValueType>
+        extends Map<SequenceType, ValueType>, Serializable {
 
     /**
      * Returns the root node of the trie. The returned object is not modifiable, i.e. an {@link
@@ -53,9 +53,10 @@ public interface Trie<SequenceType extends Sequence, ValueType> extends
     Node<SequenceType, ValueType> getRootNode();
 
     /**
-     * Returns the subtree of the node, which corresponds to a specific sequence (not necessarily a
-     * key, which is contained by the trie, but a suffix). If the given sequence is not contained by
-     * the trie, a {@link java.util.NoSuchElementException} will be thrown.
+     * Returns the subtree of the node, which corresponds to a specific sequence (must not
+     * necessarily be a key, which is contained by the trie, but can also be a suffix). If the given
+     * sequence is not contained by the trie, a {@link java.util.NoSuchElementException} will be
+     * thrown.
      *
      * @param sequence The sequence as an instance of the generic type {@link SequenceType}. The
      *                 sequence may not be null
