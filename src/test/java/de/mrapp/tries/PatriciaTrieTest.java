@@ -87,7 +87,7 @@ public class PatriciaTrieTest
     @Test
     public final void testSubTrieWithEmptySequence() {
         testPutWithNullKey();
-        Trie<StringSequence, String> subTrie = trie.subTrie(new StringSequence(""));
+        SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence(""));
         assertFalse(subTrie.isEmpty());
         assertEquals(11, subTrie.size());
         assertNull("A", subTrie.get(new StringSequence("A")));
@@ -139,7 +139,7 @@ public class PatriciaTrieTest
     @Test
     public final void testSubTrieWithNullSequence() {
         testPutWithNullKey();
-        Trie<StringSequence, String> subTrie = trie.subTrie(null);
+        SortedTrie<StringSequence, String> subTrie = trie.subTrie(null);
         assertFalse(subTrie.isEmpty());
         assertEquals(11, subTrie.size());
         assertNull("A", subTrie.get(new StringSequence("A")));
