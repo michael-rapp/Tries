@@ -11,10 +11,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package de.mrapp.tries.datastructure;
+package de.mrapp.tries.datastructure.node;
 
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
+import de.mrapp.tries.datastructure.node.UnmodifiableNode;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 import org.junit.runner.RunWith;

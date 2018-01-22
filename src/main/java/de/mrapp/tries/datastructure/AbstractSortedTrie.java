@@ -16,6 +16,8 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.Node;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.SortedTrie;
+import de.mrapp.tries.structure.SortedStructure;
+import de.mrapp.tries.structure.Structure;
 import de.mrapp.tries.util.EntryUtil;
 import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.Pair;

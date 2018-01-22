@@ -15,7 +15,7 @@ package de.mrapp.tries.util;
 
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
-import de.mrapp.tries.datastructure.HashNode;
+import de.mrapp.tries.datastructure.node.HashNode;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 

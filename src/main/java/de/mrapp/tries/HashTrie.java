@@ -14,9 +14,9 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.AbstractTrie;
-import de.mrapp.tries.datastructure.HashNode;
-import de.mrapp.tries.datastructure.Structure;
-import de.mrapp.tries.datastructure.UncompressedStructure;
+import de.mrapp.tries.datastructure.node.HashNode;
+import de.mrapp.tries.structure.Structure;
+import de.mrapp.tries.structure.UncompressedStructure;
 import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

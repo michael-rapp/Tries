@@ -14,6 +14,9 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.*;
+import de.mrapp.tries.datastructure.node.SortedListNode;
+import de.mrapp.tries.structure.SortedStructure;
+import de.mrapp.tries.structure.UncompressedSortedStructure;
 import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -16,6 +16,7 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.Node;
 import de.mrapp.tries.SortedTrie;
 import de.mrapp.tries.Trie;
+import de.mrapp.tries.datastructure.node.UnmodifiableNode;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
