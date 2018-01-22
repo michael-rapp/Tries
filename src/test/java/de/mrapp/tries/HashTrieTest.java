@@ -19,9 +19,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * Tests the functionality of the class {@link HashTrie}.
@@ -186,6 +184,15 @@ public class HashTrieTest
         verifySuccessors(nSuccessor, "n");
         Node<StringSequence, String> n2Successor = getSuccessor(nSuccessor, "n");
         verifyLeaf(n2Successor, "inn");
+    }
+
+    @Test
+    public final void testSubTrieIsEmpty() {
+        testPutWithNullKey();
+        Trie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("tea"));
+        assertTrue(subTrie.isEmpty());
+        assertEquals(0, subTrie.size());
+        assertNull(subTrie.getRootNode());
     }
 
     @Test

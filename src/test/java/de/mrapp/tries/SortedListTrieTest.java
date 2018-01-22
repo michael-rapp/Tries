@@ -212,6 +212,15 @@ public class SortedListTrieTest
     }
 
     @Test
+    public final void testSubTrieIsEmpty() {
+        testPutWithNullKey();
+        SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("tea"));
+        assertTrue(subTrie.isEmpty());
+        assertEquals(0, subTrie.size());
+        assertNull(subTrie.getRootNode());
+    }
+
+    @Test
     public void testToString() {
         testPut3();
         assertEquals("SortedListTrie [tea=tea, ted=ted, to=to]", trie.toString());

@@ -121,9 +121,13 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
         Node<SequenceType, ValueType> node = getNode(sequence);
 
         if (node != null) {
-            Node<SequenceType, ValueType> rootNode =
-                    structure.getSubTrie(sequence, createRootNode(), node);
-            return new PatriciaTrie<>(rootNode, comparator);
+            if (node.hasSuccessors()) {
+                Node<SequenceType, ValueType> rootNode =
+                        structure.getSubTrie(sequence, createRootNode(), node);
+                return new PatriciaTrie<>(rootNode, comparator);
+            } else {
+                return new PatriciaTrie<>(null, comparator);
+            }
         }
 
         throw new NoSuchElementException();

@@ -89,9 +89,13 @@ public class HashTrie<SequenceType extends Sequence, ValueType>
         Node<SequenceType, ValueType> node = getNode(sequence);
 
         if (node != null) {
-            Node<SequenceType, ValueType> rootNode =
-                    structure.getSubTrie(sequence, createRootNode(), node);
-            return new HashTrie<>(rootNode);
+            if (node.hasSuccessors()) {
+                Node<SequenceType, ValueType> rootNode =
+                        structure.getSubTrie(sequence, createRootNode(), node);
+                return new HashTrie<>(rootNode);
+            } else {
+                return new HashTrie<>((Node<SequenceType, ValueType>) null);
+            }
         }
 
         throw new NoSuchElementException();

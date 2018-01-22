@@ -212,6 +212,51 @@ public class PatriciaTrieTest
     }
 
     @Test
+    public final void testSubTrie1() {
+        testPutWithNullKey();
+        SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("roman"));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(2, subTrie.size());
+        assertEquals("romane", subTrie.get(new StringSequence("romane")));
+        assertEquals("romanus", subTrie.get(new StringSequence("romanus")));
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "roman");
+        Node<StringSequence, String> romanSuccessor = getSuccessor(subTrie.getRootNode(), "roman");
+        verifySuccessors(romanSuccessor, "e", "us");
+        Node<StringSequence, String> leaf = getSuccessor(romanSuccessor, "e");
+        verifyLeaf(leaf, "romane");
+        leaf = getSuccessor(romanSuccessor, "us");
+        verifyLeaf(leaf, "romanus");
+    }
+
+    @Test
+    public final void testSubTrie2() {
+        testPutWithNullKey();
+        SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("roma"));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(2, subTrie.size());
+        assertEquals("romane", subTrie.get(new StringSequence("romane")));
+        assertEquals("romanus", subTrie.get(new StringSequence("romanus")));
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "roman");
+        Node<StringSequence, String> romanSuccessor = getSuccessor(subTrie.getRootNode(), "roman");
+        verifySuccessors(romanSuccessor, "e", "us");
+        Node<StringSequence, String> leaf = getSuccessor(romanSuccessor, "e");
+        verifyLeaf(leaf, "romane");
+        leaf = getSuccessor(romanSuccessor, "us");
+        verifyLeaf(leaf, "romanus");
+    }
+
+    @Test
+    public final void testSubTrieIsEmpty() {
+        testPutWithNullKey();
+        SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("rubicundus"));
+        assertTrue(subTrie.isEmpty());
+        assertEquals(0, subTrie.size());
+        assertNull(subTrie.getRootNode());
+    }
+
+    @Test
     public void testToString() {
         testPut3();
         assertEquals("PatriciaTrie [rom=rom, romane=romane, romanus=romanus]", trie.toString());

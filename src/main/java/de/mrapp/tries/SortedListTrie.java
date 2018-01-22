@@ -125,9 +125,13 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
         Node<SequenceType, ValueType> node = getNode(sequence);
 
         if (node != null) {
-            Node<SequenceType, ValueType> rootNode =
-                    structure.getSubTrie(sequence, createRootNode(), node);
-            return new SortedListTrie<>(rootNode, comparator);
+            if (node.hasSuccessors()) {
+                Node<SequenceType, ValueType> rootNode =
+                        structure.getSubTrie(sequence, createRootNode(), node);
+                return new SortedListTrie<>(rootNode, comparator);
+            } else {
+                return new SortedListTrie<>(null, comparator);
+            }
         }
 
         throw new NoSuchElementException();
