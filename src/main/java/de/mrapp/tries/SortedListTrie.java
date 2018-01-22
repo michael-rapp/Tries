@@ -121,7 +121,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
     @NotNull
     @Override
     public final SortedListTrie<SequenceType, ValueType> subTrie(
-            @NotNull final SequenceType sequence) {
+            @Nullable final SequenceType sequence) {
         Node<SequenceType, ValueType> node = getNode(sequence);
 
         if (node != null) {

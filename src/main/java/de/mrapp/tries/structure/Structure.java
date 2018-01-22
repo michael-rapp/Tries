@@ -125,7 +125,7 @@ public interface Structure<SequenceType extends Sequence, ValueType> {
      * @return The root node of the subtree as an instance of the type {@link Node}. The root node
      * may not be null
      */
-    @NotNull Node<SequenceType, ValueType> getSubTrie(@NotNull SequenceType sequence,
+    @NotNull Node<SequenceType, ValueType> getSubTrie(@Nullable SequenceType sequence,
             @NotNull Node<SequenceType, ValueType> rootNode,
             @NotNull Node<SequenceType, ValueType> node);
 

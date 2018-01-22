@@ -85,7 +85,7 @@ public class HashTrie<SequenceType extends Sequence, ValueType>
 
     @NotNull
     @Override
-    public HashTrie<SequenceType, ValueType> subTrie(@NotNull final SequenceType sequence) {
+    public HashTrie<SequenceType, ValueType> subTrie(@Nullable final SequenceType sequence) {
         Node<SequenceType, ValueType> node = getNode(sequence);
 
         if (node != null) {
