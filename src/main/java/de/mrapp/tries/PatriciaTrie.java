@@ -17,6 +17,9 @@ import de.mrapp.tries.datastructure.AbstractSortedTrie;
 import de.mrapp.tries.datastructure.node.SortedListNode;
 import de.mrapp.tries.structure.PatriciaStructure;
 import de.mrapp.tries.structure.SortedStructure;
+import de.mrapp.tries.structure.Structure.Operation;
+import de.mrapp.tries.util.SequenceUtil;
+import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +47,68 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
      * The constant serial version UID.
      */
     private static final long serialVersionUID = 3229102065205655196L;
+
+    /**
+     * Traverses the trie in order to return the node, which corresponds to a specific sequence. If
+     * the sequence does not correspond to a node, the next higher node with the same prefix is
+     * returned.
+     *
+     * @param sequence The sequence, the node, which should be returned, corresponds to, as an
+     *                 instance of the generic type {@link SequenceType} or null
+     * @return A pair, which contains the node, which corresponds to the given sequence,
+     * respectively the next higher node, as well as the key, the returned node corresponds to, as
+     * an instance of the class {@link Pair} or null, if the given sequence does not match any node
+     */
+    @Nullable
+    private Pair<Node<SequenceType, ValueType>, SequenceType> getSubTrieRootNode(
+            @Nullable final SequenceType sequence) {
+        if (rootNode != null) {
+            Node<SequenceType, ValueType> currentNode = rootNode;
+            SequenceType matchedPrefix = null;
+            SequenceType suffix = sequence;
+
+            while (suffix != null && !suffix.isEmpty()) {
+                Pair<Node<SequenceType, ValueType>, SequenceType> pair =
+                        structure.onGetSuccessor(currentNode, suffix, Operation.GET);
+
+                if (pair == null) {
+                    suffix = null;
+
+                    if (matchedPrefix == null || matchedPrefix.isEmpty()) {
+                        return null;
+                    }
+                } else {
+                    currentNode = pair.first;
+                    suffix = pair.second;
+                    matchedPrefix = suffix == null || suffix.isEmpty() ? sequence : SequenceUtil
+                            .subsequence(sequence, 0, sequence.length() - suffix.length());
+                }
+            }
+
+            if (sequence != null && !sequence.isEmpty() && matchedPrefix != null &&
+                    matchedPrefix.length() < sequence.length()) {
+                SequenceType unmatchedSuffix =
+                        SequenceUtil.subsequence(sequence, matchedPrefix.length());
+                SequenceType firstElement = SequenceUtil.subsequence(unmatchedSuffix, 0, 1);
+                int index = SequenceUtil
+                        .binarySearch(currentNode.getSuccessorCount(), currentNode::getSuccessorKey,
+                                (o1, o2) -> ((Comparable<? super SequenceType>) SequenceUtil
+                                        .subsequence(o1, 0, 1))
+                                        .compareTo(SequenceUtil.subsequence(o2, 0, 1)),
+                                firstElement);
+
+                if (index != -1) {
+                    SequenceType successorKey = currentNode.getSuccessorKey(index);
+                    currentNode = currentNode.getSuccessor(index);
+                    matchedPrefix = SequenceUtil.concat(matchedPrefix, successorKey);
+                }
+            }
+
+            return Pair.create(currentNode, matchedPrefix);
+        }
+
+        return null;
+    }
 
     /**
      * Creates a new Patricia trie.
@@ -118,12 +183,14 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     @Override
     public final SortedTrie<SequenceType, ValueType> subTrie(
             @Nullable final SequenceType sequence) {
-        Node<SequenceType, ValueType> node = getNode(sequence);
+        Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSubTrieRootNode(sequence);
 
-        if (node != null) {
+        if (pair != null) {
+            Node<SequenceType, ValueType> node = pair.first;
+
             if (node.hasSuccessors()) {
                 Node<SequenceType, ValueType> rootNode =
-                        structure.getSubTrie(sequence, createRootNode(), node);
+                        structure.getSubTrie(pair.second, createRootNode(), node);
                 return new PatriciaTrie<>(rootNode, comparator);
             } else {
                 return new PatriciaTrie<>(null, comparator);

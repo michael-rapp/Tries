@@ -573,7 +573,7 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
     /**
      * The root node of the trie.
      */
-    Node<SequenceType, ValueType> rootNode;
+    protected Node<SequenceType, ValueType> rootNode;
 
     /**
      * A counter, which is increased whenever the trie is modified. It is used to fast-fail

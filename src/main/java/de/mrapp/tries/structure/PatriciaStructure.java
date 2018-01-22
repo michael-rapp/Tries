@@ -140,8 +140,12 @@ public class PatriciaStructure<SequenceType extends Sequence, ValueType>
                         Pair.create(successor, suffix) : null;
             } else {
                 int sequenceLength = sequence.length();
-                return sequenceLength == prefixLength && successorKey.length() > sequenceLength ?
-                        null : Pair.create(successor, suffix);
+
+                if (sequenceLength == prefixLength && successorKey.length() > sequenceLength) {
+                    return operation == Operation.SUB_TRIE ? Pair.create(node, null) : null;
+                }
+
+                return Pair.create(successor, suffix);
             }
         }
 

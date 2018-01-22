@@ -49,7 +49,12 @@ public interface Structure<SequenceType extends Sequence, ValueType> {
         /**
          * An operation, which puts data into the trie.
          */
-        PUT
+        PUT,
+
+        /**
+         * An operation, which creates a subtrie of the trie.
+         */
+        SUB_TRIE
 
     }
 
