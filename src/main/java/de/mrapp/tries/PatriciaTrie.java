@@ -89,13 +89,7 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
                     matchedPrefix.length() < sequence.length()) {
                 SequenceType unmatchedSuffix =
                         SequenceUtil.subsequence(sequence, matchedPrefix.length());
-                SequenceType firstElement = SequenceUtil.subsequence(unmatchedSuffix, 0, 1);
-                int index = SequenceUtil
-                        .binarySearch(currentNode.getSuccessorCount(), currentNode::getSuccessorKey,
-                                (o1, o2) -> ((Comparable<? super SequenceType>) SequenceUtil
-                                        .subsequence(o1, 0, 1))
-                                        .compareTo(SequenceUtil.subsequence(o2, 0, 1)),
-                                firstElement);
+                int index = currentNode.indexOfFirstElement(unmatchedSuffix);
 
                 if (index != -1) {
                     SequenceType successorKey = currentNode.getSuccessorKey(index);

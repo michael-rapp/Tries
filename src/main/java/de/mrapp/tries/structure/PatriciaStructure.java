@@ -14,7 +14,6 @@
 package de.mrapp.tries.structure;
 
 import de.mrapp.tries.Node;
-import de.mrapp.tries.NodeValue;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.Pair;
@@ -53,10 +52,7 @@ public class PatriciaStructure<SequenceType extends Sequence, ValueType>
     private Triple<Integer, SequenceType, SequenceType> indexOfInternal(
             @NotNull final Node<SequenceType, ValueType> node,
             @NotNull final SequenceType sequence) {
-        SequenceType firstElement = SequenceUtil.subsequence(sequence, 0, 1);
-        int index = SequenceUtil.binarySearch(node.getSuccessorCount(), node::getSuccessorKey,
-                (o1, o2) -> ((Comparable<? super SequenceType>) SequenceUtil.subsequence(o1, 0, 1))
-                        .compareTo(SequenceUtil.subsequence(o2, 0, 1)), firstElement);
+        int index = node.indexOfFirstElement(sequence);
 
         if (index != -1) {
             SequenceType successorKey = node.getSuccessorKey(index);

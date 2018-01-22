@@ -15,7 +15,6 @@ package de.mrapp.tries.datastructure.node;
 
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
-import de.mrapp.tries.datastructure.node.SortedListNode;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 
@@ -208,11 +207,25 @@ public class SortedListNodeTest {
         SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
         node.addSuccessor(new StringSequence("a"));
         node.addSuccessor(new StringSequence("b"));
+        assertEquals(-1, node.indexOf(new StringSequence("c")));
         node.addSuccessor(new StringSequence("c"));
         node.addSuccessor(new StringSequence("d"));
         node.addSuccessor(new StringSequence("e"));
         node.addSuccessor(new StringSequence("f"));
         assertEquals(2, node.indexOf(new StringSequence("c")));
+    }
+
+    @Test
+    public final void testIndexOfFirstElement() {
+        SortedListNode<StringSequence, String> node = new SortedListNode<>(null);
+        node.addSuccessor(new StringSequence("axx"));
+        node.addSuccessor(new StringSequence("bxx"));
+        assertEquals(-1, node.indexOfFirstElement(new StringSequence("cyy")));
+        node.addSuccessor(new StringSequence("cxx"));
+        node.addSuccessor(new StringSequence("dxx"));
+        node.addSuccessor(new StringSequence("exx"));
+        node.addSuccessor(new StringSequence("fxx"));
+        assertEquals(2, node.indexOfFirstElement(new StringSequence("cyy")));
     }
 
     @Test

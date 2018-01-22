@@ -170,6 +170,12 @@ public class HashNodeTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
+    public final void testIndexOfFirstElement() {
+        HashNode<StringSequence, String> node = new HashNode<>();
+        node.indexOfFirstElement(new StringSequence("c"));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
     public final void testRemoveSuccessorByIndex() {
         HashNode<StringSequence, String> node = new HashNode<>();
         node.removeSuccessor(2);

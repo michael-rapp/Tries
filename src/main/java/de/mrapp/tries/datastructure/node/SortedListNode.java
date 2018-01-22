@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.RandomAccess;
 
 import static de.mrapp.util.Condition.ensureNotNull;
+import static de.mrapp.util.Condition.ensureTrue;
 
 /**
  * A node of a trie, which stores its successors in a {@link SortedArrayList}.
@@ -35,9 +36,8 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class SortedListNode<KeyType extends Sequence, ValueType> extends
-        AbstractNode<KeyType, ValueType>
-        implements RandomAccess {
+public class SortedListNode<KeyType extends Sequence, ValueType>
+        extends AbstractNode<KeyType, ValueType> implements RandomAccess {
 
     /**
      * A directed edge, which references a successor of a node.
@@ -45,8 +45,8 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends
      * @param <K> The type of the key, the successor corresponds to
      * @param <V> The type of the successor's value
      */
-    private static class Edge<K extends Sequence, V> implements Serializable,
-            Comparable<Edge<K, V>> {
+    private static class Edge<K extends Sequence, V>
+            implements Serializable, Comparable<Edge<K, V>> {
 
         /**
          * The constant serial version UID.
@@ -80,7 +80,7 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends
          *                   the natural order of the keys should be used
          */
         Edge(@NotNull final K key, @NotNull final Node<K, V> successor,
-             @Nullable final Comparator<? super K> comparator) {
+                @Nullable final Comparator<? super K> comparator) {
             ensureNotNull(key, "The key may not be null");
             ensureNotNull(successor, "The successor may not be null");
             this.key = key;
@@ -153,7 +153,7 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends
     @NotNull
     @Override
     protected final Node<KeyType, ValueType> onAddSuccessor(@NotNull final KeyType key,
-                                                            @Nullable final Node<KeyType, ValueType> successor) {
+            @Nullable final Node<KeyType, ValueType> successor) {
         Node<KeyType, ValueType> successorToAdd =
                 successor == null ? new SortedListNode<>(comparator) : successor;
         successors.add(new Edge<>(key, successorToAdd, comparator));
@@ -210,6 +210,17 @@ public class SortedListNode<KeyType extends Sequence, ValueType> extends
         return SequenceUtil
                 .binarySearch(getSuccessorCount(), index -> successors.get(index).key, comparator,
                         key);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public final int indexOfFirstElement(@NotNull final KeyType key) {
+        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
+                UnsupportedOperationException.class);
+        KeyType firstElement = SequenceUtil.subsequence(key, 0, 1);
+        return SequenceUtil.binarySearch(getSuccessorCount(), this::getSuccessorKey,
+                (o1, o2) -> ((Comparable<? super KeyType>) SequenceUtil.subsequence(o1, 0, 1))
+                        .compareTo(SequenceUtil.subsequence(o2, 0, 1)), firstElement);
     }
 
     @Override

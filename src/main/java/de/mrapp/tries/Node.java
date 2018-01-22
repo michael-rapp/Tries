@@ -126,7 +126,7 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      * successor may not be null
      */
     @NotNull Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key,
-                                                   @Nullable final Node<KeyType, ValueType> successor);
+            @Nullable final Node<KeyType, ValueType> successor);
 
     /**
      * Removes the successor, which corresponds to a specific key.
@@ -254,6 +254,20 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      * value or -1, if no such successor is available
      */
     default int indexOf(@NotNull KeyType key) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the index of the successor, whose key starts with the first element of another key.
+     * The index is obtained by using a binary search. If the node's successors are not sorted, an
+     * {@link UnsupportedOperationException} is thrown.
+     *
+     * @param key The key, whose first element should be searched, as an instance of the generic
+     *            type {@link KeyType}. The key may not be null
+     * @return The index of the successor, whose key starts with the first element of the given key,
+     * as an {@link Integer} value or -1, if no such successor is available
+     */
+    default int indexOfFirstElement(@NotNull KeyType key) {
         throw new UnsupportedOperationException();
     }
 
