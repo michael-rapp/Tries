@@ -116,7 +116,8 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
 
     @NotNull
     @Override
-    public final SortedTrie<SequenceType, ValueType> subTrie(@NotNull final SequenceType sequence) {
+    public final SortedTrie<SequenceType, ValueType> subTrie(
+            @Nullable final SequenceType sequence) {
         Node<SequenceType, ValueType> node = getNode(sequence);
 
         if (node != null) {

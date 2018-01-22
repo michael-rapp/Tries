@@ -85,12 +85,115 @@ public class PatriciaTrieTest
     }
 
     @Test
+    public final void testSubTrieWithEmptySequence() {
+        testPutWithNullKey();
+        Trie<StringSequence, String> subTrie = trie.subTrie(new StringSequence(""));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(11, subTrie.size());
+        assertNull("A", subTrie.get(new StringSequence("A")));
+        assertEquals("romulus", subTrie.get(new StringSequence("B")));
+        assertEquals("romane", subTrie.get(new StringSequence("romane")));
+        assertEquals("romanus", subTrie.get(new StringSequence("romanus")));
+        assertEquals("rom", subTrie.get(new StringSequence("rom")));
+        assertEquals("romulus", subTrie.get(new StringSequence("romulus")));
+        assertEquals("rubens", subTrie.get(new StringSequence("rubens")));
+        assertEquals("ruber", subTrie.get(new StringSequence("ruber")));
+        assertEquals("rubicon", subTrie.get(new StringSequence("rubicon")));
+        assertEquals("rubicundus", subTrie.get(new StringSequence("rubicundus")));
+        verifyRootNode(getRootNode(trie), "null");
+        verifySuccessors(getRootNode(trie), "r", "A", "B");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
+        verifySuccessors(successor, "om", "ub");
+        Node<StringSequence, String> successorOm = getSuccessor(successor, "om");
+        verifySuccessors(successorOm, "an", "ulus");
+        Node<StringSequence, String> successorAn = getSuccessor(successorOm, "an");
+        verifySuccessors(successorAn, "e", "us");
+        Node<StringSequence, String> successorE = getSuccessor(successorAn, "e");
+        verifyLeaf(successorE, "romane");
+        Node<StringSequence, String> successorUs = getSuccessor(successorAn, "us");
+        verifyLeaf(successorUs, "romanus");
+        Node<StringSequence, String> successorUlus = getSuccessor(successorOm, "ulus");
+        verifyLeaf(successorUlus, "romulus");
+        Node<StringSequence, String> successorUb = getSuccessor(successor, "ub");
+        verifySuccessors(successorUb, "e", "ic");
+        Node<StringSequence, String> successorE2 = getSuccessor(successorUb, "e");
+        verifySuccessors(successorE2, "ns", "r");
+        Node<StringSequence, String> successorNs = getSuccessor(successorE2, "ns");
+        verifyLeaf(successorNs, "rubens");
+        Node<StringSequence, String> successorR = getSuccessor(successorE2, "r");
+        verifyLeaf(successorR, "ruber");
+        Node<StringSequence, String> successorIc = getSuccessor(successorUb, "ic");
+        verifySuccessors(successorIc, "on", "un");
+        Node<StringSequence, String> successorOn = getSuccessor(successorIc, "on");
+        verifyLeaf(successorOn, "rubicon");
+        Node<StringSequence, String> successorUn = getSuccessor(successorIc, "un");
+        verifySuccessors(successorUn, "dus");
+        Node<StringSequence, String> successorDus = getSuccessor(successorUn, "dus");
+        verifyLeaf(successorDus, "rubicundus");
+        Node<StringSequence, String> successorA = getSuccessor(getRootNode(trie), "A");
+        verifyLeaf(successorA, null);
+        Node<StringSequence, String> successorB = getSuccessor(getRootNode(trie), "B");
+        verifyLeaf(successorB, "romulus");
+    }
+
+    @Test
+    public final void testSubTrieWithNullSequence() {
+        testPutWithNullKey();
+        Trie<StringSequence, String> subTrie = trie.subTrie(null);
+        assertFalse(subTrie.isEmpty());
+        assertEquals(11, subTrie.size());
+        assertNull("A", subTrie.get(new StringSequence("A")));
+        assertEquals("romulus", subTrie.get(new StringSequence("B")));
+        assertEquals("romane", subTrie.get(new StringSequence("romane")));
+        assertEquals("romanus", subTrie.get(new StringSequence("romanus")));
+        assertEquals("rom", subTrie.get(new StringSequence("rom")));
+        assertEquals("romulus", subTrie.get(new StringSequence("romulus")));
+        assertEquals("rubens", subTrie.get(new StringSequence("rubens")));
+        assertEquals("ruber", subTrie.get(new StringSequence("ruber")));
+        assertEquals("rubicon", subTrie.get(new StringSequence("rubicon")));
+        assertEquals("rubicundus", subTrie.get(new StringSequence("rubicundus")));
+        verifyRootNode(getRootNode(trie), "null");
+        verifySuccessors(getRootNode(trie), "r", "A", "B");
+        Node<StringSequence, String> successor = getSuccessor(getRootNode(trie), "r");
+        verifySuccessors(successor, "om", "ub");
+        Node<StringSequence, String> successorOm = getSuccessor(successor, "om");
+        verifySuccessors(successorOm, "an", "ulus");
+        Node<StringSequence, String> successorAn = getSuccessor(successorOm, "an");
+        verifySuccessors(successorAn, "e", "us");
+        Node<StringSequence, String> successorE = getSuccessor(successorAn, "e");
+        verifyLeaf(successorE, "romane");
+        Node<StringSequence, String> successorUs = getSuccessor(successorAn, "us");
+        verifyLeaf(successorUs, "romanus");
+        Node<StringSequence, String> successorUlus = getSuccessor(successorOm, "ulus");
+        verifyLeaf(successorUlus, "romulus");
+        Node<StringSequence, String> successorUb = getSuccessor(successor, "ub");
+        verifySuccessors(successorUb, "e", "ic");
+        Node<StringSequence, String> successorE2 = getSuccessor(successorUb, "e");
+        verifySuccessors(successorE2, "ns", "r");
+        Node<StringSequence, String> successorNs = getSuccessor(successorE2, "ns");
+        verifyLeaf(successorNs, "rubens");
+        Node<StringSequence, String> successorR = getSuccessor(successorE2, "r");
+        verifyLeaf(successorR, "ruber");
+        Node<StringSequence, String> successorIc = getSuccessor(successorUb, "ic");
+        verifySuccessors(successorIc, "on", "un");
+        Node<StringSequence, String> successorOn = getSuccessor(successorIc, "on");
+        verifyLeaf(successorOn, "rubicon");
+        Node<StringSequence, String> successorUn = getSuccessor(successorIc, "un");
+        verifySuccessors(successorUn, "dus");
+        Node<StringSequence, String> successorDus = getSuccessor(successorUn, "dus");
+        verifyLeaf(successorDus, "rubicundus");
+        Node<StringSequence, String> successorA = getSuccessor(getRootNode(trie), "A");
+        verifyLeaf(successorA, null);
+        Node<StringSequence, String> successorB = getSuccessor(getRootNode(trie), "B");
+        verifyLeaf(successorB, "romulus");
+    }
+
+    @Test
     public final void testSubTrieIfSequenceCorrespondsToNode() {
         testPutWithNullKey();
         SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("rom"));
         assertFalse(subTrie.isEmpty());
-        assertEquals(4, subTrie.size());
-        assertEquals("rom", subTrie.get(new StringSequence("rom")));
+        assertEquals(3, subTrie.size());
         assertEquals("romane", subTrie.get(new StringSequence("romane")));
         assertEquals("romanus", subTrie.get(new StringSequence("romanus")));
         assertEquals("romulus", subTrie.get(new StringSequence("romulus")));
@@ -113,7 +216,5 @@ public class PatriciaTrieTest
         testPut3();
         assertEquals("PatriciaTrie [rom=rom, romane=romane, romanus=romanus]", trie.toString());
     }
-
-    // TODO: test subTrie method
 
 }
