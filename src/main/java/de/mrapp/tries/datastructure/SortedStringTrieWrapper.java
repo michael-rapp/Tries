@@ -31,16 +31,16 @@ import static de.mrapp.util.Condition.ensureNotNull;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class SortedStringTrieWrapper<ValueType> extends
-        AbstractStringTrieWrapper<SortedTrie<StringSequence, ValueType>, ValueType> implements
-        SortedStringTrie<ValueType> {
+public class SortedStringTrieWrapper<ValueType>
+        extends AbstractStringTrieWrapper<SortedTrie<StringSequence, ValueType>, ValueType>
+        implements SortedStringTrie<ValueType> {
 
     /**
      * A comparator, which allows to compare instances of the class {@link StringSequence} by
      * encapsulating a comparator, which compares {@link String}s.
      */
-    protected static final class StringSequenceComparatorWrapper implements
-            Comparator<StringSequence> {
+    protected static final class StringSequenceComparatorWrapper
+            implements Comparator<StringSequence> {
 
         /**
          * The encapsulated comparator.
@@ -105,8 +105,8 @@ public class SortedStringTrieWrapper<ValueType> extends
      *
      * @param <SetType> The type of the encapsulated set
      */
-    private static class SortedKeySetWrapper<SetType extends SortedSet<StringSequence>> extends
-            KeySetWrapper<SetType> implements SortedSet<String> {
+    private static class SortedKeySetWrapper<SetType extends SortedSet<StringSequence>>
+            extends KeySetWrapper<SetType> implements SortedSet<String> {
 
         /**
          * The comparator of the sorted set.
@@ -169,8 +169,9 @@ public class SortedStringTrieWrapper<ValueType> extends
      * The navigable key set of a {@link SortedStringTrie}. It encapsulates the navigable key set of
      * a {@link SortedTrie}.
      */
-    private static final class NavigableKeySetWrapper extends
-            SortedKeySetWrapper<NavigableSet<StringSequence>> implements NavigableSet<String> {
+    private static final class NavigableKeySetWrapper
+            extends SortedKeySetWrapper<NavigableSet<StringSequence>>
+            implements NavigableSet<String> {
 
         /**
          * The descending key set.
@@ -244,7 +245,7 @@ public class SortedStringTrieWrapper<ValueType> extends
         @NotNull
         @Override
         public NavigableSet<String> subSet(final String fromElement, final boolean fromInclusive,
-                                           final String toElement, final boolean toInclusive) {
+                final String toElement, final boolean toInclusive) {
             return new NavigableKeySetWrapper(
                     set.subSet(StringSequence.convertFromString(fromElement), fromInclusive,
                             StringSequence.convertFromString(toElement), toInclusive));
@@ -273,8 +274,8 @@ public class SortedStringTrieWrapper<ValueType> extends
      * @param <V>       The type of the values, which are stored by the trie
      * @param <MapType> The type of the encapsulated map
      */
-    private static class SortedMapWrapper<V, MapType extends SortedMap<StringSequence, V>> extends
-            AbstractMap<String, V> implements SortedMap<String, V> {
+    private static class SortedMapWrapper<V, MapType extends SortedMap<StringSequence, V>>
+            extends AbstractMap<String, V> implements SortedMap<String, V> {
 
         /**
          * The encapsulated map.
@@ -387,9 +388,9 @@ public class SortedStringTrieWrapper<ValueType> extends
      *
      * @param <V> The type of the values, which are stored by the trie
      */
-    private static final class NavigableMapWrapper<V> extends
-            SortedMapWrapper<V, NavigableMap<StringSequence, V>> implements
-            NavigableMap<String, V> {
+    private static final class NavigableMapWrapper<V>
+            extends SortedMapWrapper<V, NavigableMap<StringSequence, V>>
+            implements NavigableMap<String, V> {
 
         /**
          * Creates a new navigable map of a {@link SortedStringTrie}.
@@ -482,7 +483,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
         @Override
         public NavigableMap<String, V> subMap(final String fromKey, final boolean fromInclusive,
-                                              final String toKey, final boolean toInclusive) {
+                final String toKey, final boolean toInclusive) {
             return new NavigableMapWrapper<>(
                     map.subMap(StringSequence.convertFromString(fromKey), fromInclusive,
                             StringSequence.convertFromString(toKey), toInclusive));
@@ -537,8 +538,7 @@ public class SortedStringTrieWrapper<ValueType> extends
      * @param trie The trie, which should be encapsulated, as an instance of the type {@link
      *             SortedTrie}. The trie may not be null
      */
-    public SortedStringTrieWrapper(
-            @NotNull final SortedTrie<StringSequence, ValueType> trie) {
+    public SortedStringTrieWrapper(@NotNull final SortedTrie<StringSequence, ValueType> trie) {
         super(trie);
         Comparator<? super StringSequence> comparator = trie.comparator();
         this.comparator = comparator != null ? new StringComparatorWrapper(comparator) : null;
@@ -624,9 +624,7 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final NavigableMap<String, ValueType> subMap(final String fromKey,
-                                                        final boolean fromInclusive,
-                                                        final String toKey,
-                                                        final boolean toInclusive) {
+            final boolean fromInclusive, final String toKey, final boolean toInclusive) {
         return new NavigableMapWrapper<>(
                 trie.subMap(StringSequence.convertFromString(fromKey), fromInclusive,
                         StringSequence.convertFromString(toKey), toInclusive));
@@ -634,14 +632,14 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @Override
     public final NavigableMap<String, ValueType> headMap(final String toKey,
-                                                         final boolean inclusive) {
+            final boolean inclusive) {
         return new NavigableMapWrapper<>(
                 trie.headMap(StringSequence.convertFromString(toKey), inclusive));
     }
 
     @Override
     public final NavigableMap<String, ValueType> tailMap(final String fromKey,
-                                                         final boolean inclusive) {
+            final boolean inclusive) {
         return new NavigableMapWrapper<>(
                 trie.tailMap(StringSequence.convertFromString(fromKey), inclusive));
     }
@@ -682,8 +680,9 @@ public class SortedStringTrieWrapper<ValueType> extends
 
     @NotNull
     @Override
-    public final SortedStringTrie<ValueType> subTrie(@NotNull final String sequence) {
-        return new SortedStringTrieWrapper<>(trie.subTrie(new StringSequence(sequence)));
+    public final SortedStringTrie<ValueType> subTrie(@Nullable final String sequence) {
+        return new SortedStringTrieWrapper<>(
+                trie.subTrie(StringSequence.convertFromString(sequence)));
     }
 
 }

@@ -14,6 +14,7 @@
 package de.mrapp.tries;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.NavigableMap;
 
@@ -40,6 +41,6 @@ public interface SortedTrie<SequenceType extends Sequence, ValueType>
      */
     @NotNull
     @Override
-    SortedTrie<SequenceType, ValueType> subTrie(@NotNull SequenceType sequence);
+    SortedTrie<SequenceType, ValueType> subTrie(@Nullable SequenceType sequence);
 
 }

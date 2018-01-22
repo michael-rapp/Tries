@@ -14,6 +14,7 @@
 package de.mrapp.tries;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.NavigableMap;
 
@@ -28,14 +29,14 @@ import java.util.NavigableMap;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public interface SortedStringTrie<ValueType> extends NavigableMap<String, ValueType>,
-        StringTrie<ValueType> {
+public interface SortedStringTrie<ValueType>
+        extends NavigableMap<String, ValueType>, StringTrie<ValueType> {
 
     /**
      * @see StringTrie#subTrie(String)
      */
     @NotNull
     @Override
-    SortedStringTrie<ValueType> subTrie(@NotNull final String sequence);
+    SortedStringTrie<ValueType> subTrie(@Nullable String sequence);
 
 }
