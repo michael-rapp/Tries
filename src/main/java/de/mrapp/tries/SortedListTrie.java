@@ -112,6 +112,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
         return new SortedListNode<>(comparator);
     }
 
+    @NotNull
     @Override
     protected final SortedStructure<SequenceType, ValueType> createStructure() {
         return new UncompressedSortedStructure<>();
