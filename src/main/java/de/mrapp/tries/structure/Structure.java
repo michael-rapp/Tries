@@ -100,7 +100,7 @@ public interface Structure<SequenceType extends Sequence, ValueType> {
      *                 be null, nor empty
      */
     void onRemoveSuccessor(@NotNull Node<SequenceType, ValueType> node,
-                           @NotNull SequenceType sequence);
+            @NotNull SequenceType sequence);
 
     /**
      * The method, which is invoked on subclasses, when the value of a not was deleted. This
@@ -111,5 +111,22 @@ public interface Structure<SequenceType extends Sequence, ValueType> {
      *             node may not be null
      */
     void onDeletedValue(@NotNull Node<SequenceType, ValueType> node);
+
+    /**
+     * Returns the subtree of the node, which corresponds to a specific sequence (must not
+     * necessarily be a key, which is contained by the trie, but can also be a suffix).
+     *
+     * @param sequence The sequence as an instance of the generic type {@link SequenceType}. The
+     *                 sequence may not be null
+     * @param rootNode The root node of the subtree, which should be returned, as an instance of the
+     *                 type {@link Node}. The root node may not be null
+     * @param node     The node, which corresponds the given sequence as an instance of the type
+     *                 {@link Node}. The node may not be null
+     * @return The root node of the subtree as an instance of the type {@link Node}. The root node
+     * may not be null
+     */
+    @NotNull Node<SequenceType, ValueType> getSubTrie(@NotNull SequenceType sequence,
+            @NotNull Node<SequenceType, ValueType> rootNode,
+            @NotNull Node<SequenceType, ValueType> node);
 
 }

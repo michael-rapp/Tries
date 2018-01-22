@@ -61,13 +61,40 @@ public class UncompressedStructure<SequenceType extends Sequence, ValueType>
 
     @Override
     public final void onRemoveSuccessor(@NotNull final Node<SequenceType, ValueType> node,
-                                        @NotNull final SequenceType sequence) {
+            @NotNull final SequenceType sequence) {
         node.removeSuccessor(sequence);
     }
 
     @Override
     public final void onDeletedValue(@NotNull final Node<SequenceType, ValueType> node) {
 
+    }
+
+    @NotNull
+    @Override
+    public final Node<SequenceType, ValueType> getSubTrie(@NotNull final SequenceType key,
+            @NotNull final Node<SequenceType, ValueType> rootNode,
+            @NotNull final Node<SequenceType, ValueType> node) {
+        Node<SequenceType, ValueType> currentNode = rootNode;
+        SequenceType suffix = key;
+
+        while (suffix != null && !suffix.isEmpty()) {
+            Pair<Node<SequenceType, ValueType>, SequenceType> pair =
+                    onAddSuccessor(currentNode, suffix);
+            Node<SequenceType, ValueType> successor = pair.first;
+            suffix = pair.second;
+            currentNode = successor;
+        }
+
+        for (SequenceType sequence : node) {
+            Node<SequenceType, ValueType> successor = node.getSuccessor(sequence);
+
+            if (successor != null) {
+                currentNode.addSuccessor(sequence, successor.clone());
+            }
+        }
+
+        return rootNode;
     }
 
 }

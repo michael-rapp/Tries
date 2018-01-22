@@ -13,11 +13,10 @@
  */
 package de.mrapp.tries;
 
-import de.mrapp.tries.datastructure.*;
+import de.mrapp.tries.datastructure.AbstractSortedTrie;
 import de.mrapp.tries.datastructure.node.SortedListNode;
 import de.mrapp.tries.structure.SortedStructure;
 import de.mrapp.tries.structure.UncompressedSortedStructure;
-import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +55,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
      *                   the keys should be used
      */
     private SortedListTrie(@Nullable final Node<SequenceType, ValueType> rootNode,
-                           @Nullable final Comparator<? super SequenceType> comparator) {
+            @Nullable final Comparator<? super SequenceType> comparator) {
         super(rootNode, comparator);
     }
 
@@ -103,7 +102,7 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
      *                   trie, as an instance of the type {@link Map}. The map may not be null
      */
     public SortedListTrie(@Nullable final Comparator<? super SequenceType> comparator,
-                          @NotNull final Map<SequenceType, ValueType> map) {
+            @NotNull final Map<SequenceType, ValueType> map) {
         super(comparator, map);
     }
 
@@ -125,27 +124,9 @@ public class SortedListTrie<SequenceType extends Sequence, ValueType>
         Node<SequenceType, ValueType> node = getNode(sequence);
 
         if (node != null) {
-            Node<SequenceType, ValueType> newRootNode = createRootNode();
-            Node<SequenceType, ValueType> currentNode = newRootNode;
-            SequenceType suffix = sequence;
-
-            while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair =
-                        structure.onAddSuccessor(currentNode, suffix);
-                Node<SequenceType, ValueType> successor = pair.first;
-                suffix = pair.second;
-                currentNode = successor;
-            }
-
-            for (SequenceType key : node) {
-                Node<SequenceType, ValueType> successor = node.getSuccessor(key);
-
-                if (successor != null) {
-                    currentNode.addSuccessor(key, successor.clone());
-                }
-            }
-
-            return new SortedListTrie<>(newRootNode, comparator);
+            Node<SequenceType, ValueType> rootNode =
+                    structure.getSubTrie(sequence, createRootNode(), node);
+            return new SortedListTrie<>(rootNode, comparator);
         }
 
         throw new NoSuchElementException();

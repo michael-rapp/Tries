@@ -158,7 +158,7 @@ public class PatriciaStructure<SequenceType extends Sequence, ValueType>
 
     @Override
     public final void onRemoveSuccessor(@NotNull final Node<SequenceType, ValueType> node,
-                                        @NotNull final SequenceType sequence) {
+            @NotNull final SequenceType sequence) {
         node.removeSuccessor(sequence);
         removeIntermediateNode(node);
     }
@@ -166,6 +166,15 @@ public class PatriciaStructure<SequenceType extends Sequence, ValueType>
     @Override
     public final void onDeletedValue(@NotNull final Node<SequenceType, ValueType> node) {
         removeIntermediateNode(node);
+    }
+
+    @NotNull
+    @Override
+    public Node<SequenceType, ValueType> getSubTrie(@NotNull SequenceType sequence,
+            @NotNull Node<SequenceType, ValueType> rootNode,
+            @NotNull Node<SequenceType, ValueType> node) {
+        // TODO
+        return null;
     }
 
     @Nullable

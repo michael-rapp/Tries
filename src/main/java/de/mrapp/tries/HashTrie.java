@@ -17,7 +17,6 @@ import de.mrapp.tries.datastructure.AbstractTrie;
 import de.mrapp.tries.datastructure.node.HashNode;
 import de.mrapp.tries.structure.Structure;
 import de.mrapp.tries.structure.UncompressedStructure;
-import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -86,31 +85,13 @@ public class HashTrie<SequenceType extends Sequence, ValueType>
 
     @NotNull
     @Override
-    public HashTrie<SequenceType, ValueType> subTrie(@NotNull final SequenceType key) {
-        Node<SequenceType, ValueType> node = getNode(key);
+    public HashTrie<SequenceType, ValueType> subTrie(@NotNull final SequenceType sequence) {
+        Node<SequenceType, ValueType> node = getNode(sequence);
 
         if (node != null) {
-            Node<SequenceType, ValueType> newRootNode = createRootNode();
-            Node<SequenceType, ValueType> currentNode = newRootNode;
-            SequenceType suffix = key;
-
-            while (suffix != null && !suffix.isEmpty()) {
-                Pair<Node<SequenceType, ValueType>, SequenceType> pair =
-                        structure.onAddSuccessor(currentNode, suffix);
-                Node<SequenceType, ValueType> successor = pair.first;
-                suffix = pair.second;
-                currentNode = successor;
-            }
-
-            for (SequenceType sequence : node) {
-                Node<SequenceType, ValueType> successor = node.getSuccessor(sequence);
-
-                if (successor != null) {
-                    currentNode.addSuccessor(sequence, successor.clone());
-                }
-            }
-
-            return new HashTrie<>(newRootNode);
+            Node<SequenceType, ValueType> rootNode =
+                    structure.getSubTrie(sequence, createRootNode(), node);
+            return new HashTrie<>(rootNode);
         }
 
         throw new NoSuchElementException();
