@@ -14,14 +14,15 @@
 package de.mrapp.tries;
 
 import de.mrapp.tries.datastructure.AbstractSortedTrie;
-import de.mrapp.tries.structure.PatriciaStructure;
 import de.mrapp.tries.datastructure.node.SortedListNode;
+import de.mrapp.tries.structure.PatriciaStructure;
 import de.mrapp.tries.structure.SortedStructure;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * A sorted trie, which stores the successor of nodes in sorted lists. In contrast to a {@link
@@ -54,7 +55,7 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
      *                   the keys should be used
      */
     protected PatriciaTrie(@Nullable final Node<SequenceType, ValueType> rootNode,
-                           @Nullable final Comparator<? super SequenceType> comparator) {
+            @Nullable final Comparator<? super SequenceType> comparator) {
         super(rootNode, comparator);
     }
 
@@ -97,7 +98,7 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
      *                   trie, as an instance of the type {@link Map}. The map may not be null
      */
     public PatriciaTrie(@Nullable final Comparator<? super SequenceType> comparator,
-                        @NotNull final Map<SequenceType, ValueType> map) {
+            @NotNull final Map<SequenceType, ValueType> map) {
         super(comparator, map);
     }
 
@@ -116,8 +117,15 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     @NotNull
     @Override
     public final SortedTrie<SequenceType, ValueType> subTrie(@NotNull final SequenceType sequence) {
-        // TODO
-        return null;
+        Node<SequenceType, ValueType> node = getNode(sequence);
+
+        if (node != null) {
+            Node<SequenceType, ValueType> rootNode =
+                    structure.getSubTrie(sequence, createRootNode(), node);
+            return new PatriciaTrie<>(rootNode, comparator);
+        }
+
+        throw new NoSuchElementException();
     }
 
     @Override

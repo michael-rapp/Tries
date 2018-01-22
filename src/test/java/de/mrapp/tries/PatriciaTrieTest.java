@@ -29,8 +29,8 @@ import static org.mockito.Mockito.mock;
  *
  * @author Michael Rapp
  */
-public class PatriciaTrieTest extends
-        AbstractPatriciaTrieTest<StringSequence, PatriciaTrie<StringSequence, String>> {
+public class PatriciaTrieTest
+        extends AbstractPatriciaTrieTest<StringSequence, PatriciaTrie<StringSequence, String>> {
 
     @Override
     final PatriciaTrie<StringSequence, String> onCreateTrie() {
@@ -82,6 +82,36 @@ public class PatriciaTrieTest extends
         assertEquals(value1, trie.get(new StringSequence(value1)));
         assertEquals(value2, trie.get(new StringSequence(value2)));
         assertEquals(comparator, trie.comparator());
+    }
+
+    @Test
+    public final void testSubTrieIfSequenceCorrespondsToNode() {
+        testPutWithNullKey();
+        SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("rom"));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(4, subTrie.size());
+        assertEquals("rom", subTrie.get(new StringSequence("rom")));
+        assertEquals("romane", subTrie.get(new StringSequence("romane")));
+        assertEquals("romanus", subTrie.get(new StringSequence("romanus")));
+        assertEquals("romulus", subTrie.get(new StringSequence("romulus")));
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "rom");
+        Node<StringSequence, String> romSuccessor = getSuccessor(subTrie.getRootNode(), "rom");
+        verifySuccessors(romSuccessor, "an", "ulus");
+        Node<StringSequence, String> anSuccessor = getSuccessor(romSuccessor, "an");
+        verifySuccessors(anSuccessor, "e", "us");
+        Node<StringSequence, String> leaf = getSuccessor(anSuccessor, "e");
+        verifyLeaf(leaf, "romane");
+        leaf = getSuccessor(anSuccessor, "us");
+        verifyLeaf(leaf, "romanus");
+        leaf = getSuccessor(romSuccessor, "ulus");
+        verifyLeaf(leaf, "romulus");
+    }
+
+    @Test
+    public void testToString() {
+        testPut3();
+        assertEquals("PatriciaTrie [rom=rom, romane=romane, romanus=romanus]", trie.toString());
     }
 
     // TODO: test subTrie method

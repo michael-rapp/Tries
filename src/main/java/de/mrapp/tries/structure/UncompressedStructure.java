@@ -72,11 +72,11 @@ public class UncompressedStructure<SequenceType extends Sequence, ValueType>
 
     @NotNull
     @Override
-    public final Node<SequenceType, ValueType> getSubTrie(@NotNull final SequenceType key,
+    public final Node<SequenceType, ValueType> getSubTrie(@NotNull final SequenceType sequence,
             @NotNull final Node<SequenceType, ValueType> rootNode,
             @NotNull final Node<SequenceType, ValueType> node) {
         Node<SequenceType, ValueType> currentNode = rootNode;
-        SequenceType suffix = key;
+        SequenceType suffix = sequence;
 
         while (suffix != null && !suffix.isEmpty()) {
             Pair<Node<SequenceType, ValueType>, SequenceType> pair =
@@ -86,11 +86,11 @@ public class UncompressedStructure<SequenceType extends Sequence, ValueType>
             currentNode = successor;
         }
 
-        for (SequenceType sequence : node) {
-            Node<SequenceType, ValueType> successor = node.getSuccessor(sequence);
+        for (SequenceType successorKey : node) {
+            Node<SequenceType, ValueType> successor = node.getSuccessor(successorKey);
 
             if (successor != null) {
-                currentNode.addSuccessor(sequence, successor.clone());
+                currentNode.addSuccessor(successorKey, successor.clone());
             }
         }
 

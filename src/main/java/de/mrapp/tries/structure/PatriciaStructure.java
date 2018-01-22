@@ -14,6 +14,7 @@
 package de.mrapp.tries.structure;
 
 import de.mrapp.tries.Node;
+import de.mrapp.tries.NodeValue;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.Pair;
@@ -170,11 +171,22 @@ public class PatriciaStructure<SequenceType extends Sequence, ValueType>
 
     @NotNull
     @Override
-    public Node<SequenceType, ValueType> getSubTrie(@NotNull SequenceType sequence,
-            @NotNull Node<SequenceType, ValueType> rootNode,
-            @NotNull Node<SequenceType, ValueType> node) {
-        // TODO
-        return null;
+    public final Node<SequenceType, ValueType> getSubTrie(@NotNull final SequenceType sequence,
+            @NotNull final Node<SequenceType, ValueType> rootNode,
+            @NotNull final Node<SequenceType, ValueType> node) {
+        Pair<Node<SequenceType, ValueType>, SequenceType> pair = onAddSuccessor(rootNode, sequence);
+        Node<SequenceType, ValueType> currentNode = pair.first;
+        currentNode.setNodeValue(new NodeValue<>(node.getValue()));
+
+        for (SequenceType successorKey : node) {
+            Node<SequenceType, ValueType> successor = node.getSuccessor(successorKey);
+
+            if (successor != null) {
+                currentNode.addSuccessor(successorKey, successor.clone());
+            }
+        }
+
+        return rootNode;
     }
 
     @Nullable
