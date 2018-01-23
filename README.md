@@ -4,6 +4,42 @@
 
 This is a Java library, which provides different implementations of "Tries" (also referred to as "prefix trees", "digital trees" or "radix trees"). Tries are data structures that can be used to store associative arrays where the keys are sequences (e.g. sequences of characters or digits). Tries allow to efficiently search for sequences (and their associated values) that share a common prefix.
 
+The library currently provides the following features:
+
+* Provides an unsorted trie implementation, which stores successors of nodes in hash maps (`HashTrie`).
+* Provides a sorted trie implementation, which stores successors of nodes in sorted lists (`SortedListTrie`).
+* Provides a Patricia trie implementation (`PatriciaTrie`).
+* For each available trie implementation a dedicated variant for using character sequences as keys is available.
+* The utility class `Tries` allows to create empty, singleton and unmodifiable instances of all available trie implementations.  
+
+## License Agreement
+
+This project is distributed under the Apache License version 2.0. For further information about this license agreement's content please refer to its full version, which is available at http://www.apache.org/licenses/LICENSE-2.0.txt.
+
+## Download
+
+The latest release of this library can be downloaded as a zip archive from the download section of the project's Github page, which is available [here](https://github.com/michael-rapp/Tries/releases). Furthermore, the library's source code is available as a Git repository, which can be cloned using the URL https://github.com/michael-rapp/Tries.git.
+
+Alternatively, the library can be added to your project as a Gradle dependency by adding the following dependency to the `build.gradle` file:
+
+```groovy
+dependencies {
+    compile 'com.github.michael-rapp:tries:1.0.0'
+}
+```
+
+When using Maven, the following dependency can be added to the `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.github.michael-rapp</groupId>
+    <artifactId>tries</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+## Tries
+
 The image below illustrates the structure of an (unsorted) trie. The following key-value pairs (where the keys are character sequences and the values are integers) are stored by the trie:
 
 ```
