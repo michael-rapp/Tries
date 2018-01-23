@@ -579,22 +579,22 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
      * A counter, which is increased whenever the trie is modified. It is used to fast-fail
      * iterators by throwing a {@link ConcurrentModificationException}.
      */
-    long modificationCount;
+    transient long modificationCount;
 
     /**
      * The values of the trie (see {@link #values()}).
      */
-    private Collection<ValueType> values;
+    private transient Collection<ValueType> values;
 
     /**
      * The key set of the trie (see {@link #keySet()}).
      */
-    private Set<SequenceType> keySet;
+    private transient Set<SequenceType> keySet;
 
     /**
      * The entry set of the trie (see {@link #entrySet()}).
      */
-    private Set<Map.Entry<SequenceType, ValueType>> entrySet;
+    private transient Set<Map.Entry<SequenceType, ValueType>> entrySet;
 
     /**
      * The method, which is invoked on subclasses in order to create the trie's root node.
