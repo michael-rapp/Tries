@@ -1,0 +1,73 @@
+# Tries - README
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=X75YSLEJV3DWE)
+
+This is a Java library, which provides different implementations of "Tries" (also referred to as "prefix trees", "digital trees" or "radix trees"). Tries are data structures that can be used to store associative arrays where the keys are sequences (e.g. sequences of characters or digits). Tries allow to efficiently search for sequences (and their associated values) that share a common prefix.
+
+The image below illustrates the structure of an (unsorted) trie. The following key-value pairs (where the keys are character sequences and the values are integers) are stored by the trie:
+
+```
+A -> 21
+to -> 7
+tea -> 13
+ted -> 8
+ten -> 9
+in -> 14
+inn -> 16
+```  
+
+![](/doc/images/trie_example.png)
+
+As the given example illustrates, all leaf nodes of a trie are associated with values (highlighted in blue). In addition, some of the inner nodes may also correspond to values. The predecessors of a node specify the sequence it corresponds to. E.g. the node that corresponds to the key "tea" has the predecessors t -> e -> a. The root node correspond to an empty sequence. Because nodes with a common prefix share the same predecessors, tries provide some kind of compression.
+
+Most importantly, this library provides two interfaces - `Trie` and `SortedTrie`. The first of both interfaces extends the interface `java.util.Map`, whereas the latter extends the interface `java.util.NavigableMap`. Similar to the map implementations the Java SDK provides, key-value pairs can be added to a trie using the `put`-method. For retrieving values by their key, the `get`-method can be used. Whereas the order of keys is not taken into account by unsorted tries, when iterating a sorted trie, the order of the keys preserved. The following table provides an overview of the different implementations of the interfaces `Trie` and `SortedTrie`:
+
+| Interface                              | Implementations                           | Description                                                                                                                                                            |
+|----------------------------------------|-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Trie<SequenceType, ValueType>`        | `HashTrie<SequenceType, ValueType>`       | An unsorted trie, which stores the successors of nodes in hash maps. This enables to lookup keys with linear complexity.                                               |
+|                                        | `HashStringTrie<ValueType>`               | The pendant of the class `HashTrie` for using character sequences, i.e. Strings, as keys.                                                                                |
+| `SortedTrie<SequenceType, ValueType>`  | `SortedListTrie<SequenceType, ValueType>` | A sorted trie, which stores the successors of nodes in sorted lists. As binary searches are used to search for successors, looking up keys comes at logarithmic costs. |
+|                                        | `SortedListStringTrie<ValueType>`         | The pendant of the class `SortedListTrie` for using character sequences, i.e. Strings, as keys.                                                                          |
+
+Whereas the values of a trie can be of an arbitrary type (referred to as the generic type `ValueType`), the type of the keys must implement the interface `Sequence`. The tries for storing character sequences internally use the class `StringSequence`, which implements that interface. The following example illustrates how key-value pairs can be added and looked up using a generic `HashTrie`.  
+
+```java
+Trie<StringSequence, Integer> trie = new HashTrie<>();
+trie.put(new StringSequence("A"), 21);
+trie.put(new StringSequence("to"), 7);
+// ...
+int value = trie.get(new StringSequence("to"));
+```
+
+Using a `StringTrie` instead of a `Trie` simplifies the handling of keys:
+
+```java
+StringTrie<Integer> trie = new HashStringTrie<>();
+trie.put("A", 21);
+trie.put("to", 7);
+// ...
+int value = trie.get("to");
+```
+
+The nodes of a trie are implemented as classes implementing the interface `Node`. If necessary, the root node of a trie can be retrieved by using the `getRootNode`-method. Although the returned node may not be modified, this enables to traverse the tree structure of the trie:
+
+```java
+Node<StringSequence, Integer> rootNode = trie.getRootNode();
+
+if (rootNode.hasSuccessors()) {
+    for (StringSequence successorKey : rootNote)
+        Node<StringSequence, Integer> successor = rootNode.getSuccessor(successorKey);
+        // ...
+    }
+}
+```
+
+The interfaces [`Map`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html), respectively [`NavigableMap`](https://docs.oracle.com/javase/8/docs/api/java/util/NavigableMap.html), which are extends by the interfaces `Trie` and `SortedTrie` provide various methods for modifying a trie or retrieving its key or values. For a more detailed documentation of these interfaces, please refer to their API documentation. In addition to the methods, which are provides by these interfaces, each trie provides a `subTrie`-method. It enables to create a new trie from an existing one, which will only contain a subset of the original key-value pairs. In the example below, the resulting sub trie only contains keys that start with the element "t".
+
+```java
+Trie<StringSequence, Integer> subTrie = trie.subTrie(new StringSequence("t"));
+```
+
+## Patricia Tries
+
+TODO
