@@ -22,14 +22,16 @@ As the given example illustrates, all leaf nodes of a trie are associated with v
 
 Most importantly, this library provides two interfaces - `Trie` and `SortedTrie`. The first of both interfaces extends the interface `java.util.Map`, whereas the latter extends the interface `java.util.NavigableMap`. Similar to the map implementations the Java SDK provides, key-value pairs can be added to a trie using the `put`-method. For retrieving values by their key, the `get`-method can be used. Whereas the order of keys is not taken into account by unsorted tries, when iterating a sorted trie, the order of the keys preserved. The following table provides an overview of the different implementations of the interfaces `Trie` and `SortedTrie`:
 
-| Interface                              | Implementations                           | Description                                                                                                                                                            |
-|----------------------------------------|-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Trie<SequenceType, ValueType>`        | `HashTrie<SequenceType, ValueType>`       | An unsorted trie, which stores the successors of nodes in hash maps. This enables to lookup keys with linear complexity.                                               |
-|                                        | `HashStringTrie<ValueType>`               | The pendant of the class `HashTrie` for using character sequences, i.e. Strings, as keys.                                                                                |
-| `SortedTrie<SequenceType, ValueType>`  | `SortedListTrie<SequenceType, ValueType>` | A sorted trie, which stores the successors of nodes in sorted lists. As binary searches are used to search for successors, looking up keys comes at logarithmic costs. |
-|                                        | `SortedListStringTrie<ValueType>`         | The pendant of the class `SortedListTrie` for using character sequences, i.e. Strings, as keys.                                                                          |
+| Interface                              | Implementations                                 | Description                                                                                                                                                                                |
+|----------------------------------------|-------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Trie<SequenceType, ValueType>`        | `HashTrie<SequenceType, ValueType>`             | An unsorted trie, which stores the successors of nodes in hash maps. This enables to lookup keys with linear complexity.                                                                   |
+|                                        | `HashStringTrie<ValueType>`                     | The pendant of the class `HashTrie` for using character sequences, i.e. Strings, as keys.                                                                                                  |
+| `SortedTrie<SequenceType, ValueType>`  | `SortedListTrie<SequenceType, ValueType>`       | A sorted trie, which stores the successors of nodes in sorted lists. As binary searches are used to search for successors, looking up keys comes at logarithmic costs.                     |
+|                                        | `SortedListStringTrie<ValueType>`               | The pendant of the class `SortedListTrie` for using character sequences, i.e. Strings, as keys.                                                                                            |
+|                                        | `PatriciaTrie<SequenceType, ValueType>`         | A sorted trie similar to a `SortedListTrie`, where edges between nodes do not always correspond to a single element. Subsequent nodes with a single successor are merged to a single node. |
+|                                        | `PatriciaStringTrie<SequenceType, ValueType>`   | The pendant of the class `PatriciaTrie` for using character sequences, i.e. Strings, as keys.                                                                                              |
 
-Whereas the values of a trie can be of an arbitrary type (referred to as the generic type `ValueType`), the type of the keys must implement the interface `Sequence`. The tries for storing character sequences internally use the class `StringSequence`, which implements that interface. The following example illustrates how key-value pairs can be added and looked up using a generic `HashTrie`.  
+Whereas the values of a trie can be of an arbitrary type (referred to as the generic type `ValueType`), the type of the keys (referred to as `SequenceType`) must implement the interface `Sequence`. The tries for storing character sequences internally use the class `StringSequence`, which implements that interface. The following example illustrates how key-value pairs can be added and looked up using a generic `HashTrie`.  
 
 ```java
 Trie<StringSequence, Integer> trie = new HashTrie<>();
@@ -70,4 +72,46 @@ Trie<StringSequence, Integer> subTrie = trie.subTrie(new StringSequence("t"));
 
 ## Patricia Tries
 
-TODO
+Patricia tries use a structure, which is optimized in terms of the required space. Unlike a `HashTrie` or a `SortedListTrie`, the edges between a `PatriciaTrie`'s nodes do not always correspond to a single element. Instead, subsequent nodes that only have a single successor are merged into a single node to reduce space complexity. As this requires to reorganize the tree structure when inserting or removing elements, patricia tries should be preferred over a `SortedListTrie` if elements are only added or removed sporadically and optimizing memory consumption is important. 
+
+The image below illustrates the structure of a Patricia trie, which contains the following key value-pairs. 
+
+```
+roman -> 7
+romane -> 13
+romanus -> 8
+romulus -> 9
+ruber -> 17
+rubicon -> 14
+```  
+
+![](/doc/images/patricia_trie_example.png)
+
+## Utility methods
+
+Similar to the Java SDK's class `java.util.Collections`, the class `Tries` provides various static utility methods regarding tries. By using the following methods, empty and unmodifiable trie can be created:
+
+```java
+Trie<SequenceType, ValueType> trie = Tries.emptyTrie();
+StringTrie<ValueType> stringTrie = Tries.emptyStringTrie();
+SortedTrie<SequenceType, ValueType> sortedTrie = Tries.emptySortedTrie();
+SortedStringTrie<ValueType> sortedStringTrie = Tries.emptySortedStringTrie();
+```
+
+Furthermore, the class `Tries` provides the following methods to create unmodifiable tries that consist of a single entry:
+
+```java
+Trie<SequenceType, ValueType> trie = Tries.singletonTrie(key, value);
+StringTrie<ValueType> stringTrie = Tries.singletonStringTrie(key, value);
+SortedTrie<SequenceType, ValueType> sortedTrie = Tries.singletonSortedTrie(key, value);
+SortedStringTrie<ValueType> sortedStringTrie = Tries.singletonSortedStringTrie(key, value);
+``` 
+
+In order to create an unmodifiable instance of an existing trie, the following utility methods can be used. This enables to return a trie from an API, which only provides read-only access to some data.
+
+```java
+Trie<SequenceType, ValueType> unmodifiableTrie = Trie.unmodifiableTrie(trie);
+StringTrie<ValueType> unmodifiableStringTrie = Trie.unmodifiableStringTrie(stringTrie);
+SortedTrie<SequenceType, ValueType> unmodifiableSortedTrie = Trie.unmodifiableSortedTrie(sortedTrie);
+SortedStringTrie<ValueType> unmodifiableSortedStringTrie = Trie.unmodifiableSortedStringTrie(sortedStringTrie);
+```
