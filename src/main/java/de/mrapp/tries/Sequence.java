@@ -24,10 +24,10 @@ import java.io.Serializable;
  * <p>
  * Implementations of this class must be immutable, i.e. the {@link #concat(Sequence)} and {@link
  * #subsequence(int, int)} methods must return a new object instead of modifying the original one.
- * Furthermore, the {@link #hashCode()} and {@link #equals(Object)} methods must be overridden by
- * implementing classes. If an implementation of this interface should be used together with a
- * {@link SortedTrie}, without requiring to pass a {@link java.util.Comparator} to the trie, the
- * sequence must also implement the interface {@link Comparable}.
+ * Furthermore, the {@link Object#hashCode()} and {@link Object#equals(Object)} methods must be
+ * overridden by implementing classes. If an implementation of this interface should be used
+ * together with a {@link SortedTrie}, without requiring to pass a {@link java.util.Comparator} to
+ * the trie, the sequence must also implement the interface {@link Comparable}.
  *
  * @author Michael Rapp
  * @since 1.0.0

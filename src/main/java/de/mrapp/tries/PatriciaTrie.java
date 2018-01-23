@@ -151,8 +151,8 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
      * Creates a new Patrica trie, which contains all key-value pairs that are contained by a map.
      *
      * @param comparator The comparator, which should be used to compare keys with each other, as an
-     *                   instance of< the type {@link Comparator} or null, if the natural ordering
-     *                   of the keys should be used
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
      * @param map        The map, which contains the key-value pairs that should be added to the
      *                   trie, as an instance of the type {@link Map}. The map may not be null
      */
