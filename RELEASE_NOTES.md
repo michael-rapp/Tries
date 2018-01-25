@@ -1,6 +1,6 @@
 # Tries - RELEASE NOTES
 
-## Version 1.0.0 (Dec. 22th 2017)
+## Version 1.0.0 (Jan. 25th 2018)
 
 The first stable release of the library, which provides the following features:
 
