@@ -17,6 +17,8 @@ import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.Trie;
+import de.mrapp.tries.datastructure.node.HashNode;
+import de.mrapp.tries.datastructure.node.UnmodifiableNode;
 import de.mrapp.tries.util.SequenceUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

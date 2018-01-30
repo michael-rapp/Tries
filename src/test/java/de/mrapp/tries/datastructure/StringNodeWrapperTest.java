@@ -15,6 +15,8 @@ package de.mrapp.tries.datastructure;
 
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
+import de.mrapp.tries.datastructure.node.HashNode;
+import de.mrapp.tries.datastructure.node.UnmodifiableNode;
 import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
 import org.junit.runner.RunWith;

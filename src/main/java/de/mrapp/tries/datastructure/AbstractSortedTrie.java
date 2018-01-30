@@ -16,6 +16,8 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.Node;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.SortedTrie;
+import de.mrapp.tries.structure.SortedStructure;
+import de.mrapp.tries.structure.Structure;
 import de.mrapp.tries.util.EntryUtil;
 import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.Pair;
@@ -149,7 +151,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public NavigableSet<K> subSet(final K fromElement, final boolean fromInclusive,
-                                      final K toElement, final boolean toInclusive) {
+                final K toElement, final boolean toInclusive) {
             return new NavigableKeySet<>(
                     backingMap.subMap(fromElement, fromInclusive, toElement, toInclusive));
         }
@@ -341,8 +343,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
              *              restricted
              */
             AscendingSubMapEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                                         @Nullable final Map.Entry<K, V> first,
-                                         @Nullable final Map.Entry<K, V> fence) {
+                    @Nullable final Map.Entry<K, V> first, @Nullable final Map.Entry<K, V> fence) {
                 super(trie, first, fence);
             }
 
@@ -383,8 +384,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
              *              restricted
              */
             DescendingSubMapEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                                          @Nullable final Map.Entry<K, V> first,
-                                          @Nullable final Map.Entry<K, V> fence) {
+                    @Nullable final Map.Entry<K, V> first, @Nullable final Map.Entry<K, V> fence) {
                 super(trie, first, fence);
             }
 
@@ -436,8 +436,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
              *              restricted
              */
             AbstractSubMapEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                                        @Nullable final Map.Entry<K, V> first,
-                                        @Nullable final Map.Entry<K, V> fence) {
+                    @Nullable final Map.Entry<K, V> first, @Nullable final Map.Entry<K, V> fence) {
                 super(trie, first);
                 this.fenceKey = fence != null ? fence.getKey() : UNRESTRICTED_KEY;
             }
@@ -464,11 +463,37 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          */
         private final Comparator<? super K> comparator;
 
-        final K fromKey, toKey;
+        /**
+         * The first key of the sub map.
+         */
+        final K fromKey;
 
-        final boolean fromStart, toEnd;
+        /**
+         * The last key of the sub map.
+         */
+        final K toKey;
 
-        final boolean fromInclusive, toInclusive;
+        /**
+         * True, if the sub map starts at the first key of the backing trie, false otherwise. If
+         * true, the {@link #fromKey} is ignored.
+         */
+        final boolean fromStart;
+
+        /**
+         * True, if the sub map ends at the last key of the backing trie, false otherwise. If true,
+         * the {@link #toKey} is ignored.
+         */
+        final boolean toEnd;
+
+        /**
+         * True, if the {@link #firstKey} is included in the sub map, false otherwise.
+         */
+        final boolean fromInclusive;
+
+        /**
+         * True, if the {@link #toKey} is included in the sub map, false otherwise.
+         */
+        final boolean toInclusive;
 
         /**
          * Returns, whether a key is too low to be included in the sub map.
@@ -759,8 +784,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *                      otherwise
          */
         AbstractSubMap(@NotNull final AbstractSortedTrie<K, V> trie, final boolean fromStart,
-                       @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
-                       @Nullable final K toKey, final boolean toInclusive) {
+                @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
+                @Nullable final K toKey, final boolean toInclusive) {
             ensureNotNull(trie, "The trie may not be null");
             this.trie = trie;
             this.comparator = SequenceUtil.comparator(trie.comparator);
@@ -978,8 +1003,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *                      otherwise
          */
         AscendingSubMap(@NotNull final AbstractSortedTrie<K, V> trie, final boolean fromStart,
-                        @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
-                        @Nullable final K toKey, final boolean toInclusive) {
+                @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
+                @Nullable final K toKey, final boolean toInclusive) {
             super(trie, fromStart, fromKey, fromInclusive, toEnd, toKey, toInclusive);
         }
 
@@ -990,7 +1015,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public NavigableMap<K, V> subMap(final K fromKey, final boolean fromInclusive,
-                                         final K toKey, final boolean toInclusive) {
+                final K toKey, final boolean toInclusive) {
             ensureTrue(isInRange(fromKey, fromInclusive), "fromKey out of range");
             ensureTrue(isInRange(toKey, toInclusive), "toKey out of range");
             return new AscendingSubMap<>(trie, false, fromKey, fromInclusive, false, toKey,
@@ -1130,8 +1155,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *                      otherwise
          */
         DescendingSubMap(@NotNull final AbstractSortedTrie<K, V> trie, final boolean fromStart,
-                         @Nullable final K fromKey, final boolean fromInclusive,
-                         final boolean toEnd, @Nullable final K toKey, final boolean toInclusive) {
+                @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
+                @Nullable final K toKey, final boolean toInclusive) {
             super(trie, fromStart, fromKey, fromInclusive, toEnd, toKey, toInclusive);
             this.reverseComparator =
                     trie.comparator() != null ? Collections.reverseOrder(trie.comparator()) : null;
@@ -1144,7 +1169,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public NavigableMap<K, V> subMap(final K fromKey, final boolean fromInclusive,
-                                         final K toKey, final boolean toInclusive) {
+                final K toKey, final boolean toInclusive) {
             ensureTrue(isInRange(fromKey, fromInclusive), "fromKey out of range");
             ensureTrue(isInRange(toKey, toInclusive), "fromKey out of range");
             return new DescendingSubMap<>(trie, false, toKey, toInclusive, false, fromKey,
@@ -1248,7 +1273,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *              or null, if the trie is empty
          */
         AscendingKeyIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                             @Nullable final Map.Entry<K, V> first) {
+                @Nullable final Map.Entry<K, V> first) {
             super(trie, first);
         }
 
@@ -1284,7 +1309,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *              or null, if the trie is empty
          */
         DescendingKeyIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                              @Nullable final Map.Entry<K, V> first) {
+                @Nullable final Map.Entry<K, V> first) {
             super(trie, first);
         }
 
@@ -1332,7 +1357,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *              or null, if the trie is empty
          */
         AbstractEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                              @Nullable final Map.Entry<K, V> first) {
+                @Nullable final Map.Entry<K, V> first) {
             super(trie);
             this.next = first;
             this.lastReturned = null;
@@ -1380,7 +1405,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *                 {@link Iterator}. The iterator may not be null
          */
         SpliteratorWrapper(@NotNull final AbstractSortedTrie<K, V> trie,
-                           @NotNull final Iterator<K> iterator) {
+                @NotNull final Iterator<K> iterator) {
             super(trie);
             ensureNotNull(iterator, "The iterator may not be null");
             this.iterator = iterator;
@@ -1851,7 +1876,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      *                   the keys should be used
      */
     protected AbstractSortedTrie(@Nullable final Node<SequenceType, ValueType> rootNode,
-                                 @Nullable final Comparator<? super SequenceType> comparator) {
+            @Nullable final Comparator<? super SequenceType> comparator) {
         super(rootNode);
         this.comparator = comparator;
     }
@@ -1877,7 +1902,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      *                   trie, as an instance of the type {@link Map}. The map may not be null
      */
     public AbstractSortedTrie(@Nullable final Comparator<? super SequenceType> comparator,
-                              @NotNull final Map<SequenceType, ValueType> map) {
+            @NotNull final Map<SequenceType, ValueType> map) {
         this(comparator);
         putAll(map);
     }
@@ -2025,16 +2050,14 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @NotNull
     @Override
     public final SortedMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
-                                                           final SequenceType toKey) {
+            final SequenceType toKey) {
         return subMap(fromKey, true, toKey, false);
     }
 
     @NotNull
     @Override
     public final NavigableMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
-                                                              final boolean fromInclusive,
-                                                              final SequenceType toKey,
-                                                              final boolean toInclusive) {
+            final boolean fromInclusive, final SequenceType toKey, final boolean toInclusive) {
         return new AscendingSubMap<>(this, false, fromKey, fromInclusive, false, toKey,
                 toInclusive);
     }
@@ -2048,7 +2071,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @NotNull
     @Override
     public final NavigableMap<SequenceType, ValueType> headMap(final SequenceType toKey,
-                                                               final boolean inclusive) {
+            final boolean inclusive) {
         return new AscendingSubMap<>(this, true, null, true, false, toKey, inclusive);
     }
 
@@ -2060,7 +2083,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final NavigableMap<SequenceType, ValueType> tailMap(final SequenceType fromKey,
-                                                               final boolean inclusive) {
+            final boolean inclusive) {
         return new AscendingSubMap<>(this, false, fromKey, inclusive, true, null, true);
     }
 

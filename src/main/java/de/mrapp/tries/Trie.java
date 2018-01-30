@@ -49,24 +49,21 @@ public interface Trie<SequenceType extends Sequence, ValueType>
      * @return The root node of the trie as an instance of the type {@link Node} or null, if the
      * trie is empty
      */
-    @Nullable
-    Node<SequenceType, ValueType> getRootNode();
+    @Nullable Node<SequenceType, ValueType> getRootNode();
 
     /**
      * Returns the subtree of the node, which corresponds to a specific sequence (must not
      * necessarily be a key, which is contained by the trie, but can also be a suffix). If the given
-     * sequence is not contained by the trie, a {@link java.util.NoSuchElementException} will be
-     * thrown.
+     * sequence corresponds to a key, the key is not included in the subtree. If the given sequence
+     * is not contained by the trie, a {@link java.util.NoSuchElementException} will be thrown.
      * <p>
      * The nodes of the returned trie are deep copies of those of the original trie. Therefore the
      * returned trie is fully functional and can be modified without affecting the original trie.
      *
-     * @param sequence The sequence as an instance of the generic type {@link SequenceType}. The
-     *                 sequence may not be null
+     * @param sequence The sequence as an instance of the generic type {@link SequenceType}
      * @return The subtree of the node, which corresponds to the given sequence, as an instance of
      * the type {@link Trie}. The subtree may not be null
      */
-    @NotNull
-    Trie<SequenceType, ValueType> subTrie(@NotNull SequenceType sequence);
+    @NotNull Trie<SequenceType, ValueType> subTrie(@Nullable SequenceType sequence);
 
 }

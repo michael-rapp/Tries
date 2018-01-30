@@ -17,7 +17,9 @@ import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.Trie;
-import de.mrapp.tries.datastructure.Structure.Operation;
+import de.mrapp.tries.datastructure.node.UnmodifiableNode;
+import de.mrapp.tries.structure.Structure;
+import de.mrapp.tries.structure.Structure.Operation;
 import de.mrapp.tries.util.EntryUtil;
 import de.mrapp.tries.util.SequenceUtil;
 import de.mrapp.util.datastructure.Pair;
@@ -571,28 +573,28 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
     /**
      * The root node of the trie.
      */
-    Node<SequenceType, ValueType> rootNode;
+    protected Node<SequenceType, ValueType> rootNode;
 
     /**
      * A counter, which is increased whenever the trie is modified. It is used to fast-fail
      * iterators by throwing a {@link ConcurrentModificationException}.
      */
-    long modificationCount;
+    transient long modificationCount;
 
     /**
      * The values of the trie (see {@link #values()}).
      */
-    private Collection<ValueType> values;
+    private transient Collection<ValueType> values;
 
     /**
      * The key set of the trie (see {@link #keySet()}).
      */
-    private Set<SequenceType> keySet;
+    private transient Set<SequenceType> keySet;
 
     /**
      * The entry set of the trie (see {@link #entrySet()}).
      */
-    private Set<Map.Entry<SequenceType, ValueType>> entrySet;
+    private transient Set<Map.Entry<SequenceType, ValueType>> entrySet;
 
     /**
      * The method, which is invoked on subclasses in order to create the trie's root node.

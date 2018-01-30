@@ -39,13 +39,11 @@ public interface StringTrie<ValueType> extends Map<String, ValueType>, Serializa
     /**
      * @see Trie#getRootNode()
      */
-    @Nullable
-    Node<String, ValueType> getRootNode();
+    @Nullable Node<String, ValueType> getRootNode();
 
     /**
      * @see Trie#subTrie(Sequence)
      */
-    @NotNull
-    StringTrie<ValueType> subTrie(@NotNull String sequence);
+    @NotNull StringTrie<ValueType> subTrie(@Nullable String sequence);
 
 }

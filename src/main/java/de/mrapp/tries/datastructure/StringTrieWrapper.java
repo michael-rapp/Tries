@@ -17,6 +17,7 @@ import de.mrapp.tries.StringTrie;
 import de.mrapp.tries.Trie;
 import de.mrapp.tries.sequence.StringSequence;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A wrapper, which implements the interface {@link StringTrie} by delegating all method calls to an
@@ -26,9 +27,9 @@ import org.jetbrains.annotations.NotNull;
  * @author Michael Rapp
  * @since 1.0.0
  */
-public class StringTrieWrapper<ValueType> extends
-        AbstractStringTrieWrapper<Trie<StringSequence, ValueType>, ValueType> implements
-        StringTrie<ValueType> {
+public class StringTrieWrapper<ValueType>
+        extends AbstractStringTrieWrapper<Trie<StringSequence, ValueType>, ValueType>
+        implements StringTrie<ValueType> {
 
     /**
      * The constant serial version UID.
@@ -47,8 +48,8 @@ public class StringTrieWrapper<ValueType> extends
 
     @NotNull
     @Override
-    public final StringTrieWrapper<ValueType> subTrie(@NotNull final String sequence) {
-        return new StringTrieWrapper<>(trie.subTrie(new StringSequence(sequence)));
+    public final StringTrieWrapper<ValueType> subTrie(@Nullable final String sequence) {
+        return new StringTrieWrapper<>(trie.subTrie(StringSequence.convertFromString(sequence)));
     }
 
 }
