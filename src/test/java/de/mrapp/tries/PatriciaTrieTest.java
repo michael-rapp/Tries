@@ -29,8 +29,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Michael Rapp
  */
-public class PatriciaTrieTest
-        extends AbstractPatriciaTrieTest<StringSequence, PatriciaTrie<StringSequence, String>> {
+public class PatriciaTrieTest extends AbstractPatriciaTrieTest<StringSequence, PatriciaTrie<StringSequence, String>> {
 
     @Override
     final PatriciaTrie<StringSequence, String> onCreateTrie() {
@@ -43,8 +42,7 @@ public class PatriciaTrieTest
     }
 
     @Override
-    final Node<StringSequence, String> getRootNode(
-            @NotNull final PatriciaTrie<StringSequence, String> trie) {
+    final Node<StringSequence, String> getRootNode(@NotNull final PatriciaTrie<StringSequence, String> trie) {
         return trie.getRootNode();
     }
 
@@ -268,6 +266,22 @@ public class PatriciaTrieTest
         verifyLeaf(usSuccessor, "romanus");
         Node<StringSequence, String> ulusSuccessor = getSuccessor(romSuccessor, "ulus");
         verifyLeaf(ulusSuccessor, "romulus");
+    }
+
+    @Test
+    public final void testSubTrie4() {
+        trie.put(new StringSequence("bacon"), "bacon");
+        trie.put(new StringSequence("bagels"), "bagels");
+        trie.put(new StringSequence("baguette"), "baguette");
+        trie.put(new StringSequence("bananas"), "bananas");
+        SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("bac"));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(1, subTrie.size());
+        assertEquals("bacon", subTrie.get(new StringSequence("bacon")));
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "bacon");
+        Node<StringSequence, String> baconSuccessor = getSuccessor(subTrie.getRootNode(), "bacon");
+        verifyLeaf(baconSuccessor, "bacon");
     }
 
     @Test

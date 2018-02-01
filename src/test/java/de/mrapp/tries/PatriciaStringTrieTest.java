@@ -278,6 +278,22 @@ public class PatriciaStringTrieTest extends AbstractPatriciaTrieTest<String, Pat
     }
 
     @Test
+    public final void testSubTrie4() {
+        trie.put("bacon", "bacon");
+        trie.put("bagels", "bagels");
+        trie.put("baguette", "baguette");
+        trie.put("bananas", "bananas");
+        SortedStringTrie<String> subTrie = trie.subTrie("bac");
+        assertFalse(subTrie.isEmpty());
+        assertEquals(1, subTrie.size());
+        assertEquals("bacon", subTrie.get("bacon"));
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "bacon");
+        Node<String, String> baconSuccessor = getSuccessor(subTrie.getRootNode(), "bacon");
+        verifyLeaf(baconSuccessor, "bacon");
+    }
+
+    @Test
     public final void testSubTrieIsEmpty() {
         testPutWithNullKey();
         SortedStringTrie<String> subTrie = trie.subTrie("rubicundus");
