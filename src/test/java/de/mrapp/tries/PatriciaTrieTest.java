@@ -248,6 +248,29 @@ public class PatriciaTrieTest
     }
 
     @Test
+    public final void testSubTrie3() {
+        testPutWithNullKey();
+        SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("ro"));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(3, subTrie.size());
+        assertEquals("romane", subTrie.get(new StringSequence("romane")));
+        assertEquals("romanus", subTrie.get(new StringSequence("romanus")));
+        assertEquals("romulus", subTrie.get(new StringSequence("romulus")));
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "rom");
+        Node<StringSequence, String> romSuccessor = getSuccessor(subTrie.getRootNode(), "rom");
+        verifySuccessors(romSuccessor, "an", "ulus");
+        Node<StringSequence, String> anSuccessor = getSuccessor(romSuccessor, "an");
+        verifySuccessors(anSuccessor, "e", "us");
+        Node<StringSequence, String> eSuccessor = getSuccessor(anSuccessor, "e");
+        verifyLeaf(eSuccessor, "romane");
+        Node<StringSequence, String> usSuccessor = getSuccessor(anSuccessor, "us");
+        verifyLeaf(usSuccessor, "romanus");
+        Node<StringSequence, String> ulusSuccessor = getSuccessor(romSuccessor, "ulus");
+        verifyLeaf(ulusSuccessor, "romulus");
+    }
+
+    @Test
     public final void testSubTrieIsEmpty() {
         testPutWithNullKey();
         SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("rubicundus"));
