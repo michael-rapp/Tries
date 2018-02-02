@@ -1,6 +1,6 @@
 # Tries - RELEASE NOTES
 
-## Version 1.0.1 (Feb. 1st 2018)
+## Version 1.0.1 (Feb. 2nd 2018)
 
 A bugfix release, which fixes the following issues:
 
