@@ -13,6 +13,7 @@
  */
 package de.mrapp.tries;
 
+import de.mrapp.tries.sequence.StringSequence;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -30,8 +31,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Michael Rapp
  */
-public class PatriciaStringTrieTest
-        extends AbstractPatriciaTrieTest<String, PatriciaStringTrie<String>> {
+public class PatriciaStringTrieTest extends AbstractPatriciaTrieTest<String, PatriciaStringTrie<String>> {
 
     @Override
     final PatriciaStringTrie<String> onCreateTrie() {
@@ -252,6 +252,45 @@ public class PatriciaStringTrieTest
         verifyLeaf(leaf, "romane");
         leaf = getSuccessor(romanSuccessor, "us");
         verifyLeaf(leaf, "romanus");
+    }
+
+    @Test
+    public final void testSubTrie3() {
+        testPutWithNullKey();
+        SortedStringTrie<String> subTrie = trie.subTrie("ro");
+        assertFalse(subTrie.isEmpty());
+        assertEquals(3, subTrie.size());
+        assertEquals("romane", subTrie.get("romane"));
+        assertEquals("romanus", subTrie.get("romanus"));
+        assertEquals("romulus", subTrie.get("romulus"));
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "rom");
+        Node<String, String> romSuccessor = getSuccessor(subTrie.getRootNode(), "rom");
+        verifySuccessors(romSuccessor, "an", "ulus");
+        Node<String, String> anSuccessor = getSuccessor(romSuccessor, "an");
+        verifySuccessors(anSuccessor, "e", "us");
+        Node<String, String> eSuccessor = getSuccessor(anSuccessor, "e");
+        verifyLeaf(eSuccessor, "romane");
+        Node<String, String> usSuccessor = getSuccessor(anSuccessor, "us");
+        verifyLeaf(usSuccessor, "romanus");
+        Node<String, String> ulusSuccessor = getSuccessor(romSuccessor, "ulus");
+        verifyLeaf(ulusSuccessor, "romulus");
+    }
+
+    @Test
+    public final void testSubTrie4() {
+        trie.put("bacon", "bacon");
+        trie.put("bagels", "bagels");
+        trie.put("baguette", "baguette");
+        trie.put("bananas", "bananas");
+        SortedStringTrie<String> subTrie = trie.subTrie("bac");
+        assertFalse(subTrie.isEmpty());
+        assertEquals(1, subTrie.size());
+        assertEquals("bacon", subTrie.get("bacon"));
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "bacon");
+        Node<String, String> baconSuccessor = getSuccessor(subTrie.getRootNode(), "bacon");
+        verifyLeaf(baconSuccessor, "bacon");
     }
 
     @Test

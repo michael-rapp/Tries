@@ -74,7 +74,7 @@ public class UncompressedStructure<SequenceType extends Sequence, ValueType>
     @Override
     public final Node<SequenceType, ValueType> getSubTrie(@Nullable final SequenceType sequence,
             @NotNull final Node<SequenceType, ValueType> rootNode,
-            @NotNull final Node<SequenceType, ValueType> node) {
+            @NotNull final Node<SequenceType, ValueType> node, final boolean includeNodeValue) {
         Node<SequenceType, ValueType> currentNode = rootNode;
         SequenceType suffix = sequence;
 
