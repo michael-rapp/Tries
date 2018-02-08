@@ -306,13 +306,13 @@ public class PatriciaTrieTest extends AbstractPatriciaTrieTest<StringSequence, P
     }
 
     @Test(expected = NoSuchElementException.class)
-    public final void testSubTrieIfSequenceINotContained1() {
+    public final void testSubTrieIfSequenceIsNotContained1() {
         testPutWithNullKey();
         trie.subTrie(new StringSequence("romax"));
     }
 
     @Test(expected = NoSuchElementException.class)
-    public final void testSubTrieIfSequenceINotContained2() {
+    public final void testSubTrieIfSequenceIsNotContained2() {
         trie.put(new StringSequence("icetea"), "icetea");
         trie.put(new StringSequence("ice cream"), "ice cream");
         trie.subTrie(new StringSequence("ix"));

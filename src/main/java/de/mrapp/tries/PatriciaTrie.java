@@ -102,10 +102,11 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
                     SequenceType successorKey = currentNode.getSuccessorKey(index);
                     currentNode = currentNode.getSuccessor(index);
                     matchedPrefix = SequenceUtil.concat(matchedPrefix, successorKey);
+                    return Pair.create(currentNode, matchedPrefix);
                 }
+            } else {
+                return Pair.create(currentNode, matchedPrefix);
             }
-
-            return Pair.create(currentNode, matchedPrefix);
         }
 
         return null;
