@@ -1,5 +1,12 @@
 # Tries - RELEASE NOTES
 
+## Version 1.0.2 (Feb. 8th 2018)
+
+A bugfix release, which fixes the following issues:
+
+- Fixed another issue, which may cause the sub tries of a `PatriciaTrie` or `PatriciaStringTrie` to lack some values.
+- Fixed no `NoSuchElementException` being thrown when passing an invalid sequence to the `subTrie`-method of a `PatriciaTrie` or `PatriciaStringTrie`. 
+
 ## Version 1.0.1 (Feb. 2nd 2018)
 
 A bugfix release, which fixes the following issues:
