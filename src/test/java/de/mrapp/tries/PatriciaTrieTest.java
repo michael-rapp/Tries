@@ -305,6 +305,19 @@ public class PatriciaTrieTest extends AbstractPatriciaTrieTest<StringSequence, P
         verifyLeaf(creamSuccessor, "ice cream");
     }
 
+    @Test(expected = NoSuchElementException.class)
+    public final void testSubTrieIfSequenceINotContained1() {
+        testPutWithNullKey();
+        trie.subTrie(new StringSequence("romax"));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public final void testSubTrieIfSequenceINotContained2() {
+        trie.put(new StringSequence("icetea"), "icetea");
+        trie.put(new StringSequence("ice cream"), "ice cream");
+        trie.subTrie(new StringSequence("ix"));
+    }
+
     @Test
     public final void testSubTrieIsEmpty() {
         testPutWithNullKey();
