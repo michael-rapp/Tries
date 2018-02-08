@@ -15,11 +15,13 @@ package de.mrapp.tries;
 
 import de.mrapp.tries.sequence.StringSequence;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -282,6 +284,25 @@ public class PatriciaTrieTest extends AbstractPatriciaTrieTest<StringSequence, P
         verifySuccessors(subTrie.getRootNode(), "bacon");
         Node<StringSequence, String> baconSuccessor = getSuccessor(subTrie.getRootNode(), "bacon");
         verifyLeaf(baconSuccessor, "bacon");
+    }
+
+    @Test
+    public final void testSubTrie5() {
+        trie.put(new StringSequence("icetea"), "icetea");
+        trie.put(new StringSequence("ice cream"), "ice cream");
+        SortedTrie<StringSequence, String> subTrie = trie.subTrie(new StringSequence("ic"));
+        assertFalse(subTrie.isEmpty());
+        assertEquals(2, subTrie.size());
+        assertEquals("icetea", subTrie.get(new StringSequence("icetea")));
+        assertEquals("ice cream", subTrie.get(new StringSequence("ice cream")));
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "ice");
+        Node<StringSequence, String> iceSuccessor = getSuccessor(subTrie.getRootNode(), "ice");
+        verifySuccessors(iceSuccessor, "tea", " cream");
+        Node<StringSequence, String> teaSuccessor = getSuccessor(iceSuccessor, "tea");
+        verifyLeaf(teaSuccessor, "icetea");
+        Node<StringSequence, String> creamSuccessor = getSuccessor(iceSuccessor, " cream");
+        verifyLeaf(creamSuccessor, "ice cream");
     }
 
     @Test

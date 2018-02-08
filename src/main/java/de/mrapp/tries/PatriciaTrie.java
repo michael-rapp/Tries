@@ -80,7 +80,8 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
                     suffix = pair.second;
 
                     if (suffix != null && !suffix.isEmpty()) {
-                        if (matchedPrefix != null && matchedPrefix.length() + suffix.length() > sequence.length()) {
+                        if (matchedPrefix != null && matchedPrefix.length() + suffix.length() > sequence.length() ||
+                                suffix.length() > sequence.length()) {
                             matchedPrefix = SequenceUtil.concat(matchedPrefix, suffix);
                             suffix = null;
                         } else {
