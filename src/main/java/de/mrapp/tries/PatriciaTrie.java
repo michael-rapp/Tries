@@ -67,7 +67,7 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
 
             while (suffix != null && !suffix.isEmpty()) {
                 Pair<Node<SequenceType, ValueType>, SequenceType> pair =
-                        structure.onGetSuccessor(currentNode, suffix, Operation.GET);
+                        structure.onGetSuccessor(currentNode, suffix, Operation.SUB_TRIE);
 
                 if (pair == null) {
                     suffix = null;
@@ -78,8 +78,17 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
                 } else {
                     currentNode = pair.first;
                     suffix = pair.second;
-                    matchedPrefix = suffix == null || suffix.isEmpty() ? sequence :
-                            SequenceUtil.subsequence(sequence, 0, sequence.length() - suffix.length());
+
+                    if (suffix != null && !suffix.isEmpty()) {
+                        if (matchedPrefix != null && matchedPrefix.length() + suffix.length() > sequence.length()) {
+                            matchedPrefix = SequenceUtil.concat(matchedPrefix, suffix);
+                            suffix = null;
+                        } else {
+                            matchedPrefix = SequenceUtil.subsequence(sequence, 0, sequence.length() - suffix.length());
+                        }
+                    } else {
+                        matchedPrefix = sequence;
+                    }
                 }
             }
 

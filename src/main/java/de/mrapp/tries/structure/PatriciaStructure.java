@@ -136,7 +136,7 @@ public class PatriciaStructure<SequenceType extends Sequence, ValueType>
                 int sequenceLength = sequence.length();
 
                 if (sequenceLength == prefixLength && successorKey.length() > sequenceLength) {
-                    return operation == Operation.SUB_TRIE ? Pair.create(node, null) : null;
+                    return operation == Operation.SUB_TRIE ? Pair.create(successor, successorKey) : null;
                 }
 
                 return Pair.create(successor, suffix);
