@@ -13,13 +13,13 @@
  */
 package de.mrapp.tries;
 
-import de.mrapp.tries.sequence.StringSequence;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.*;
@@ -291,6 +291,38 @@ public class PatriciaStringTrieTest extends AbstractPatriciaTrieTest<String, Pat
         verifySuccessors(subTrie.getRootNode(), "bacon");
         Node<String, String> baconSuccessor = getSuccessor(subTrie.getRootNode(), "bacon");
         verifyLeaf(baconSuccessor, "bacon");
+    }
+
+    @Test
+    public final void testSubTrie5() {
+        trie.put("icetea", "icetea");
+        trie.put("ice cream", "ice cream");
+        SortedStringTrie<String> subTrie = trie.subTrie("ic");
+        assertFalse(subTrie.isEmpty());
+        assertEquals(2, subTrie.size());
+        assertEquals("icetea", subTrie.get("icetea"));
+        assertEquals("ice cream", subTrie.get("ice cream"));
+        verifyRootNode(subTrie.getRootNode());
+        verifySuccessors(subTrie.getRootNode(), "ice");
+        Node<String, String> iceSuccessor = getSuccessor(subTrie.getRootNode(), "ice");
+        verifySuccessors(iceSuccessor, "tea", " cream");
+        Node<String, String> teaSuccessor = getSuccessor(iceSuccessor, "tea");
+        verifyLeaf(teaSuccessor, "icetea");
+        Node<String, String> creamSuccessor = getSuccessor(iceSuccessor, " cream");
+        verifyLeaf(creamSuccessor, "ice cream");
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public final void testSubTrieIfSequenceIsNotContained1() {
+        testPutWithNullKey();
+        trie.subTrie("romax");
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public final void testSubTrieIfSequenceIsNotContained2() {
+        trie.put("icetea", "icetea");
+        trie.put("ice cream", "ice cream");
+        trie.subTrie("ix");
     }
 
     @Test

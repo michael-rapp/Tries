@@ -13,7 +13,10 @@
  */
 package de.mrapp.tries;
 
+import de.mrapp.tries.sequence.StringSequence;
 import org.junit.Test;
+
+import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 
@@ -149,6 +152,12 @@ public class HashStringTrieTest extends AbstractStringNonPatriciaTrieTest<HashSt
         verifyLeaf(leaf, "ted");
         leaf = getSuccessor(eSuccessor, "n");
         verifyLeaf(leaf, "ten");
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public final void testSubTrieIfSequenceIsNotContained() {
+        testPutWithNullKey();
+        trie.subTrie("ix");
     }
 
     @Test

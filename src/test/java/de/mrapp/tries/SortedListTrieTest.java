@@ -19,6 +19,7 @@ import org.junit.Test;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -192,6 +193,12 @@ public class SortedListTrieTest
         verifyLeaf(leaf, "ted");
         leaf = getSuccessor(eSuccessor, "n");
         verifyLeaf(leaf, "ten");
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public final void testSubTrieIfSequenceIsNotContained() {
+        testPutWithNullKey();
+        trie.subTrie(new StringSequence("ix"));
     }
 
     @Test
