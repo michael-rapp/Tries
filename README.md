@@ -24,7 +24,7 @@ Alternatively, the library can be added to your project as a Gradle dependency b
 
 ```groovy
 dependencies {
-    compile 'com.github.michael-rapp:tries:1.0.1'
+    compile 'com.github.michael-rapp:tries:1.0.2'
 }
 ```
 
@@ -34,7 +34,7 @@ When using Maven, the following dependency can be added to the `pom.xml`:
 <dependency>
     <groupId>com.github.michael-rapp</groupId>
     <artifactId>tries</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
