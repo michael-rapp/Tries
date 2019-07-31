@@ -16,6 +16,7 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.Node;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.Trie;
+import de.mrapp.util.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,8 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-
-import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
  * An abstract base class for all tries, which forward read-only method calls to an encapsulated
@@ -56,7 +55,7 @@ public abstract class AbstractUnmodifiableTrie<SequenceType extends Sequence, Va
      *             TrieType}. The trie may not be null
      */
     public AbstractUnmodifiableTrie(@NotNull final TrieType trie) {
-        ensureNotNull(trie, "The trie may not be null");
+        Condition.INSTANCE.ensureNotNull(trie, "The trie may not be null");
         this.trie = trie;
     }
 

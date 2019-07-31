@@ -14,13 +14,12 @@
 package de.mrapp.tries.util;
 
 import de.mrapp.tries.Sequence;
+import de.mrapp.util.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.function.Function;
-
-import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
  * An utility class, which provides methods for handling sequences.
@@ -103,7 +102,7 @@ public class SequenceUtil {
     @SuppressWarnings("unchecked")
     @NotNull
     public static <T extends Sequence> T subsequence(@NotNull final T sequence, final int start) {
-        ensureNotNull(sequence, "The sequence may not be null");
+        Condition.INSTANCE.ensureNotNull(sequence, "The sequence may not be null");
         return (T) sequence.subsequence(start);
     }
 
@@ -126,7 +125,7 @@ public class SequenceUtil {
     @NotNull
     public static <T extends Sequence> T subsequence(@NotNull final T sequence, final int start,
                                                      final int end) {
-        ensureNotNull(sequence, "The sequence may not be null");
+        Condition.INSTANCE.ensureNotNull(sequence, "The sequence may not be null");
         return (T) sequence.subsequence(start, end);
     }
 
@@ -185,8 +184,8 @@ public class SequenceUtil {
     @Nullable
     public static <T extends Sequence> T getCommonPrefix(@NotNull final T sequence1,
                                                          @NotNull final T sequence2) {
-        ensureNotNull(sequence1, "The first sequence may not be null");
-        ensureNotNull(sequence2, "The second sequence may not be null");
+        Condition.INSTANCE.ensureNotNull(sequence1, "The first sequence may not be null");
+        Condition.INSTANCE.ensureNotNull(sequence2, "The second sequence may not be null");
 
         if (sequence1.isEmpty() || sequence2.isEmpty()) {
             return null;
@@ -229,7 +228,7 @@ public class SequenceUtil {
                                                         @NotNull final Function<Integer, T> getter,
                                                         @Nullable final Comparator<? super T> comparator,
                                                         @NotNull final T sequence) {
-        ensureNotNull(getter, "The function may not be null");
+        Condition.INSTANCE.ensureNotNull(getter, "The function may not be null");
 
         if (size > 0) {
             Comparator<? super T> comp = SequenceUtil.comparator(comparator);

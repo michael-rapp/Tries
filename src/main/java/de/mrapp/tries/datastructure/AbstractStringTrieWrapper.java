@@ -18,13 +18,12 @@ import de.mrapp.tries.StringTrie;
 import de.mrapp.tries.Trie;
 import de.mrapp.tries.sequence.StringSequence;
 import de.mrapp.tries.util.EntryUtil;
+import de.mrapp.util.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
-
-import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
  * An abstract base class for all wrappers, which implement an interface, which is extended from
@@ -66,7 +65,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
              *                 type {@link Iterator}. The iterator may not be null
              */
             EntryIteratorWrapper(@NotNull final Iterator<Entry<StringSequence, V>> iterator) {
-                ensureNotNull(iterator, "The iterator may not be null");
+                Condition.INSTANCE.ensureNotNull(iterator, "The iterator may not be null");
                 this.iterator = iterator;
             }
 
@@ -106,7 +105,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
          *                 {@link Set}. The entry set may not be null
          */
         EntrySetWrapper(@NotNull final Set<Entry<StringSequence, V>> entrySet) {
-            ensureNotNull(entrySet, "The entry set may not be null");
+            Condition.INSTANCE.ensureNotNull(entrySet, "The entry set may not be null");
             this.entrySet = entrySet;
         }
 
@@ -167,7 +166,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
          * The iterator, which allows to iterate the entries of a {@link StringTrie}'s key set. It
          * encapsulates the iterator of a {@link Trie}'s key set.
          */
-        final class KeyIteratorWrapper implements Iterator<String> {
+        static final class KeyIteratorWrapper implements Iterator<String> {
 
             /**
              * The encapsulated iterator.
@@ -182,7 +181,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
              *                 type {@link Iterator}. The iterator may not be null
              */
             KeyIteratorWrapper(@NotNull final Iterator<StringSequence> iterator) {
-                ensureNotNull(iterator, "The iterator may not be null");
+                Condition.INSTANCE.ensureNotNull(iterator, "The iterator may not be null");
                 this.iterator = iterator;
             }
 
@@ -207,7 +206,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
          * The spliterator, which allows to traverse the entries of a {@link StringTrie}'s key set.
          * It encapsulates the spliterator of a {@link Trie}'s key set.
          */
-        private final class KeySpliteratorWrapper implements Spliterator<String> {
+        private static final class KeySpliteratorWrapper implements Spliterator<String> {
 
             /**
              * The encapsulated spliterator.
@@ -222,7 +221,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
              *                    the type {@link Spliterator}. The spliterator may not be null
              */
             KeySpliteratorWrapper(@NotNull final Spliterator<StringSequence> spliterator) {
-                ensureNotNull(spliterator, "The spliterator may not be null");
+                Condition.INSTANCE.ensureNotNull(spliterator, "The spliterator may not be null");
                 this.spliterator = spliterator;
             }
 
@@ -263,7 +262,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
          *            {@link SetType}. The set may not be null
          */
         KeySetWrapper(@NotNull final SetType set) {
-            ensureNotNull(set, "The set may not be null");
+            Condition.INSTANCE.ensureNotNull(set, "The set may not be null");
             this.set = set;
         }
 
@@ -322,7 +321,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
      *             TrieType}. The trie may not be null
      */
     AbstractStringTrieWrapper(@NotNull final TrieType trie) {
-        ensureNotNull(trie, "The trie may not be null");
+        Condition.INSTANCE.ensureNotNull(trie, "The trie may not be null");
         this.trie = trie;
     }
 
@@ -363,7 +362,7 @@ public abstract class AbstractStringTrieWrapper<TrieType extends Trie<StringSequ
 
     @Override
     public final void putAll(@NotNull final Map<? extends String, ? extends ValueType> map) {
-        ensureNotNull(map, "The map may not be null");
+        Condition.INSTANCE.ensureNotNull(map, "The map may not be null");
         map.forEach(this::put);
     }
 

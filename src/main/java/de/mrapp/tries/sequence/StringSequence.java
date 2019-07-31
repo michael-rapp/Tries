@@ -16,10 +16,9 @@ package de.mrapp.tries.sequence;
 import de.mrapp.tries.Sequence;
 import de.mrapp.tries.SortedStringTrie;
 import de.mrapp.tries.StringTrie;
+import de.mrapp.util.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
  * A character sequence, which is backed by a {@link String}. It can be used as the keys of a {@link
@@ -47,7 +46,7 @@ public class StringSequence implements Sequence, Comparable<StringSequence> {
      *               not be null
      */
     public StringSequence(@NotNull final String string) {
-        ensureNotNull(string, "The string may not be null");
+        Condition.INSTANCE.ensureNotNull(string, "The string may not be null");
         this.string = string;
     }
 
@@ -83,7 +82,7 @@ public class StringSequence implements Sequence, Comparable<StringSequence> {
 
     @Override
     public final Sequence concat(@NotNull final Sequence sequence) {
-        ensureNotNull(sequence, "The sequence may not be null");
+        Condition.INSTANCE.ensureNotNull(sequence, "The sequence may not be null");
         StringSequence stringSequence = (StringSequence) sequence;
         return convertFromString(string.concat(stringSequence.string));
     }

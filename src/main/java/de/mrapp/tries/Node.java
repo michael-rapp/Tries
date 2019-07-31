@@ -13,14 +13,13 @@
  */
 package de.mrapp.tries;
 
+import de.mrapp.util.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Map;
 import java.util.RandomAccess;
-
-import static de.mrapp.util.Condition.ensureTrue;
 
 /**
  * Defines the interface, a node of a trie must implement. It extends the interface {@link Iterable}
@@ -126,7 +125,7 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      * successor may not be null
      */
     @NotNull Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key,
-            @Nullable final Node<KeyType, ValueType> successor);
+                                                   @Nullable final Node<KeyType, ValueType> successor);
 
     /**
      * Removes the successor, which corresponds to a specific key.
@@ -149,7 +148,8 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
     }
 
     /**
-     * Returns the number of successors for which values are set, i.e. {@link #isValueSet()} returns
+     * Returns the number of successors for which values are set, i.e. {@link #isValueSet()}
+     * returns
      * <code>true</code>. All successors of the node are taken into account recursively down to the
      * leaf nodes.
      *
@@ -180,7 +180,7 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      */
     @Nullable
     default KeyType getFirstSuccessorKey() {
-        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
+        Condition.INSTANCE.ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
                 UnsupportedOperationException.class);
         return hasSuccessors() ? getSuccessorKey(0) : null;
     }
@@ -194,7 +194,7 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      */
     @Nullable
     default KeyType getLastSuccessorKey() {
-        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
+        Condition.INSTANCE.ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
                 UnsupportedOperationException.class);
         int successorCount = getSuccessorCount();
         return successorCount > 0 ? getSuccessorKey(successorCount - 1) : null;
@@ -224,7 +224,7 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      */
     @Nullable
     default Node<KeyType, ValueType> getFirstSuccessor() {
-        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
+        Condition.INSTANCE.ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
                 UnsupportedOperationException.class);
         return hasSuccessors() ? getSuccessor(0) : null;
     }
@@ -238,7 +238,7 @@ public interface Node<KeyType, ValueType> extends Iterable<KeyType>, Serializabl
      */
     @Nullable
     default Node<KeyType, ValueType> getLastSuccessor() {
-        ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
+        Condition.INSTANCE.ensureTrue(RandomAccess.class.isAssignableFrom(getClass()), null,
                 UnsupportedOperationException.class);
         int successorCount = getSuccessorCount();
         return successorCount > 0 ? getSuccessor(successorCount - 1) : null;

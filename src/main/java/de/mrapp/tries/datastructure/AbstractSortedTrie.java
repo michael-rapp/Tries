@@ -20,6 +20,7 @@ import de.mrapp.tries.structure.SortedStructure;
 import de.mrapp.tries.structure.Structure;
 import de.mrapp.tries.util.EntryUtil;
 import de.mrapp.tries.util.SequenceUtil;
+import de.mrapp.util.Condition;
 import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +29,6 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import static de.mrapp.util.Condition.*;
 
 /**
  * An abstract base class for all sorted tries, whose nodes are ordered by their keys. It implements
@@ -151,7 +150,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         @NotNull
         @Override
         public NavigableSet<K> subSet(final K fromElement, final boolean fromInclusive,
-                final K toElement, final boolean toInclusive) {
+                                      final K toElement, final boolean toInclusive) {
             return new NavigableKeySet<>(
                     backingMap.subMap(fromElement, fromInclusive, toElement, toInclusive));
         }
@@ -304,7 +303,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
              *                 type {@link Iterator}. The iterator may not be null
              */
             KeyIteratorWrapper(@NotNull final Iterator<Map.Entry<K, V>> iterator) {
-                ensureNotNull(iterator, "The iterator may not be null");
+                Condition.INSTANCE.ensureNotNull(iterator, "The iterator may not be null");
                 this.iterator = iterator;
             }
 
@@ -343,16 +342,18 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
              *              restricted
              */
             AscendingSubMapEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                    @Nullable final Map.Entry<K, V> first, @Nullable final Map.Entry<K, V> fence) {
+                                         @Nullable final Map.Entry<K, V> first,
+                                         @Nullable final Map.Entry<K, V> fence) {
                 super(trie, first, fence);
             }
 
             @Override
             public Entry<K, V> next() {
-                ensureEqual(expectedModificationCount, trie.modificationCount, null,
-                        ConcurrentModificationException.class);
-                ensureNotNull(next, null, NoSuchElementException.class);
-                ensureFalse(fenceKey.equals(next.getKey()), null, NoSuchElementException.class);
+                Condition.INSTANCE.ensureEqual(expectedModificationCount, trie.modificationCount,
+                        null, ConcurrentModificationException.class);
+                Condition.INSTANCE.ensureNotNull(next, null, NoSuchElementException.class);
+                Condition.INSTANCE.ensureFalse(fenceKey.equals(next.getKey()), null,
+                        NoSuchElementException.class);
                 Map.Entry<K, V> entry = next;
                 next = trie.higherEntry(entry.getKey());
                 lastReturned = entry;
@@ -384,16 +385,18 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
              *              restricted
              */
             DescendingSubMapEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                    @Nullable final Map.Entry<K, V> first, @Nullable final Map.Entry<K, V> fence) {
+                                          @Nullable final Map.Entry<K, V> first,
+                                          @Nullable final Map.Entry<K, V> fence) {
                 super(trie, first, fence);
             }
 
             @Override
             public Entry<K, V> next() {
-                ensureEqual(expectedModificationCount, trie.modificationCount, null,
-                        ConcurrentModificationException.class);
-                ensureNotNull(next, null, NoSuchElementException.class);
-                ensureFalse(fenceKey.equals(next.getKey()), null, NoSuchElementException.class);
+                Condition.INSTANCE.ensureEqual(expectedModificationCount, trie.modificationCount,
+                        null, ConcurrentModificationException.class);
+                Condition.INSTANCE.ensureNotNull(next, null, NoSuchElementException.class);
+                Condition.INSTANCE.ensureFalse(fenceKey.equals(next.getKey()), null,
+                        NoSuchElementException.class);
                 Map.Entry<K, V> entry = next;
                 next = trie.lowerEntry(entry.getKey());
                 lastReturned = entry;
@@ -436,7 +439,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
              *              restricted
              */
             AbstractSubMapEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                    @Nullable final Map.Entry<K, V> first, @Nullable final Map.Entry<K, V> fence) {
+                                        @Nullable final Map.Entry<K, V> first,
+                                        @Nullable final Map.Entry<K, V> fence) {
                 super(trie, first);
                 this.fenceKey = fence != null ? fence.getKey() : UNRESTRICTED_KEY;
             }
@@ -784,9 +788,9 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *                      otherwise
          */
         AbstractSubMap(@NotNull final AbstractSortedTrie<K, V> trie, final boolean fromStart,
-                @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
-                @Nullable final K toKey, final boolean toInclusive) {
-            ensureNotNull(trie, "The trie may not be null");
+                       @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
+                       @Nullable final K toKey, final boolean toInclusive) {
+            Condition.INSTANCE.ensureNotNull(trie, "The trie may not be null");
             this.trie = trie;
             this.comparator = SequenceUtil.comparator(trie.comparator);
 
@@ -820,7 +824,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public final V put(final K key, final V value) {
-            ensureTrue(isInOpenRange(key), "Key out of range");
+            Condition.INSTANCE.ensureTrue(isInOpenRange(key), "Key out of range");
             return trie.put(key, value);
         }
 
@@ -1003,8 +1007,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *                      otherwise
          */
         AscendingSubMap(@NotNull final AbstractSortedTrie<K, V> trie, final boolean fromStart,
-                @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
-                @Nullable final K toKey, final boolean toInclusive) {
+                        @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
+                        @Nullable final K toKey, final boolean toInclusive) {
             super(trie, fromStart, fromKey, fromInclusive, toEnd, toKey, toInclusive);
         }
 
@@ -1015,23 +1019,24 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public NavigableMap<K, V> subMap(final K fromKey, final boolean fromInclusive,
-                final K toKey, final boolean toInclusive) {
-            ensureTrue(isInRange(fromKey, fromInclusive), "fromKey out of range");
-            ensureTrue(isInRange(toKey, toInclusive), "toKey out of range");
+                                         final K toKey, final boolean toInclusive) {
+            Condition.INSTANCE
+                    .ensureTrue(isInRange(fromKey, fromInclusive), "fromKey out of range");
+            Condition.INSTANCE.ensureTrue(isInRange(toKey, toInclusive), "toKey out of range");
             return new AscendingSubMap<>(trie, false, fromKey, fromInclusive, false, toKey,
                     toInclusive);
         }
 
         @Override
         public NavigableMap<K, V> headMap(final K to, final boolean inclusive) {
-            ensureTrue(isInRange(to, inclusive), "Key out of range");
+            Condition.INSTANCE.ensureTrue(isInRange(to, inclusive), "Key out of range");
             return new AscendingSubMap<>(trie, fromStart, fromKey, fromInclusive, false, to,
                     inclusive);
         }
 
         @Override
         public NavigableMap<K, V> tailMap(final K from, final boolean inclusive) {
-            ensureTrue(isInRange(from, inclusive), "Key out of range");
+            Condition.INSTANCE.ensureTrue(isInRange(from, inclusive), "Key out of range");
             return new AscendingSubMap<>(trie, false, from, inclusive, toEnd, toKey, toInclusive);
         }
 
@@ -1155,8 +1160,9 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *                      otherwise
          */
         DescendingSubMap(@NotNull final AbstractSortedTrie<K, V> trie, final boolean fromStart,
-                @Nullable final K fromKey, final boolean fromInclusive, final boolean toEnd,
-                @Nullable final K toKey, final boolean toInclusive) {
+                         @Nullable final K fromKey, final boolean fromInclusive,
+                         final boolean toEnd,
+                         @Nullable final K toKey, final boolean toInclusive) {
             super(trie, fromStart, fromKey, fromInclusive, toEnd, toKey, toInclusive);
             this.reverseComparator =
                     trie.comparator() != null ? Collections.reverseOrder(trie.comparator()) : null;
@@ -1169,22 +1175,23 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public NavigableMap<K, V> subMap(final K fromKey, final boolean fromInclusive,
-                final K toKey, final boolean toInclusive) {
-            ensureTrue(isInRange(fromKey, fromInclusive), "fromKey out of range");
-            ensureTrue(isInRange(toKey, toInclusive), "fromKey out of range");
+                                         final K toKey, final boolean toInclusive) {
+            Condition.INSTANCE
+                    .ensureTrue(isInRange(fromKey, fromInclusive), "fromKey out of range");
+            Condition.INSTANCE.ensureTrue(isInRange(toKey, toInclusive), "fromKey out of range");
             return new DescendingSubMap<>(trie, false, toKey, toInclusive, false, fromKey,
                     fromInclusive);
         }
 
         @Override
         public NavigableMap<K, V> headMap(final K to, final boolean inclusive) {
-            ensureTrue(isInRange(to, inclusive), "Key out of range");
+            Condition.INSTANCE.ensureTrue(isInRange(to, inclusive), "Key out of range");
             return new DescendingSubMap<>(trie, false, to, inclusive, toEnd, toKey, toInclusive);
         }
 
         @Override
         public NavigableMap<K, V> tailMap(final K from, final boolean inclusive) {
-            ensureTrue(isInRange(from, inclusive), "Key out of range");
+            Condition.INSTANCE.ensureTrue(isInRange(from, inclusive), "Key out of range");
             return new DescendingSubMap<>(trie, fromStart, fromKey, fromInclusive, false, from,
                     inclusive);
         }
@@ -1273,15 +1280,15 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *              or null, if the trie is empty
          */
         AscendingKeyIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                @Nullable final Map.Entry<K, V> first) {
+                             @Nullable final Map.Entry<K, V> first) {
             super(trie, first);
         }
 
         @Override
         public K next() {
-            ensureEqual(expectedModificationCount, trie.modificationCount, null,
+            Condition.INSTANCE.ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
-            ensureNotNull(next, null, NoSuchElementException.class);
+            Condition.INSTANCE.ensureNotNull(next, null, NoSuchElementException.class);
             Map.Entry<K, V> entry = next;
             next = trie.higherEntry(entry.getKey());
             lastReturned = entry;
@@ -1309,14 +1316,14 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *              or null, if the trie is empty
          */
         DescendingKeyIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                @Nullable final Map.Entry<K, V> first) {
+                              @Nullable final Map.Entry<K, V> first) {
             super(trie, first);
         }
 
         @Override
         public K next() {
-            ensureNotNull(next, null, NoSuchElementException.class);
-            ensureEqual(expectedModificationCount, trie.modificationCount, null,
+            Condition.INSTANCE.ensureNotNull(next, null, NoSuchElementException.class);
+            Condition.INSTANCE.ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
             Map.Entry<K, V> entry = next;
             next = trie.lowerEntry(entry.getKey());
@@ -1357,7 +1364,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *              or null, if the trie is empty
          */
         AbstractEntryIterator(@NotNull final AbstractSortedTrie<K, V> trie,
-                @Nullable final Map.Entry<K, V> first) {
+                              @Nullable final Map.Entry<K, V> first) {
             super(trie);
             this.next = first;
             this.lastReturned = null;
@@ -1370,8 +1377,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public final void remove() {
-            ensureNotNull(lastReturned, null, IllegalStateException.class);
-            ensureEqual(expectedModificationCount, trie.modificationCount, null,
+            Condition.INSTANCE.ensureNotNull(lastReturned, null, IllegalStateException.class);
+            Condition.INSTANCE.ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
             trie.remove(lastReturned.getKey());
             expectedModificationCount = trie.modificationCount;
@@ -1405,9 +1412,9 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *                 {@link Iterator}. The iterator may not be null
          */
         SpliteratorWrapper(@NotNull final AbstractSortedTrie<K, V> trie,
-                @NotNull final Iterator<K> iterator) {
+                           @NotNull final Iterator<K> iterator) {
             super(trie);
-            ensureNotNull(iterator, "The iterator may not be null");
+            Condition.INSTANCE.ensureNotNull(iterator, "The iterator may not be null");
             this.iterator = iterator;
         }
 
@@ -1449,7 +1456,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
          *             {@link AbstractSortedTrie}. The trie may not be null
          */
         AbstractKeySpliterator(@NotNull final AbstractSortedTrie<K, V> trie) {
-            ensureNotNull(trie, "The trie may not be null");
+            Condition.INSTANCE.ensureNotNull(trie, "The trie may not be null");
             this.trie = trie;
             this.expectedModificationCount = trie.modificationCount;
         }
@@ -1513,8 +1520,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public boolean tryAdvance(final Consumer<? super K> action) {
-            ensureNotNull(action, null, NullPointerException.class);
-            ensureEqual(expectedModificationCount, trie.modificationCount, null,
+            Condition.INSTANCE.ensureNotNull(action, null, NullPointerException.class);
+            Condition.INSTANCE.ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
 
             if (next != null) {
@@ -1561,8 +1568,8 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
         @Override
         public boolean tryAdvance(final Consumer<? super K> action) {
-            ensureNotNull(action, null, NullPointerException.class);
-            ensureEqual(expectedModificationCount, trie.modificationCount, null,
+            Condition.INSTANCE.ensureNotNull(action, null, NullPointerException.class);
+            Condition.INSTANCE.ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
 
             if (next != null) {
@@ -1737,14 +1744,14 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                 if (pair == null) {
                     return null;
                 } else {
-                    stack.push(Pair.create(currentNode, suffix));
-                    currentNode = pair.first;
-                    suffix = pair.second;
+                    stack.push(Pair.Companion.create(currentNode, suffix));
+                    currentNode = pair.getFirst();
+                    suffix = pair.getSecond();
                 }
             }
 
             if (currentNode != null) {
-                stack.push(Pair.create(currentNode, null));
+                stack.push(Pair.Companion.create(currentNode, null));
                 return stack;
             }
         }
@@ -1807,7 +1814,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
             @NotNull final Node<SequenceType, ValueType> node, @NotNull final SequenceType key,
             @NotNull final Function<Integer, Integer> indexFunction, final boolean higher) {
         if (indexPair != null) {
-            int index = indexFunction.apply(indexPair.first);
+            int index = indexFunction.apply(indexPair.getFirst());
 
             if (index >= 0 && index < node.getSuccessorCount()) {
                 Node<SequenceType, ValueType> successor = node.getSuccessor(index);
@@ -1829,7 +1836,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * {@link Iterator}. The iterator may not be null
      */
     @NotNull
-    final Iterator<SequenceType> keyIterator() {
+    private Iterator<SequenceType> keyIterator() {
         return new AscendingKeyIterator<>(this, firstEntry());
     }
 
@@ -1840,7 +1847,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * instance of the type {@link Iterator}. The iterator may not be null
      */
     @NotNull
-    final Iterator<SequenceType> descendingKeyIterator() {
+    private Iterator<SequenceType> descendingKeyIterator() {
         return new DescendingKeyIterator<>(this, lastEntry());
     }
 
@@ -1851,7 +1858,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * type {@link Spliterator}. The spliterator may not be null
      */
     @NotNull
-    final Spliterator<SequenceType> keySpliterator() {
+    private Spliterator<SequenceType> keySpliterator() {
         return new AscendingKeySpliterator<>(this);
     }
 
@@ -1862,7 +1869,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      * an instance of the type {@link Spliterator}. The spliterator may not be null
      */
     @NotNull
-    final Spliterator<SequenceType> descendingKeySpliterator() {
+    private Spliterator<SequenceType> descendingKeySpliterator() {
         return new DescendingKeySpliterator<>(this);
     }
 
@@ -1876,7 +1883,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      *                   the keys should be used
      */
     protected AbstractSortedTrie(@Nullable final Node<SequenceType, ValueType> rootNode,
-            @Nullable final Comparator<? super SequenceType> comparator) {
+                                 @Nullable final Comparator<? super SequenceType> comparator) {
         super(rootNode);
         this.comparator = comparator;
     }
@@ -1902,7 +1909,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
      *                   trie, as an instance of the type {@link Map}. The map may not be null
      */
     public AbstractSortedTrie(@Nullable final Comparator<? super SequenceType> comparator,
-            @NotNull final Map<SequenceType, ValueType> map) {
+                              @NotNull final Map<SequenceType, ValueType> map) {
         this(comparator);
         putAll(map);
     }
@@ -1953,24 +1960,24 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                 Pair<Node<SequenceType, ValueType>, SequenceType> pair = stack.pop();
                 Pair<Integer, SequenceType> indexPair = null;
 
-                if (pair.first.isValueSet()) {
-                    if (pair.first.getSuccessorCount() <= 1) {
-                        return createLowerEntry(key, pair.first, pair.second);
+                if (pair.getFirst().isValueSet()) {
+                    if (pair.getFirst().getSuccessorCount() <= 1) {
+                        return createLowerEntry(key, pair.getFirst(), pair.getSecond());
                     } else {
-                        indexPair = structure.indexOf(pair.first, pair.second);
+                        indexPair = structure.indexOf(pair.getFirst(), pair.getSecond());
 
-                        if (indexPair != null && indexPair.first == 0) {
-                            return createLowerEntry(key, pair.first, pair.second);
+                        if (indexPair != null && indexPair.getFirst() == 0) {
+                            return createLowerEntry(key, pair.getFirst(), pair.getSecond());
                         }
                     }
                 }
 
-                if (indexPair == null && pair.first.getSuccessorCount() > 1) {
-                    indexPair = structure.indexOf(pair.first, pair.second);
+                if (indexPair == null && pair.getFirst().getSuccessorCount() > 1) {
+                    indexPair = structure.indexOf(pair.getFirst(), pair.getSecond());
                 }
 
                 Map.Entry<SequenceType, ValueType> entry =
-                        createLowerOrHigherEntry(key, indexPair, pair.first, pair.second,
+                        createLowerOrHigherEntry(key, indexPair, pair.getFirst(), pair.getSecond(),
                                 index -> index - 1, false);
 
                 if (entry != null) {
@@ -1987,7 +1994,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
         Deque<Pair<Node<SequenceType, ValueType>, SequenceType>> stack = getPathToNode(key);
 
         if (stack != null) {
-            Node<SequenceType, ValueType> node = stack.pop().first;
+            Node<SequenceType, ValueType> node = stack.pop().getFirst();
 
             if (node.hasSuccessors()) {
                 Node<SequenceType, ValueType> successor = node.getFirstSuccessor();
@@ -1997,12 +2004,12 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
                 while (!stack.isEmpty()) {
                     Pair<Node<SequenceType, ValueType>, SequenceType> pair = stack.pop();
 
-                    if (pair.first.getSuccessorCount() > 1) {
+                    if (pair.getFirst().getSuccessorCount() > 1) {
                         Pair<Integer, SequenceType> indexPair =
-                                structure.indexOf(pair.first, pair.second);
+                                structure.indexOf(pair.getFirst(), pair.getSecond());
                         Entry<SequenceType, ValueType> entry =
-                                createLowerOrHigherEntry(key, indexPair, pair.first, pair.second,
-                                        index -> index + 1, true);
+                                createLowerOrHigherEntry(key, indexPair, pair.getFirst(),
+                                        pair.getSecond(), index -> index + 1, true);
 
                         if (entry != null) {
                             return entry;
@@ -2050,14 +2057,16 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @NotNull
     @Override
     public final SortedMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
-            final SequenceType toKey) {
+                                                           final SequenceType toKey) {
         return subMap(fromKey, true, toKey, false);
     }
 
     @NotNull
     @Override
     public final NavigableMap<SequenceType, ValueType> subMap(final SequenceType fromKey,
-            final boolean fromInclusive, final SequenceType toKey, final boolean toInclusive) {
+                                                              final boolean fromInclusive,
+                                                              final SequenceType toKey,
+                                                              final boolean toInclusive) {
         return new AscendingSubMap<>(this, false, fromKey, fromInclusive, false, toKey,
                 toInclusive);
     }
@@ -2071,7 +2080,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
     @NotNull
     @Override
     public final NavigableMap<SequenceType, ValueType> headMap(final SequenceType toKey,
-            final boolean inclusive) {
+                                                               final boolean inclusive) {
         return new AscendingSubMap<>(this, true, null, true, false, toKey, inclusive);
     }
 
@@ -2083,7 +2092,7 @@ public abstract class AbstractSortedTrie<SequenceType extends Sequence, ValueTyp
 
     @Override
     public final NavigableMap<SequenceType, ValueType> tailMap(final SequenceType fromKey,
-            final boolean inclusive) {
+                                                               final boolean inclusive) {
         return new AscendingSubMap<>(this, false, fromKey, inclusive, true, null, true);
     }
 

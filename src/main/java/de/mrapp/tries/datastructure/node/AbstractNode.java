@@ -16,14 +16,12 @@ package de.mrapp.tries.datastructure.node;
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
 import de.mrapp.tries.Sequence;
+import de.mrapp.util.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractMap;
 import java.util.Map;
-
-import static de.mrapp.util.Condition.ensureAtLeast;
-import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
  * An abstract base for all nodes of a trie.
@@ -138,7 +136,7 @@ public abstract class AbstractNode<KeyType extends Sequence, ValueType> implemen
     @NotNull
     public final Node<KeyType, ValueType> addSuccessor(@NotNull final KeyType key,
                                                        @Nullable final Node<KeyType, ValueType> successor) {
-        ensureNotNull(key, "The key may not be null");
+        Condition.INSTANCE.ensureNotNull(key, "The key may not be null");
         Node<KeyType, ValueType> addedSuccessor = onAddSuccessor(key, successor);
         addedSuccessor.setPredecessor(new AbstractMap.SimpleImmutableEntry<>(key, this));
         increaseSuccessorValueCount(addedSuccessor.getSuccessorValueCount());
@@ -147,7 +145,7 @@ public abstract class AbstractNode<KeyType extends Sequence, ValueType> implemen
 
     @Override
     public final void removeSuccessor(@NotNull final KeyType key) {
-        ensureNotNull(key, "The key may not be null");
+        Condition.INSTANCE.ensureNotNull(key, "The key may not be null");
         Node<KeyType, ValueType> successor = onRemoveSuccessor(key);
 
         if (successor != null) {
@@ -163,7 +161,7 @@ public abstract class AbstractNode<KeyType extends Sequence, ValueType> implemen
 
     @Override
     public final void increaseSuccessorValueCount(final int by) {
-        ensureAtLeast(by, 0, "The amount must be at least 0");
+        Condition.INSTANCE.ensureAtLeast(by, 0, "The amount must be at least 0");
         this.successorValueCount += by;
 
         if (predecessor != null) {
@@ -173,7 +171,7 @@ public abstract class AbstractNode<KeyType extends Sequence, ValueType> implemen
 
     @Override
     public final void decreaseSuccessorValueCount(final int by) {
-        ensureAtLeast(by, 0, "The amount must be at least 0");
+        Condition.INSTANCE.ensureAtLeast(by, 0, "The amount must be at least 0");
         this.successorValueCount -= by;
 
         if (predecessor != null) {

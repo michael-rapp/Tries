@@ -42,7 +42,7 @@ public class UncompressedStructure<SequenceType extends Sequence, ValueType>
 
         if (successor != null) {
             SequenceType suffix = SequenceUtil.subsequence(sequence, 1);
-            return Pair.create(successor, suffix);
+            return Pair.Companion.create(successor, suffix);
         }
 
         return null;
@@ -56,12 +56,12 @@ public class UncompressedStructure<SequenceType extends Sequence, ValueType>
         SequenceType prefix = SequenceUtil.subsequence(sequence, 0, 1);
         Node<SequenceType, ValueType> successor = node.addSuccessor(prefix);
         SequenceType suffix = SequenceUtil.subsequence(sequence, 1);
-        return Pair.create(successor, suffix);
+        return Pair.Companion.create(successor, suffix);
     }
 
     @Override
     public final void onRemoveSuccessor(@NotNull final Node<SequenceType, ValueType> node,
-            @NotNull final SequenceType sequence) {
+                                        @NotNull final SequenceType sequence) {
         node.removeSuccessor(sequence);
     }
 
@@ -73,16 +73,17 @@ public class UncompressedStructure<SequenceType extends Sequence, ValueType>
     @NotNull
     @Override
     public final Node<SequenceType, ValueType> getSubTrie(@Nullable final SequenceType sequence,
-            @NotNull final Node<SequenceType, ValueType> rootNode,
-            @NotNull final Node<SequenceType, ValueType> node, final boolean includeNodeValue) {
+                                                          @NotNull final Node<SequenceType, ValueType> rootNode,
+                                                          @NotNull final Node<SequenceType, ValueType> node,
+                                                          final boolean includeNodeValue) {
         Node<SequenceType, ValueType> currentNode = rootNode;
         SequenceType suffix = sequence;
 
         while (suffix != null && !suffix.isEmpty()) {
             Pair<Node<SequenceType, ValueType>, SequenceType> pair =
                     onAddSuccessor(currentNode, suffix);
-            Node<SequenceType, ValueType> successor = pair.first;
-            suffix = pair.second;
+            Node<SequenceType, ValueType> successor = pair.getFirst();
+            suffix = pair.getSecond();
             currentNode = successor;
         }
 

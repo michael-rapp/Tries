@@ -16,14 +16,13 @@ package de.mrapp.tries.datastructure.node;
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
 import de.mrapp.tries.Sequence;
+import de.mrapp.util.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
  * An implementation of the interface {@link Node}, which forwards read-only method calls to an
@@ -55,7 +54,7 @@ public class UnmodifiableNode<KeyType extends Sequence, ValueType> implements
      *             The node may not be null
      */
     public UnmodifiableNode(@NotNull final Node<KeyType, ValueType> node) {
-        ensureNotNull(node, "The node may not be null");
+        Condition.INSTANCE.ensureNotNull(node, "The node may not be null");
         this.node = node;
     }
 

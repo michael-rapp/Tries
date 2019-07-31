@@ -16,12 +16,11 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.SortedStringTrie;
 import de.mrapp.tries.SortedTrie;
 import de.mrapp.tries.sequence.StringSequence;
+import de.mrapp.util.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-
-import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
  * A wrapper, which implements the interface {@link SortedStringTrie} by delegating all method calls
@@ -56,7 +55,7 @@ public class SortedStringTrieWrapper<ValueType>
          */
         public StringSequenceComparatorWrapper(
                 @NotNull final Comparator<? super String> comparator) {
-            ensureNotNull(comparator, "The comparator may not be null");
+            Condition.INSTANCE.ensureNotNull(comparator, "The comparator may not be null");
             this.comparator = comparator;
         }
 
@@ -87,7 +86,7 @@ public class SortedStringTrieWrapper<ValueType>
          *                   type {@link Comparator}. The comparator may not be null
          */
         StringComparatorWrapper(@NotNull final Comparator<? super StringSequence> comparator) {
-            ensureNotNull(comparator, "The comparator may not be null");
+            Condition.INSTANCE.ensureNotNull(comparator, "The comparator may not be null");
             this.comparator = comparator;
         }
 
@@ -245,7 +244,7 @@ public class SortedStringTrieWrapper<ValueType>
         @NotNull
         @Override
         public NavigableSet<String> subSet(final String fromElement, final boolean fromInclusive,
-                final String toElement, final boolean toInclusive) {
+                                           final String toElement, final boolean toInclusive) {
             return new NavigableKeySetWrapper(
                     set.subSet(StringSequence.convertFromString(fromElement), fromInclusive,
                             StringSequence.convertFromString(toElement), toInclusive));
@@ -294,7 +293,7 @@ public class SortedStringTrieWrapper<ValueType>
          *            {@link MapType}. The map may not be null
          */
         SortedMapWrapper(@NotNull final MapType map) {
-            ensureNotNull(map, "The map may not be null");
+            Condition.INSTANCE.ensureNotNull(map, "The map may not be null");
             this.map = map;
             Comparator<? super StringSequence> comparator = map.comparator();
             this.comparator = comparator != null ? new StringComparatorWrapper(comparator) : null;
@@ -483,7 +482,7 @@ public class SortedStringTrieWrapper<ValueType>
 
         @Override
         public NavigableMap<String, V> subMap(final String fromKey, final boolean fromInclusive,
-                final String toKey, final boolean toInclusive) {
+                                              final String toKey, final boolean toInclusive) {
             return new NavigableMapWrapper<>(
                     map.subMap(StringSequence.convertFromString(fromKey), fromInclusive,
                             StringSequence.convertFromString(toKey), toInclusive));
@@ -517,7 +516,8 @@ public class SortedStringTrieWrapper<ValueType>
      * if the given entry is null
      */
     @Nullable
-    static <V> Entry<String, V> convertEntry(@Nullable final Entry<StringSequence, V> entry) {
+    private static <V> Entry<String, V> convertEntry(
+            @Nullable final Entry<StringSequence, V> entry) {
         if (entry != null) {
             return new AbstractMap.SimpleImmutableEntry<>(
                     StringSequence.convertToString(entry.getKey()), entry.getValue());
@@ -624,7 +624,9 @@ public class SortedStringTrieWrapper<ValueType>
 
     @Override
     public final NavigableMap<String, ValueType> subMap(final String fromKey,
-            final boolean fromInclusive, final String toKey, final boolean toInclusive) {
+                                                        final boolean fromInclusive,
+                                                        final String toKey,
+                                                        final boolean toInclusive) {
         return new NavigableMapWrapper<>(
                 trie.subMap(StringSequence.convertFromString(fromKey), fromInclusive,
                         StringSequence.convertFromString(toKey), toInclusive));
@@ -632,14 +634,14 @@ public class SortedStringTrieWrapper<ValueType>
 
     @Override
     public final NavigableMap<String, ValueType> headMap(final String toKey,
-            final boolean inclusive) {
+                                                         final boolean inclusive) {
         return new NavigableMapWrapper<>(
                 trie.headMap(StringSequence.convertFromString(toKey), inclusive));
     }
 
     @Override
     public final NavigableMap<String, ValueType> tailMap(final String fromKey,
-            final boolean inclusive) {
+                                                         final boolean inclusive) {
         return new NavigableMapWrapper<>(
                 trie.tailMap(StringSequence.convertFromString(fromKey), inclusive));
     }

@@ -16,14 +16,13 @@ package de.mrapp.tries.datastructure;
 import de.mrapp.tries.Node;
 import de.mrapp.tries.NodeValue;
 import de.mrapp.tries.sequence.StringSequence;
+import de.mrapp.util.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
  * An implementation of the interface {@link Node}, where predecessors correspond to keys of the
@@ -55,7 +54,7 @@ public class StringNodeWrapper<ValueType> implements Node<String, ValueType> {
      *             The node may not be null
      */
     public StringNodeWrapper(@NotNull final Node<StringSequence, ValueType> node) {
-        ensureNotNull(node, "The node may not be null");
+        Condition.INSTANCE.ensureNotNull(node, "The node may not be null");
         this.node = node;
     }
 

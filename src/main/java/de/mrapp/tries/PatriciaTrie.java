@@ -28,11 +28,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * A sorted trie, which stores the successor of nodes in sorted lists. In contrast to a {@link SortedListTrie}, the
- * edges between nodes do not always correspond to a single element of a sequence. Instead, subsequent nodes that only
- * have a single successor are merged to a single node to reduce space complexity. This requires to reorganize the tree
- * structure when inserting new elements. Consequently, this trie should be preferred over the a {@link SortedListTrie},
- * if new elements are only inserted sporadically and minimizing memory consumption is important.
+ * A sorted trie, which stores the successor of nodes in sorted lists. In contrast to a {@link
+ * SortedListTrie}, the edges between nodes do not always correspond to a single element of a
+ * sequence. Instead, subsequent nodes that only have a single successor are merged to a single node
+ * to reduce space complexity. This requires to reorganize the tree structure when inserting new
+ * elements. Consequently, this trie should be preferred over the a {@link SortedListTrie}, if new
+ * elements are only inserted sporadically and minimizing memory consumption is important.
  *
  * @param <SequenceType> The type of the sequences, which are used as the trie's keys
  * @param <ValueType>    The type of the values, which are stored by the trie
@@ -48,14 +49,15 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     private static final long serialVersionUID = 3229102065205655196L;
 
     /**
-     * Traverses the trie in order to return the node, which corresponds to a specific sequence. If the sequence does
-     * not correspond to a node, the next higher node with the same prefix is returned.
+     * Traverses the trie in order to return the node, which corresponds to a specific sequence. If
+     * the sequence does not correspond to a node, the next higher node with the same prefix is
+     * returned.
      *
-     * @param sequence The sequence, the node, which should be returned, corresponds to, as an instance of the generic
-     *                 type {@link SequenceType} or null
-     * @return A pair, which contains the node, which corresponds to the given sequence, respectively the next higher
-     * node, as well as the key, the returned node corresponds to, as an instance of the class {@link Pair} or null, if
-     * the given sequence does not match any node
+     * @param sequence The sequence, the node, which should be returned, corresponds to, as an
+     *                 instance of the generic type {@link SequenceType} or null
+     * @return A pair, which contains the node, which corresponds to the given sequence,
+     * respectively the next higher node, as well as the key, the returned node corresponds to, as
+     * an instance of the class {@link Pair} or null, if the given sequence does not match any node
      */
     @Nullable
     private Pair<Node<SequenceType, ValueType>, SequenceType> getSubTrieRootNode(
@@ -76,16 +78,18 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
                         return null;
                     }
                 } else {
-                    currentNode = pair.first;
-                    suffix = pair.second;
+                    currentNode = pair.getFirst();
+                    suffix = pair.getSecond();
 
                     if (suffix != null && !suffix.isEmpty()) {
-                        if (matchedPrefix != null && matchedPrefix.length() + suffix.length() > sequence.length() ||
+                        if (matchedPrefix != null &&
+                                matchedPrefix.length() + suffix.length() > sequence.length() ||
                                 suffix.length() > sequence.length()) {
                             matchedPrefix = SequenceUtil.concat(matchedPrefix, suffix);
                             suffix = null;
                         } else {
-                            matchedPrefix = SequenceUtil.subsequence(sequence, 0, sequence.length() - suffix.length());
+                            matchedPrefix = SequenceUtil
+                                    .subsequence(sequence, 0, sequence.length() - suffix.length());
                         }
                     } else {
                         matchedPrefix = sequence;
@@ -95,17 +99,18 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
 
             if (sequence != null && !sequence.isEmpty() && matchedPrefix != null &&
                     matchedPrefix.length() < sequence.length()) {
-                SequenceType unmatchedSuffix = SequenceUtil.subsequence(sequence, matchedPrefix.length());
+                SequenceType unmatchedSuffix = SequenceUtil
+                        .subsequence(sequence, matchedPrefix.length());
                 int index = currentNode.indexOfFirstElement(unmatchedSuffix);
 
                 if (index != -1) {
                     SequenceType successorKey = currentNode.getSuccessorKey(index);
                     currentNode = currentNode.getSuccessor(index);
                     matchedPrefix = SequenceUtil.concat(matchedPrefix, successorKey);
-                    return Pair.create(currentNode, matchedPrefix);
+                    return Pair.Companion.create(currentNode, matchedPrefix);
                 }
             } else {
-                return Pair.create(currentNode, matchedPrefix);
+                return Pair.Companion.create(currentNode, matchedPrefix);
             }
         }
 
@@ -115,13 +120,14 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     /**
      * Creates a new Patricia trie.
      *
-     * @param rootNode   The root node of the trie as an instance of the type {@link Node} or null, if the trie should
-     *                   be empty
-     * @param comparator The comparator, which should be used to compare keys with each other, as an instance of the
-     *                   type {@link Comparator} or null, if the natural ordering of the keys should be used
+     * @param rootNode   The root node of the trie as an instance of the type {@link Node} or null,
+     *                   if the trie should be empty
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
      */
     protected PatriciaTrie(@Nullable final Node<SequenceType, ValueType> rootNode,
-            @Nullable final Comparator<? super SequenceType> comparator) {
+                           @Nullable final Comparator<? super SequenceType> comparator) {
         super(rootNode, comparator);
     }
 
@@ -133,11 +139,11 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     }
 
     /**
-     * Creates a new Patricia trie, which contains all key-value pairs that are contained by a map. For comparing keys
-     * with each other, the natural ordering of the keys is used.
+     * Creates a new Patricia trie, which contains all key-value pairs that are contained by a map.
+     * For comparing keys with each other, the natural ordering of the keys is used.
      *
-     * @param map The map, which contains the key-value pairs that should be added to the trie, as an instance of the
-     *            type {@link Map}. The map may not be null
+     * @param map The map, which contains the key-value pairs that should be added to the trie, as
+     *            an instance of the type {@link Map}. The map may not be null
      */
     public PatriciaTrie(@NotNull final Map<SequenceType, ValueType> map) {
         super(null, map);
@@ -146,8 +152,9 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     /**
      * Creates a new, empty Patricia trie.
      *
-     * @param comparator The comparator, which should be used to compare keys with each other, as an instance of the
-     *                   type {@link Comparator} or null, if the natural ordering of the keys should be used
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
      */
     public PatriciaTrie(@Nullable final Comparator<? super SequenceType> comparator) {
         super(comparator);
@@ -156,13 +163,14 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
     /**
      * Creates a new Patrica trie, which contains all key-value pairs that are contained by a map.
      *
-     * @param comparator The comparator, which should be used to compare keys with each other, as an instance of the
-     *                   type {@link Comparator} or null, if the natural ordering of the keys should be used
-     * @param map        The map, which contains the key-value pairs that should be added to the trie, as an instance of
-     *                   the type {@link Map}. The map may not be null
+     * @param comparator The comparator, which should be used to compare keys with each other, as an
+     *                   instance of the type {@link Comparator} or null, if the natural ordering of
+     *                   the keys should be used
+     * @param map        The map, which contains the key-value pairs that should be added to the
+     *                   trie, as an instance of the type {@link Map}. The map may not be null
      */
     public PatriciaTrie(@Nullable final Comparator<? super SequenceType> comparator,
-            @NotNull final Map<SequenceType, ValueType> map) {
+                        @NotNull final Map<SequenceType, ValueType> map) {
         super(comparator, map);
     }
 
@@ -180,18 +188,21 @@ public class PatriciaTrie<SequenceType extends Sequence, ValueType>
 
     @NotNull
     @Override
-    public final SortedTrie<SequenceType, ValueType> subTrie(@Nullable final SequenceType sequence) {
+    public final SortedTrie<SequenceType, ValueType> subTrie(
+            @Nullable final SequenceType sequence) {
         Pair<Node<SequenceType, ValueType>, SequenceType> pair = getSubTrieRootNode(sequence);
 
         if (pair != null) {
-            Node<SequenceType, ValueType> node = pair.first;
+            Node<SequenceType, ValueType> node = pair.getFirst();
             boolean hasSuccessors = node.hasSuccessors();
             boolean includeNodeValue =
-                    (sequence != null && pair.second != null && pair.second.length() > sequence.length());
+                    (sequence != null && pair.getSecond() != null &&
+                            pair.getSecond().length() > sequence.length());
 
             if (hasSuccessors || includeNodeValue) {
                 Node<SequenceType, ValueType> rootNode =
-                        structure.getSubTrie(pair.second, createRootNode(), node, includeNodeValue && !hasSuccessors);
+                        structure.getSubTrie(pair.getSecond(), createRootNode(), node,
+                                includeNodeValue && !hasSuccessors);
                 return new PatriciaTrie<>(rootNode, comparator);
             } else {
                 return new PatriciaTrie<>(null, comparator);

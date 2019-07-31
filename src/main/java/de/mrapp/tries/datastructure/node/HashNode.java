@@ -15,14 +15,13 @@ package de.mrapp.tries.datastructure.node;
 
 import de.mrapp.tries.Node;
 import de.mrapp.tries.Sequence;
+import de.mrapp.util.Condition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import static de.mrapp.util.Condition.ensureNotNull;
 
 /**
  * A node of a trie, which stores its successors in a {@link HashMap}.
@@ -70,7 +69,7 @@ public class HashNode<KeyType extends Sequence, ValueType> extends
     @Nullable
     @Override
     public final Node<KeyType, ValueType> getSuccessor(@NotNull final KeyType key) {
-        ensureNotNull(key, "The key may not be null");
+        Condition.INSTANCE.ensureNotNull(key, "The key may not be null");
         return successors.get(key);
     }
 

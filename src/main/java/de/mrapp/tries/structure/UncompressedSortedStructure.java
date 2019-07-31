@@ -43,7 +43,7 @@ public class UncompressedSortedStructure<SequenceType extends Sequence, ValueTyp
 
         if (index != -1) {
             SequenceType suffix = SequenceUtil.subsequence(sequence, 1);
-            return Pair.create(index, suffix);
+            return Pair.Companion.create(index, suffix);
         }
 
         return null;

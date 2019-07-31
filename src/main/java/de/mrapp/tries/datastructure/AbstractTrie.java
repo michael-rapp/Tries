@@ -22,13 +22,12 @@ import de.mrapp.tries.structure.Structure;
 import de.mrapp.tries.structure.Structure.Operation;
 import de.mrapp.tries.util.EntryUtil;
 import de.mrapp.tries.util.SequenceUtil;
+import de.mrapp.util.Condition;
 import de.mrapp.util.datastructure.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-
-import static de.mrapp.util.Condition.*;
 
 /**
  * An abstract base class for all tries. It implements the methods of the interface {@link Map}. In
@@ -71,7 +70,7 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
          *                    The trie may not be null
          */
         EntrySet(@NotNull final TrieType backingTrie) {
-            ensureNotNull(backingTrie, "The backing trie may not be null");
+            Condition.INSTANCE.ensureNotNull(backingTrie, "The backing trie may not be null");
             this.backingTrie = backingTrie;
         }
 
@@ -129,7 +128,7 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
          *                    The trie may not be null
          */
         Values(@NotNull final TrieType backingTrie) {
-            ensureNotNull(backingTrie, "The backing trie may not be null");
+            Condition.INSTANCE.ensureNotNull(backingTrie, "The backing trie may not be null");
             this.backingTrie = backingTrie;
         }
 
@@ -216,7 +215,7 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
          *                   type {@link MapType}. The backing map may not be null
          */
         AbstractKeySet(@NotNull final MapType backingMap) {
-            ensureNotNull(backingMap, "The backing map may not be null");
+            Condition.INSTANCE.ensureNotNull(backingMap, "The backing map may not be null");
             this.backingMap = backingMap;
         }
 
@@ -383,9 +382,9 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
              *                 empty
              */
             Path(@NotNull final Node<K, V> node, @NotNull final K sequence) {
-                ensureNotNull(node, "The node may not be null");
-                ensureNotNull(sequence, "The sequence may not be null");
-                ensureFalse(sequence.isEmpty(), "The sequence may not be empty");
+                Condition.INSTANCE.ensureNotNull(node, "The node may not be null");
+                Condition.INSTANCE.ensureNotNull(sequence, "The sequence may not be null");
+                Condition.INSTANCE.ensureFalse(sequence.isEmpty(), "The sequence may not be empty");
                 this.node = node;
                 this.sequence = sequence;
                 this.iterator = null;
@@ -479,9 +478,9 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
         }
 
         final Map.Entry<K, V> nextEntry() {
-            ensureEqual(expectedModificationCount, trie.modificationCount, null,
+            Condition.INSTANCE.ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
-            ensureTrue(hasNext(), null, NoSuchElementException.class);
+            Condition.INSTANCE.ensureTrue(hasNext(), null, NoSuchElementException.class);
             Path result = nextPath;
             nextPath = fetchNext();
             lastReturned =
@@ -514,8 +513,8 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
 
         @Override
         public void remove() {
-            ensureNotNull(lastReturned, null, IllegalStateException.class);
-            ensureEqual(expectedModificationCount, trie.modificationCount, null,
+            Condition.INSTANCE.ensureNotNull(lastReturned, null, IllegalStateException.class);
+            Condition.INSTANCE.ensureEqual(expectedModificationCount, trie.modificationCount, null,
                     ConcurrentModificationException.class);
             trie.remove(lastReturned.getKey());
             lastReturned = null;
@@ -552,7 +551,7 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
          *             {@link TrieType}. The trie may not be null
          */
         AbstractIterator(@NotNull final TrieType trie) {
-            ensureNotNull(trie, "The trie may not be null");
+            Condition.INSTANCE.ensureNotNull(trie, "The trie may not be null");
             this.trie = trie;
             this.expectedModificationCount = trie.modificationCount;
         }
@@ -640,8 +639,8 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
                 if (pair == null) {
                     return null;
                 } else {
-                    currentNode = pair.first;
-                    suffix = pair.second;
+                    currentNode = pair.getFirst();
+                    suffix = pair.getSecond();
                 }
             }
 
@@ -678,7 +677,7 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
      */
     public AbstractTrie(@NotNull final Map<SequenceType, ValueType> map) {
         this();
-        ensureNotNull(map, "The map may not be null");
+        Condition.INSTANCE.ensureNotNull(map, "The map may not be null");
         putAll(map);
     }
 
@@ -764,8 +763,8 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
             if (pair == null) {
                 break;
             } else {
-                currentNode = pair.first;
-                suffix = pair.second;
+                currentNode = pair.getFirst();
+                suffix = pair.getSecond();
             }
         }
 
@@ -777,8 +776,8 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
             while (suffix != null && !suffix.isEmpty()) {
                 Pair<Node<SequenceType, ValueType>, SequenceType> pair =
                         structure.onAddSuccessor(currentNode, suffix);
-                Node<SequenceType, ValueType> successor = pair.first;
-                suffix = pair.second;
+                Node<SequenceType, ValueType> successor = pair.getFirst();
+                suffix = pair.getSecond();
 
                 if (suffix == null || suffix.isEmpty()) {
                     successor.setNodeValue(new NodeValue<>(value));
@@ -794,7 +793,7 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
 
     @Override
     public final void putAll(@NotNull final Map<? extends SequenceType, ? extends ValueType> map) {
-        ensureNotNull(map, "The map may not be null");
+        Condition.INSTANCE.ensureNotNull(map, "The map may not be null");
         map.forEach(this::put);
     }
 
@@ -830,8 +829,8 @@ public abstract class AbstractTrie<StructureType extends Structure<SequenceType,
                             suffixToRemove = suffix;
                         }
 
-                        Node<SequenceType, ValueType> successor = pair.first;
-                        suffix = pair.second;
+                        Node<SequenceType, ValueType> successor = pair.getFirst();
+                        suffix = pair.getSecond();
 
                         if (suffix == null || suffix.isEmpty()) {
                             if (successor.hasSuccessors()) {
