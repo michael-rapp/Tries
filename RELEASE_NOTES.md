@@ -1,5 +1,13 @@
 # Tries - RELEASE NOTES
 
+## Version 1.0.3 (Aug. 1st 2019)
+
+A minor release, which introduces the following changes:
+
+- Updated dependency "JavaUtil" to version 2.4.0.
+- Updated dependency "Annotations" to version 17.0.
+- Updated dependency "Mockito" to version 3.0.0.
+
 ## Version 1.0.2 (Feb. 8th 2018)
 
 A bugfix release, which fixes the following issues:
